@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>§ 9—10. Особенности ГИС — GeoSpatial Core</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
+      <nav class="nav-group">
+        <a href="index.html" class="nav-item">← Дашборд</a>
+        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
+        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
+        <a href="p9-10.html" class="nav-item active">§ 9—10. Особенности ГИС</a>
+        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
+        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
+      </nav>
+      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="header-bar"><div class="crumb"><span>§ 9—10</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <main class="content">
+
+        <!-- Мини-игра 1: Изометрическая 3D-площадка ГИС -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 1. «Сборка слоеного ГИС-пирога»</h2>
+            <span class="badge" data-game-badge="p910_g1">WAIT</span>
+          </div>
+          <p class="card-subtitle">3D-площадка проектирования карты: основанием может стать ТОЛЬКО опорный слой (геоположение), остальные слои распределяются по оси Z.</p>
+
+          <div class="stack-bench">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div id="chip-hydro" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('hydro', this)" ondragstart="dragLayer(event, 'hydro')">📄 [Гидрография]</div>
+              <div id="chip-base" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('base', this)" ondragstart="dragLayer(event, 'base')">🔒 [Опорный слой (Геоположение)]</div>
+              <div id="chip-transport" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('transport', this)" ondragstart="dragLayer(event, 'transport')">📄 [Транспортная сеть]</div>
+              <div id="chip-vegetation" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('vegetation', this)" ondragstart="dragLayer(event, 'vegetation')">📄 [Растительность]</div>
+            </div>
+
+            <!-- Изометрическая 3D сцена -->
+            <div class="scene-3d-wrapper" onclick="handle3DStageClick()" ondragover="allowDrop(event)" ondrop="dropLayer(event)">
+              <div id="stage-3d" class="stage-3d">
+                <div id="plane-3d-1" class="layer-plane-3d">Основание платформы (Z: 0px)</div>
+                <div id="plane-3d-2" class="layer-plane-3d">Уровень Z: +45px</div>
+                <div id="plane-3d-3" class="layer-plane-3d">Уровень Z: +90px</div>
+                <div id="plane-3d-4" class="layer-plane-3d">Уровень Z: +135px</div>
+              </div>
+            </div>
+          </div>
+          <div class="drag-hint">💡 <em>Нажмите на слой слева, затем нажмите на 3D-площадку, либо перетащите курсором.</em></div>
+          <div id="p910-g1-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 2 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 2. «Циркулярное лассо: Буферная зона MapInfo»</h2>
+            <span class="badge" data-game-badge="p910_g2">WAIT</span>
+          </div>
+          <p class="card-subtitle">Обведите замкнутой линией газопровод, создав буферную зону безопасности, затем запустите расчет SQL.</p>
+
+          <div class="canvas-holder"><canvas id="lasso-canvas" width="400" height="200"></canvas></div>
+          <div id="sql-action-panel" style="display:none; margin-top:10px;">
+            <button class="btn btn-primary btn-sm" onclick="executeMapInfoSql()">⚡ Тап: [SQL-объединение таблиц и расчет параметров]</button>
+          </div>
+          <div id="p910-g2-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 3 -->
+        <div class="card" id="conveyor-board">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 3. «Сортировочный конвейер программных ядер»</h2>
+            <span class="badge" data-game-badge="p910_g3">WAIT</span>
+          </div>
+          <p class="card-subtitle">Сбросьте программы в гнезда соответствующего функционала лаборатории.</p>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+            <div id="slot-ai" class="layer-slot" onclick="handleConveyorSlotClick('slot-ai')" ondragover="allowDrop(event)" ondrop="dropSoftware(event, 'slot-ai')">Настройка отдельных цветов векторной графики</div>
+            <div id="slot-mapinfo" class="layer-slot" onclick="handleConveyorSlotClick('slot-mapinfo')" ondragover="allowDrop(event)" ondrop="dropSoftware(event, 'slot-mapinfo')">Построение 3D-моделей и наклонных сечений</div>
+            <div id="slot-corel" class="layer-slot" onclick="handleConveyorSlotClick('slot-corel')" ondragover="allowDrop(event)" ondrop="dropSoftware(event, 'slot-corel')">Быстрое создание растровых рисунков для художников</div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
+            <div id="chip-soft-ai" class="token-chip token-chip-soft" draggable="true" onclick="selectSoft('ai', this)" ondragstart="dragSoft(event, 'ai')">💻 [Adobe Illustrator]</div>
+            <div id="chip-soft-mapinfo" class="token-chip token-chip-soft" draggable="true" onclick="selectSoft('mapinfo', this)" ondragstart="dragSoft(event, 'mapinfo')">💻 [MapInfo Professional]</div>
+            <div id="chip-soft-corel" class="token-chip token-chip-soft" draggable="true" onclick="selectSoft('corel', this)" ondragstart="dragSoft(event, 'corel')">💻 [Corel Photo-Paint]</div>
+          </div>
+          <div id="p910-g3-fb" class="status-callout"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

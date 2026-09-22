@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>§ 5—6. Цифровая модель карты — GeoSpatial Core</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
+      <nav class="nav-group">
+        <a href="index.html" class="nav-item">← Дашборд</a>
+        <a href="p5-6.html" class="nav-item active">§ 5—6. Цифровая модель карты</a>
+        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
+        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
+        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
+        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
+      </nav>
+      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="header-bar"><div class="crumb"><span>§ 5—6</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <main class="content">
+
+        <!-- Мини-игра 1 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 1. «Pinch-to-Zoom: Тест графического ядра»</h2>
+            <span class="badge" data-game-badge="p56_g1">WAIT</span>
+          </div>
+          <p class="card-subtitle">Увеличьте карты ползунком масштабирования: на растровой карте пиксели размоются, а на векторной появится предупреждение «Нет описания объекта!». Распределите магнитные значки.</p>
+
+          <input type="range" id="pinch-slider" min="1" max="3" step="0.1" value="1" style="width:100%; margin-bottom:12px;">
+
+          <div class="zoom-split">
+            <div class="map-window" onclick="handlePinchSlotClick('raster')" ondragover="allowDrop(event)" ondrop="dropToken(event, 'raster')">
+              <strong style="font-size:11px; margin-bottom:6px;">КАРТА А</strong>
+              <div class="pixel-canvas-box" id="raster-box">
+                <div style="width:44px; height:44px; background:#475569; display:grid; grid-template-columns:repeat(2,1fr); gap:2px; padding:2px;">
+                  <div style="background:#38bdf8"></div><div style="background:#cbd5e1"></div>
+                  <div style="background:#cbd5e1"></div><div style="background:#38bdf8"></div>
+                </div>
+              </div>
+              <span id="slot-raster-txt" style="font-size:11px; color:var(--text-muted); margin-top:8px;">Нажмите/перетащите маркер сюда</span>
+            </div>
+
+            <div class="map-window" onclick="handlePinchSlotClick('vector')" ondragover="allowDrop(event)" ondrop="dropToken(event, 'vector')">
+              <strong style="font-size:11px; margin-bottom:6px;">КАРТА Б</strong>
+              <div class="pixel-canvas-box" id="vector-box">
+                <svg width="44" height="44" viewBox="0 0 44 44">
+                  <path d="M5,35 Q22,5 39,35" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+                  <rect x="18" y="12" width="8" height="8" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div id="vector-warn" style="display:none; font-size:10px; color:#ef4444; font-weight:700;">⚠️ Нет описания объекта!</div>
+              <span id="slot-vector-txt" style="font-size:11px; color:var(--text-muted); margin-top:8px;">Нажмите/перетащите маркер сюда</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
+            <div id="chip-pixel" class="token-chip token-chip-pinch" draggable="true" onclick="selectPinchToken('pixel-matrix', this)" ondragstart="dragToken(event, 'pixel-matrix')">
+              📌 [Матрица фиксированных пикселей]
+            </div>
+            <div id="chip-attr" class="token-chip token-chip-pinch" draggable="true" onclick="selectPinchToken('attr-db', this)" ondragstart="dragToken(event, 'attr-db')">
+              📌 [Связать с базой данных атрибутов]
+            </div>
+          </div>
+          <div class="drag-hint">💡 <em>Кликните по маркеру, затем по окну карты, либо перетащите курсором.</em></div>
+          <div id="p56-g1-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 2 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 2. «Tinder-сортировщик картографических пакетов»</h2>
+            <span class="badge" data-game-badge="p56_g2">WAIT</span>
+          </div>
+          <p class="card-subtitle">Свайпайте карточку в 4 стороны экрана (жестом или кнопками управления). Достигните комбо 4/4 без ошибок.</p>
+
+          <div style="display:flex; justify-content:space-between; font-weight:600; font-size:12px; margin-bottom:8px;">
+            <span id="tinder-combo-counter">Комбо: 0/4</span>
+          </div>
+
+          <div id="tinder-zone" class="tinder-zone">
+            <div class="swipe-target swipe-top">⬆️ Размерная (метрика)</div>
+            <div class="swipe-target swipe-right">➡️ Цифровая</div>
+            <div class="swipe-target swipe-bottom">⬇️ Смысловая</div>
+            <div class="swipe-target swipe-left">⬅️ Общая</div>
+            <div id="tinder-card" class="tinder-card">Загрузка...</div>
+          </div>
+
+          <div style="display:flex; justify-content:center; gap:8px; margin-top:12px;">
+            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('LEFT')">⬅️ Общая</button>
+            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('UP')">⬆️ Размерная</button>
+            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('DOWN')">⬇️ Смысловая</button>
+            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('RIGHT')">➡️ Цифровая</button>
+          </div>
+          <div id="p56-g2-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 3: Честный 3D-рельеф -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 3. «Диск-калибратор плотности рельефа»</h2>
+            <span class="badge" data-game-badge="p56_g3">WAIT</span>
+          </div>
+          <p class="card-subtitle">Требование: <em>«Отобразить точки рельефа строго в количестве, определяющем средний уровень местности»</em>. Вращайте диск для переключения 3D-проекции.</p>
+
+          <div class="rotary-layout">
+            <div class="landscape-view">
+              <canvas id="terrain-canvas" class="viewport-3d-canvas" width="400" height="200"></canvas>
+            </div>
+            <div class="rotary-controller">
+              <div id="rotary-dial" class="dial-housing">
+                <div class="dial-marker"></div>
+              </div>
+              <div id="dial-mode-name" style="font-weight:700; font-size:14px; margin-top:10px;">3D-режим: Постенная</div>
+              <div id="dial-mode-desc" style="font-size:11px; color:var(--text-muted); text-align:center; margin-top:2px;">Качественные/количественные знаки</div>
+              <span id="dial-lock-icon" class="badge" style="margin-top:8px;">Крутите регулятор</span>
+            </div>
+          </div>
+          <div id="p56-g3-fb" class="status-callout"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

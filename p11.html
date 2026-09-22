@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>§ 11. Связь ГИС с отраслями — GeoSpatial Core</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
+      <nav class="nav-group">
+        <a href="index.html" class="nav-item">← Дашборд</a>
+        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
+        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
+        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
+        <a href="p11.html" class="nav-item active">§ 11. Связь ГИС с отраслями</a>
+        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
+      </nav>
+      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="header-bar"><div class="crumb"><span>§ 11</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <main class="content">
+
+        <!-- Мини-игра 1 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 1. «Агро-скретч Microsoft: Очистка пашен»</h2>
+            <span class="badge" data-game-badge="p11_g1">WAIT</span>
+          </div>
+          <p class="card-subtitle">Сотрите пальцем/курсором защитный налет неиспользуемого пастбища и наложите штампы аудита.</p>
+
+          <div class="canvas-holder" style="height:150px;"><canvas id="scratch-canvas" width="400" height="150"></canvas></div>
+          <div id="ms-stamps-panel" style="display:none; gap:10px; margin-top:10px;">
+            <button class="btn btn-secondary btn-sm" onclick="applyMsStamp('owner')">🏷️ Штамп: [Собственник земли]</button>
+            <button class="btn btn-secondary btn-sm" onclick="applyMsStamp('years')">🏷️ Штамп: [Срок неиспользования: 3 года]</button>
+          </div>
+          <div id="p11-g1-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 2 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 2. «Георадар ER Mapper: Тактильный металлоискатель»</h2>
+            <span class="badge" data-game-badge="p11_g2">WAIT</span>
+          </div>
+          <p class="card-subtitle">Медленно ведите сканер по космическому снимку. При нахождении высокоминерализованного очага грунта установите GPS-метку.</p>
+
+          <div id="radar-pad" style="height:180px; background:#fff; border:1px solid var(--border); border-radius:var(--radius-md); position:relative; overflow:hidden; cursor:crosshair; touch-action:none;">
+            <div id="radar-reticle" style="position:absolute; width:28px; height:28px; border:2px solid var(--accent); border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; transition:transform 0.1s;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span id="radar-status-tag" style="font-size:12px; font-weight:600;">Сканирование грунта...</span>
+            <button id="gps-pin-btn" class="btn btn-primary btn-sm" style="display:none;" onclick="dropGpsPin()">📍 Установить [GPS-метка для геологов]</button>
+          </div>
+          <div id="p11-g2-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 3 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 3. «Трассировщик логистического коридора»</h2>
+            <span class="badge" data-game-badge="p11_g3">WAIT</span>
+          </div>
+          <p class="card-subtitle">Нарисуйте линию маршрута от Парка А к Хабу Б строго в обход красной зоны стихийного бедствия.</p>
+
+          <div class="canvas-holder" style="height:160px;"><canvas id="logistic-canvas" width="400" height="160"></canvas></div>
+          <div id="cargo-score-bar" style="display:none; margin-top:8px; font-weight:700; color:#10b981;">🚀 Грузооборот: МАКСИМУМ</div>
+          <div id="p11-g3-fb" class="status-callout"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

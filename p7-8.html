@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>§ 7—8. Методы ДЗЗ — GeoSpatial Core</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
+      <nav class="nav-group">
+        <a href="index.html" class="nav-item">← Дашборд</a>
+        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
+        <a href="p7-8.html" class="nav-item active">§ 7—8. Методы ДЗЗ</a>
+        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
+        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
+        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
+      </nav>
+      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="header-bar"><div class="crumb"><span>§ 7—8</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <main class="content">
+
+        <!-- Мини-игра 1: 3D Глобус KazEOSat-1 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 1. «Орбитальный трассировщик KazEOSat-1»</h2>
+            <span class="badge" data-game-badge="p78_g1">WAIT</span>
+          </div>
+          <p class="card-subtitle">Вращающийся 3D-глобус: ведите спутник по полярному коридору (Таймыр—Индия), совершив 14 витков в сутки.</p>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-weight:600; font-size:12px;">
+            <span id="sat-rev-counter">0 / 14 витков в сутки</span>
+            <button id="sat-mode-trigger" class="btn btn-primary btn-sm" style="display:none;" onclick="activateKazEOSatMode()">Тап: [Панхроматический + Мультиспектральный]</button>
+          </div>
+          <div class="canvas-holder" style="height:250px;"><canvas id="orbit-canvas" width="400" height="250"></canvas></div>
+          <div id="p78-g1-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 2 -->
+        <div class="card" id="beacons-game">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 2. «Магнитный штекер океанических маяков»</h2>
+            <span class="badge" data-game-badge="p78_g2">WAIT</span>
+          </div>
+          <p class="card-subtitle">Примагнитьте 4 спутниковых блока к своим океаническим зонам для синхронизации точности GPS в 1 метр.</p>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div id="slot-aore" class="layer-slot" onclick="handleBeaconSlotClick('slot-aore')" ondragover="allowDrop(event)" ondrop="dropBeacon(event, 'slot-aore')">Восход Атлантического океана</div>
+            <div id="slot-ior" class="layer-slot" onclick="handleBeaconSlotClick('slot-ior')" ondragover="allowDrop(event)" ondrop="dropBeacon(event, 'slot-ior')">Индийский океан</div>
+            <div id="slot-waas" class="layer-slot" onclick="handleBeaconSlotClick('slot-waas')" ondragover="allowDrop(event)" ondrop="dropBeacon(event, 'slot-waas')">Северное полушарие / Сев. Атлантика</div>
+            <div id="slot-msas" class="layer-slot" onclick="handleBeaconSlotClick('slot-msas')" ondragover="allowDrop(event)" ondrop="dropBeacon(event, 'slot-msas')">Сев. часть Тихого и Индийского ок.</div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
+            <div id="chip-AORE" class="token-chip token-chip-beacon" draggable="true" onclick="selectBeacon('AORE', this)" ondragstart="dragBeacon(event, 'AORE')">📡 [AORE]</div>
+            <div id="chip-IOR" class="token-chip token-chip-beacon" draggable="true" onclick="selectBeacon('IOR', this)" ondragstart="dragBeacon(event, 'IOR')">📡 [IOR]</div>
+            <div id="chip-WAAS" class="token-chip token-chip-beacon" draggable="true" onclick="selectBeacon('WAAS', this)" ondragstart="dragBeacon(event, 'WAAS')">📡 [WAAS]</div>
+            <div id="chip-MSAS" class="token-chip token-chip-beacon" draggable="true" onclick="selectBeacon('MSAS', this)" ondragstart="dragBeacon(event, 'MSAS')">📡 [MSAS]</div>
+          </div>
+          <div id="beacons-wave-indicator" style="display:none; margin-top:8px; font-size:12px; color:#10b981; font-weight:600;">⚡ Навигационная волна: Точность GPS = 1.0 м.</div>
+          <div id="p78-g2-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 3: 3D ERDAS Imaging -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 3. «Спектральный слайдер гиперспектра»</h2>
+            <span class="badge" data-game-badge="p78_g3">WAIT</span>
+          </div>
+          <p class="card-subtitle">Растягивайте шкалу спектра: при преодолении 20 каналов ERDAS генерирует детализированную 3D-модель изменений среды.</p>
+
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600;">
+            <span id="spectrum-val">1 канал</span>
+            <span id="spectrum-type-badge" class="badge">Оптический</span>
+          </div>
+          <input type="range" id="spectrum-range" min="1" max="32" value="1" style="width:100%; margin:12px 0;">
+          <div class="canvas-holder" style="height:160px;">
+            <canvas id="erdas-3d-canvas" width="400" height="160"></canvas>
+          </div>
+          <div id="p78-g3-fb" class="status-callout"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

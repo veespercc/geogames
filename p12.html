@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>§ 12. Географическая БД — GeoSpatial Core</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
+      <nav class="nav-group">
+        <a href="index.html" class="nav-item">← Дашборд</a>
+        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
+        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
+        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
+        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
+        <a href="p12.html" class="nav-item active">§ 12. Географическая БД</a>
+      </nav>
+      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="header-bar"><div class="crumb"><span>§ 12</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <main class="content">
+
+        <!-- Мини-игра 1 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 1. «Геометрический шредер: Точка — Линия — Полигон»</h2>
+            <span class="badge" data-game-badge="p12_g1">WAIT</span>
+          </div>
+          <p class="card-subtitle">Сбрасывайте падающие карточки в один из трех люков геометрии базы данных по ГОСТу.</p>
+
+          <div style="display:flex; justify-content:center; margin:16px 0;">
+            <div id="shredder-card" class="tinder-card" style="position:relative; width:260px;">Загрузка...</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+            <button class="btn btn-secondary" onclick="sortShredder('point')">🔘 ТОЧКА<br><small style="color:var(--text-muted);">Местоположение, 0D</small></button>
+            <button class="btn btn-secondary" onclick="sortShredder('line')">➖ ЛИНИЯ<br><small style="color:var(--text-muted);">Только длина, 1D</small></button>
+            <button class="btn btn-secondary" onclick="sortShredder('polygon')">🔲 ПОЛИГОН<br><small style="color:var(--text-muted);">Длина и ширина, 2D</small></button>
+          </div>
+          <div id="p12-g1-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 2 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 2. «Эквалайзер триады качества данных»</h2>
+            <span class="badge" data-game-badge="p12_g2">WAIT</span>
+          </div>
+          <p class="card-subtitle">Поднимите все 3 фейдера микшера до целевых золотых отметок качества.</p>
+
+          <div class="faders-grid">
+            <div class="fader-col">
+              <span style="font-size:11px; font-weight:600;">Пространственная</span>
+              <input type="range" id="eq-fader-1" min="0" max="100" value="20">
+              <span class="badge">ТОЧНОСТЬ</span>
+            </div>
+            <div class="fader-col">
+              <span style="font-size:11px; font-weight:600;">Временная</span>
+              <input type="range" id="eq-fader-2" min="0" max="100" value="20">
+              <span class="badge">СВОЕВРЕМЕННОСТЬ</span>
+            </div>
+            <div class="fader-col">
+              <span style="font-size:11px; font-weight:600;">Тематическая</span>
+              <input type="range" id="eq-fader-3" min="0" max="100" value="20">
+              <span class="badge">ПОЛНОЦЕННОСТЬ</span>
+            </div>
+          </div>
+          <div id="p12-g2-fb" class="status-callout"></div>
+        </div>
+
+        <!-- Мини-игра 3 -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title">Мини-игра 3. «Сетевой хаб распределенной СУБД»</h2>
+            <span class="badge" data-game-badge="p12_g3">WAIT</span>
+          </div>
+          <p class="card-subtitle">Протяните линии-лучи от городских компьютеров к центральному ядру СУБД, затем выполните двойной клик по ядру.</p>
+
+          <div style="display:flex; justify-content:space-around; margin:16px 0;">
+            <button class="btn btn-secondary btn-sm" onclick="connectNode(this, 'Алматы')">🖥️ Компьютер: Алматы</button>
+            <button class="btn btn-secondary btn-sm" onclick="connectNode(this, 'Астана')">🖥️ Компьютер: Астана</button>
+            <button class="btn btn-secondary btn-sm" onclick="connectNode(this, 'Шымкент')">🖥️ Компьютер: Шымкент</button>
+          </div>
+
+          <div id="dbms-core" style="height:70px; background:var(--bg-subtle); border:2px dashed var(--border-strong); border-radius:var(--radius-md); display:grid; place-items:center; font-weight:600; font-size:13px; cursor:pointer; user-select:none;">
+            [СУБД: Распределенная база данных] — Ожидание подключения 3 узлов
+          </div>
+          <div id="p12-g3-fb" class="status-callout"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoSpatial Core LMS — 15 Интерактивных модулей</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">G</div>
+        <div>
+          <strong style="font-size:14px;">GeoSpatial Core</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Educational LMS Platform</div>
+        </div>
+      </div>
+      <nav class="nav-group">
+        <div class="nav-label">Навигация</div>
+        <a href="index.html" class="nav-item active">Дашборд курса</a>
+        <div class="nav-label">Параграфы (15 заданий)</div>
+        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
+        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
+        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
+        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
+        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
+      </nav>
+      <div class="sidebar-foot">
+        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600;">
+          <span>Общий прогресс</span>
+          <span id="global-label">0 / 15 (0%)</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="header-bar">
+        <div class="crumb"><span>Курс</span> <span>/</span> <strong>Дашборд образовательного тренажера</strong></div>
+      </header>
+      <main class="content">
+        <div class="card">
+          <h1 class="card-title">Практикум: 15 интерактивных мини-игр по картографии и ГИС</h1>
+          <p class="card-subtitle">Полное погружение в профессиональные механики: от масштабирования растровых матриц и 14 витков спутника KazEOSat-1 до SQL-лассо в MapInfo и топологии распределенной СУБД.</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+          <div class="card">
+            <h2 style="font-size:15px; font-weight:600;">§ 5—6. Цифровая модель карты</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Pinch-to-Zoom графического ядра, 4-сторонний Tinder-сортировщик, Диск плотности рельефа.</p>
+            <a href="p5-6.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть параграф (3 игры) →</a>
+          </div>
+          <div class="card">
+            <h2 style="font-size:15px; font-weight:600;">§ 7—8. Методы дистанционного зондирования</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Орбита KazEOSat-1 (14 витков/сут), Океанические маяки точности 1м, Гиперспектральный захват ERDAS.</p>
+            <a href="p7-8.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть параграф (3 игры) →</a>
+          </div>
+          <div class="card">
+            <h2 style="font-size:15px; font-weight:600;">§ 9—10. Особенности ГИС-технологий</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Сборка ГИС-пирога с опорным основанием, Циркулярное лассо MapInfo, Конвейер экспорта ПО.</p>
+            <a href="p9-10.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть параграф (3 игры) →</a>
+          </div>
+          <div class="card">
+            <h2 style="font-size:15px; font-weight:600;">§ 11. Связь ГИС с другими отраслями</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Агро-скретч Microsoft, Георадар ER Mapper с тактильным откликом, Логистический трассировщик.</p>
+            <a href="p11.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть параграф (3 игры) →</a>
+          </div>
+          <div class="card">
+            <h2 style="font-size:15px; font-weight:600;">§ 12. Географическая база данных</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Шредер геометрии (0D/1D/2D), Эквалайзер триады качества, Сетевой хаб распределенной СУБД.</p>
+            <a href="p12.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть параграф (3 игры) →</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
