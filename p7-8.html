@@ -22,102 +22,137 @@
     </aside>
 
     <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 7—8</span> <span>/</span> <strong>3 интерактивных карты</strong></div></header>
+      <header class="header-bar"><div class="crumb"><span>§ 7—8</span> <span>/</span> <strong>3 картографических тренажера</strong></div></header>
       <main class="content">
 
-        <!-- 1. Орбитальная проекция KazEOSat-1 -->
+        <!-- 1. Полярный коридор KazEOSat-1 -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">1. «Орбитальная проекция KazEOSat-1»</h2>
-            <span class="badge" data-game-badge="p78_m1">WAIT</span>
+            <h2 class="card-title">1. Полярный коридор съемки KazEOSat-1 на карте Евразии</h2>
+            <span class="badge" data-game-badge="p78_t1">WAIT</span>
           </div>
-          <p class="card-subtitle">Проведите трассу полета от Таймыра до севера Индии через Казахстан. Настройте полосу 20×20 км и активируйте сенсор.</p>
+          <p class="card-subtitle">Проведите пальцем прямую полосу съемки от Таймыра до севера Индии через Казахстан. Задайте охват 20×20 км и включите режим.</p>
 
-          <div class="map-canvas-holder" style="height:250px;">
-            <canvas id="kazeosat-orbit-canvas" width="400" height="250"></canvas>
+          <div class="map-viewport-frame" style="height:260px;">
+            <canvas id="kazeosat-eurasia-canvas" width="450" height="260"></canvas>
           </div>
 
-          <div id="swath-control-panel" style="display:none; margin-top:12px;">
+          <div id="corridor-controls" style="display:none; margin-top:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:12px; font-weight:600;">Полоса съемки:</span>
+                <span style="font-size:12px; font-weight:600;">Ширина охвата:</span>
                 <input type="range" id="swath-slider" min="5" max="30" value="10" style="width:120px;">
-                <span id="swath-val-label" class="badge">10 × 10 км</span>
+                <span id="swath-label" class="badge">10 × 10 км</span>
               </div>
-              <button class="btn btn-secondary btn-sm" onclick="togglePanMultiSensor(this)">[Панхроматический + Мультиспектральный]</button>
+              <button class="btn btn-secondary btn-sm" onclick="toggleKazEOSatMode(this)">[Панхроматический и мультиспектральный]</button>
             </div>
           </div>
-          <div id="p78-g1-fb" class="status-callout"></div>
+          <div id="p78-t1-fb" class="status-callout"></div>
         </div>
 
-        <!-- 2. Геопортал противопаводкового мониторинга -->
+        <!-- 2. Расстановка морских навигационных центров -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">2. «Геопортал противопаводкового мониторинга Казахстана»</h2>
-            <span class="badge" data-game-badge="p78_m2">WAIT</span>
+            <h2 class="card-title">2. Расстановка морских навигационных центров на карте мира</h2>
+            <span class="badge" data-game-badge="p78_t2">WAIT</span>
           </div>
-          <p class="card-subtitle">Тапайте по 8 областям договора с «Қазақстан Ғарыш Сапары»: Актюбинская, Алматинская, Атырауская, ВКО, ЗКО, Карагандинская, Павлодарская, Туркестанская.</p>
+          <p class="card-subtitle">Расставьте 4 навигационных значка в океанические зоны карты мира (кликните по значку, затем по зоне на карте).</p>
 
-          <div style="font-size:12px; font-weight:600; color:var(--accent); margin-bottom:8px;" id="flood-counter">Активировано: 0 из 8 областей</div>
+          <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+            <div id="badge-AORE" class="token-chip token-chip-nav" onclick="selectNavBadge('AORE', this)">⚓ [AORE] (Атлантика)</div>
+            <div id="badge-IOR" class="token-chip token-chip-nav" onclick="selectNavBadge('IOR', this)">⚓ [IOR] (Индийский ок.)</div>
+            <div id="badge-WAAS" class="token-chip token-chip-nav" onclick="selectNavBadge('WAAS', this)">⚓ [WAAS] (Сев. Атлантика / Сев. полушарие)</div>
+            <div id="badge-MSAS" class="token-chip token-chip-nav" onclick="selectNavBadge('MSAS', this)">⚓ [MSAS] (Сев. часть Тихого и Индийского ок.)</div>
+          </div>
 
-          <div class="map-canvas-holder" style="height:260px;">
-            <svg id="flood-portal-svg" width="100%" height="100%" viewBox="0 0 500 280">
-              <!-- ЗКО -->
-              <polygon points="30,80 80,60 100,110 50,130" class="kz-region-path" onclick="handleRegionClick(this, 'zko')"/>
-              <text x="45" y="95" font-size="9">ЗКО</text>
+          <div id="world-nav-map" class="map-viewport-frame" style="height:260px; background:#e0f2fe;">
+            <svg viewBox="0 0 500 260">
+              <!-- Continents simplified -->
+              <path d="M30,30 L90,20 L110,90 L60,110 Z" fill="#cbd5e1" stroke="#94a3b8"/> <!-- N. America -->
+              <path d="M190,30 L270,30 L260,100 L200,80 Z" fill="#cbd5e1" stroke="#94a3b8"/> <!-- Europe -->
+              <path d="M260,30 L440,30 L420,130 L280,120 Z" fill="#cbd5e1" stroke="#94a3b8"/> <!-- Asia -->
 
-              <!-- Атырау -->
-              <polygon points="40,140 100,120 110,180 50,190" class="kz-region-path" onclick="handleRegionClick(this, 'atyrau')"/>
-              <text x="55" y="160" font-size="9">Атырау</text>
+              <!-- Ocean targets -->
+              <g onclick="dropNavBeacon('slot-waas')" style="cursor:pointer;">
+                <rect x="90" y="40" width="100" height="40" fill="rgba(255,255,255,0.7)" stroke="#3b82f6" stroke-dasharray="3,3" rx="4"/>
+                <text id="slot-waas" x="95" y="65" font-size="9" fill="#1e40af">Сев. Атлантика / Сев. полушарие</text>
+              </g>
 
-              <!-- Актобе -->
-              <polygon points="110,90 190,70 180,180 110,170" class="kz-region-path" onclick="handleRegionClick(this, 'aktobe')"/>
-              <text x="135" y="130" font-size="9">Актобе</text>
+              <g onclick="dropNavBeacon('slot-aore')" style="cursor:pointer;">
+                <rect x="110" y="110" width="100" height="40" fill="rgba(255,255,255,0.7)" stroke="#3b82f6" stroke-dasharray="3,3" rx="4"/>
+                <text id="slot-aore" x="115" y="135" font-size="9" fill="#1e40af">Регион Атлантического ок.</text>
+              </g>
 
-              <!-- Караганда -->
-              <polygon points="200,80 320,80 300,190 200,170" class="kz-region-path" onclick="handleRegionClick(this, 'karaganda')"/>
-              <text x="235" y="130" font-size="9">Караганда</text>
+              <g onclick="dropNavBeacon('slot-ior')" style="cursor:pointer;">
+                <rect x="250" y="140" width="100" height="40" fill="rgba(255,255,255,0.7)" stroke="#3b82f6" stroke-dasharray="3,3" rx="4"/>
+                <text id="slot-ior" x="260" y="165" font-size="9" fill="#1e40af">Индийский океан</text>
+              </g>
 
-              <!-- Павлодар -->
-              <polygon points="310,40 380,50 360,110 300,90" class="kz-region-path" onclick="handleRegionClick(this, 'pavlodar')"/>
-              <text x="325" y="75" font-size="9">Павлодар</text>
+              <g onclick="dropNavBeacon('slot-msas')" style="cursor:pointer;">
+                <rect x="360" y="60" width="110" height="40" fill="rgba(255,255,255,0.7)" stroke="#3b82f6" stroke-dasharray="3,3" rx="4"/>
+                <text id="slot-msas" x="365" y="85" font-size="9" fill="#1e40af">Сев. часть Тихого/Индийского</text>
+              </g>
 
-              <!-- ВКО -->
-              <polygon points="370,100 460,100 430,180 350,160" class="kz-region-path" onclick="handleRegionClick(this, 'vko')"/>
-              <text x="395" y="140" font-size="9">ВКО</text>
-
-              <!-- Алматы -->
-              <polygon points="310,190 420,190 390,260 300,240" class="kz-region-path" onclick="handleRegionClick(this, 'almaty')"/>
-              <text x="340" y="225" font-size="9">Алматы</text>
-
-              <!-- Туркестан -->
-              <polygon points="190,190 290,190 270,270 190,250" class="kz-region-path" onclick="handleRegionClick(this, 'turkestan')"/>
-              <text x="215" y="230" font-size="9">Туркестан</text>
-
-              <!-- Жамбыл (Не входит в договор — провокация) -->
-              <polygon points="280,210 320,200 310,250 270,240" class="kz-region-path" onclick="handleRegionClick(this, 'zhambyl')"/>
-              <text x="282" y="225" font-size="7" fill="#94a3b8">Жамбыл</text>
+              <g id="nav-waves-layer" style="display:none;" stroke="#16a34a" stroke-width="1.5" fill="none">
+                <circle cx="140" cy="60" r="20" stroke-dasharray="4,2"/>
+                <circle cx="160" cy="130" r="20" stroke-dasharray="4,2"/>
+                <circle cx="300" cy="160" r="20" stroke-dasharray="4,2"/>
+                <circle cx="410" cy="80" r="20" stroke-dasharray="4,2"/>
+              </g>
             </svg>
           </div>
-          <div id="p78-g2-fb" class="status-callout"></div>
+          <div id="p78-t2-fb" class="status-callout"></div>
         </div>
 
-        <!-- 3. Наземный треугольник станций -->
+        <!-- 3. Договорная карта космического мониторинга -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">3. «Наземный геодезический треугольник опорных станций»</h2>
-            <span class="badge" data-game-badge="p78_m3">WAIT</span>
+            <h2 class="card-title">3. Договорная карта космического мониторинга Казахстана</h2>
+            <span class="badge" data-game-badge="p78_t3">WAIT</span>
           </div>
-          <p class="card-subtitle">Кликните по карте вокруг Нур-Султана, чтобы выставить 3 опорные станции РГКП «Аэтапография», затем поместите мобильный GPS в центр.</p>
+          <p class="card-subtitle">Тапайте по 8 областям договора с «Казахстан Гарыш Сапары» и выставьте 3 станции предприятия «Аэтапография» в Акмолинской области.</p>
 
-          <div class="map-canvas-holder" style="height:240px;">
-            <canvas id="geodetic-canvas" width="400" height="240"></canvas>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:700; color:var(--accent);" id="kz-contract-count">Активировано областей договора: 0 из 8</span>
+            <button id="station-btn" class="btn btn-secondary btn-sm" onclick="placeAkmolaStation()">Установить референц-станцию «Аэтапография» (0/3)</button>
           </div>
 
-          <div style="margin-top:10px;">
-            <button id="gps-place-trigger" class="btn btn-primary btn-sm" style="display:none;" onclick="placeGpsReceiver()">📍 Поместить мобильный GPS-приемник в центр</button>
+          <div class="map-viewport-frame" style="height:270px;">
+            <svg id="kz-contract-svg" viewBox="0 0 500 270">
+              <!-- 8 Областей договора -->
+              <polygon points="20,80 80,60 100,120 40,130" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'zko')"/>
+              <text x="35" y="95" font-size="9">ЗКО</text>
+
+              <polygon points="40,135 100,125 110,180 50,190" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'atyrau')"/>
+              <text x="55" y="160" font-size="9">Атырау</text>
+
+              <polygon points="105,80 180,70 170,180 110,170" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'aktobe')"/>
+              <text x="125" y="125" font-size="9">Актобе</text>
+
+              <polygon points="190,80 310,80 290,190 180,170" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'karaganda')"/>
+              <text x="225" y="130" font-size="9">Караганда</text>
+
+              <polygon points="290,40 370,40 350,100 280,80" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'pavlodar')"/>
+              <text x="305" y="70" font-size="9">Павлодар</text>
+
+              <polygon points="360,90 460,90 430,170 340,150" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'vko')"/>
+              <text x="385" y="130" font-size="9">ВКО</text>
+
+              <polygon points="300,180 410,180 380,250 290,230" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'almaty')"/>
+              <text x="330" y="215" font-size="9">Алматы</text>
+
+              <polygon points="180,180 280,180 260,260 180,240" fill="#f1f5f9" stroke="#64748b" class="map-clickable-feature" onclick="toggleKZRegion(this, 'turkestan')"/>
+              <text x="205" y="220" font-size="9">Туркестан</text>
+
+              <!-- Акмолинская область (центр станций) -->
+              <polygon points="190,40 280,40 280,80 190,80" fill="#e2e8f0" stroke="#475569"/>
+              <text x="200" y="60" font-size="8" fill="#475569">Акмолинская (Нур-Султан)</text>
+              <circle id="akmola-station-1" cx="210" cy="50" r="4" fill="#dc2626" style="display:none;"/>
+              <circle id="akmola-station-2" cx="240" cy="55" r="4" fill="#dc2626" style="display:none;"/>
+              <circle id="akmola-station-3" cx="225" cy="70" r="4" fill="#dc2626" style="display:none;"/>
+            </svg>
           </div>
-          <div id="p78-g3-fb" class="status-callout"></div>
+          <div id="p78-t3-fb" class="status-callout"></div>
         </div>
 
       </main>

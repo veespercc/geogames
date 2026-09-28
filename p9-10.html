@@ -22,80 +22,112 @@
     </aside>
 
     <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 9—10</span> <span>/</span> <strong>3 интерактивных карты</strong></div></header>
+      <header class="header-bar"><div class="crumb"><span>§ 9—10</span> <span>/</span> <strong>3 картографических тренажера</strong></div></header>
       <main class="content">
 
-        <!-- 1. Конструктор многослойной карты -->
+        <!-- 1. Послойная сборка карты -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">1. «Конструктор многослойной электронной карты»</h2>
-            <span class="badge" data-game-badge="p910_m1">WAIT</span>
+            <h2 class="card-title">1. Послойная сборка географической карты</h2>
+            <span class="badge" data-game-badge="p910_t1">WAIT</span>
           </div>
-          <p class="card-subtitle">Перетащите «Опорный слой (геоположение)» на самое дно стола карты, а поверх наложите тематические слои.</p>
+          <p class="card-subtitle">Перетащите «Опорный слой» на дно рамки карты первым, затем наложите слои рек, дорог и лесов.</p>
 
-          <div style="display:grid; grid-template-columns:230px 1fr; gap:16px;">
+          <div style="display:grid; grid-template-columns:230px 1fr; gap:14px;">
             <div style="display:flex; flex-direction:column; gap:8px;">
-              <div id="chip-layer-hydro" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'hydro')">📄 [Гидрография]</div>
-              <div id="chip-layer-base" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'base')">🔒 [Опорный слой (геоположение)]</div>
-              <div id="chip-layer-forest" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'forest')">📄 [Лесной фонд]</div>
-              <div id="chip-layer-roads" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'roads')">📄 [Дорожная сеть]</div>
+              <div id="layer-chip-rivers" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'rivers')">🌊 [Речная сеть]</div>
+              <div id="layer-chip-base" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'base')">🔒 [Опорный слой (геоположение)]</div>
+              <div id="layer-chip-roads" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'roads')">🛣️ [Автомобильные дороги]</div>
+              <div id="layer-chip-forest" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'forest')">🌲 [Лесной фонд]</div>
             </div>
 
-            <div class="map-canvas-holder" style="height:210px; padding:12px;" ondragover="allowDrop(event)" ondrop="dropGISLayerOnTable(event)">
-              <div id="gis-slot-4" class="token-chip" style="width:100%; margin-bottom:6px;">Слой 4 (Верхний тематический)</div>
-              <div id="gis-slot-3" class="token-chip" style="width:100%; margin-bottom:6px;">Слой 3 (Тематический)</div>
-              <div id="gis-slot-2" class="token-chip" style="width:100%; margin-bottom:6px;">Слой 2 (Тематический)</div>
-              <div id="gis-slot-1" class="token-chip" style="width:100%; border-color:var(--accent);">Слой 1 (Основание рабочего стола)</div>
+            <div class="map-viewport-frame" style="height:230px;" ondragover="allowDrop(event)" ondrop="dropGISLayerToFrame(event)">
+              <svg viewBox="0 0 400 230">
+                <!-- Опорный слой -->
+                <g id="map-layer-visual-base" style="display:none;">
+                  <rect width="400" height="230" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+                  <text x="20" y="30" font-size="10" fill="#64748b">Опорная географическая основа</text>
+                </g>
+                <!-- Леса -->
+                <g id="map-layer-visual-forest" style="display:none;">
+                  <polygon points="40,50 140,50 110,130 30,110" fill="#dcfce7" stroke="#16a34a"/>
+                  <polygon points="260,120 370,120 350,200 240,190" fill="#dcfce7" stroke="#16a34a"/>
+                </g>
+                <!-- Реки -->
+                <g id="map-layer-visual-rivers" style="display:none;">
+                  <path d="M20,200 Q160,80 380,180" fill="none" stroke="#0284c7" stroke-width="4"/>
+                </g>
+                <!-- Дороги -->
+                <g id="map-layer-visual-roads" style="display:none;">
+                  <path d="M20,40 L380,200" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="6,2"/>
+                </g>
+              </svg>
             </div>
           </div>
-          <div id="p910-g1-fb" class="status-callout"></div>
+          <div id="p910-t1-fb" class="status-callout"></div>
         </div>
 
-        <!-- 2. Лассо буферной зоны MapInfo -->
+        <!-- 2. Буферная зона MapInfo -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">2. «Лассо-генератор буферной зоны MapInfo»</h2>
-            <span class="badge" data-game-badge="p910_m2">WAIT</span>
+            <h2 class="card-title">2. Построение буферной зоны вокруг трубопровода в MapInfo</h2>
+            <span class="badge" data-game-badge="p910_t2">WAIT</span>
           </div>
-          <p class="card-subtitle">Обведите газопровод замкнутым контуром (Лассо), создайте буферную зону и запустите геометрический расчет площади отчуждения.</p>
+          <p class="card-subtitle">Обведите замкнутой линией трассу нефтепровода и запустите геометрический расчет площади отчуждения.</p>
 
-          <div class="map-canvas-holder" style="height:220px;">
-            <canvas id="mapinfo-lasso-canvas" width="400" height="220"></canvas>
+          <div class="map-viewport-frame" style="height:240px;">
+            <canvas id="pipeline-mapinfo-canvas" width="400" height="240"></canvas>
           </div>
 
           <div style="display:flex; gap:10px; margin-top:10px;">
-            <button id="btn-create-buffer" class="btn btn-primary btn-sm" style="display:none;" onclick="createMapInfoBuffer()">[Создать буферную зону]</button>
-            <button id="btn-geom-calc" class="btn btn-primary btn-sm" style="display:none;" onclick="calcMapInfoGeometry()">[Геометрические функции: Площадь и Периметр]</button>
+            <button id="btn-create-buffer" class="btn btn-primary btn-sm" style="display:none;" onclick="generateBufferCorridor()">[Создать буферную зону]</button>
+            <button id="btn-calc-geom" class="btn btn-primary btn-sm" style="display:none;" onclick="calculateBufferGeometry()">[Геометрические расчеты: Площадь и Периметр]</button>
           </div>
-          <div id="p910-g2-fb" class="status-callout"></div>
+          <div id="p910-t2-fb" class="status-callout"></div>
         </div>
 
-        <!-- 3. Пространственный манипулятор «ГеоГраф ГИС» -->
+        <!-- 3. Картограммы и диаграммы «ГеоГраф ГИС» -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">3. «Пространственный манипулятор "ГеоГраф ГИС"»</h2>
-            <span class="badge" data-game-badge="p910_m3">WAIT</span>
+            <h2 class="card-title">3. Наложение картограмм и диаграмм на карту районов</h2>
+            <span class="badge" data-game-badge="p910_t3">WAIT</span>
           </div>
-          <p class="card-subtitle">Сбросьте блок-диаграмму на центральный район, картограмму — на соседний, и постройте изолинии рельефа.</p>
+          <p class="card-subtitle">Перетащите блок-диаграмму на центральный район, картограмму — на северный, а на восточный холмистый район наложите изолинии.</p>
 
-          <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <div id="chip-diagram" class="token-chip" draggable="true" ondragstart="dragManipulator(event, 'diagram')">📊 [Блок-диаграмма]</div>
-            <div id="chip-cartogram" class="token-chip" draggable="true" ondragstart="dragManipulator(event, 'cartogram')">🗺️ [Картограмма]</div>
-            <button class="btn btn-secondary btn-sm" onclick="buildIsolines(this)">[Построение изолиний]</button>
+          <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <div id="badge-bar" class="token-chip" draggable="true" ondragstart="dragGeoGraphModule(event, 'bar')">📊 [Блок-диаграмма]</div>
+            <div id="badge-carto" class="token-chip" draggable="true" ondragstart="dragGeoGraphModule(event, 'cartogram')">🗺️ [Картограмма]</div>
+            <div id="badge-iso" class="token-chip" draggable="true" ondragstart="dragGeoGraphModule(event, 'isolines')">〰️ [Изолинии]</div>
           </div>
 
-          <div class="map-canvas-holder" style="height:200px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:10px;">
-            <div id="dist-side" class="token-chip" style="height:100%; display:flex; align-items:center; justify-content:center;" ondragover="allowDrop(event)" ondrop="dropOnDistrict(event, 'dist-side')">
-              <span id="dist-side-label">Соседний район (Сбросьте картограмму)</span>
-            </div>
-            <div id="dist-center" class="token-chip" style="height:100%; display:flex; align-items:center; justify-content:center;" ondragover="allowDrop(event)" ondrop="dropOnDistrict(event, 'dist-center')">
-              <span id="dist-center-label">Центральный район (Сбросьте блок-диаграмму)</span>
-            </div>
-            <div id="dist-mountain" class="token-chip" style="height:100%; display:flex; align-items:center; justify-content:center;">
-              <span id="dist-mountain-label">Горный участок</span>
-            </div>
+          <div class="map-viewport-frame" style="height:250px;">
+            <svg viewBox="0 0 500 250">
+              <!-- Северный район -->
+              <polygon points="180,10 320,10 300,90 190,90" fill="#f8fafc" stroke="#334155" stroke-width="2" ondragover="allowDrop(event)" ondrop="dropOnDistrictMap(event, 'dist-north')"/>
+              <text x="210" y="45" font-size="10">Северный р-н</text>
+              <g id="north-carto-visual" style="display:none;">
+                <line x1="190" y1="20" x2="310" y2="80" stroke="#2563eb" stroke-width="2"/>
+                <line x1="200" y1="10" x2="320" y2="70" stroke="#2563eb" stroke-width="2"/>
+              </g>
+
+              <!-- Центральный район -->
+              <polygon points="170,100 320,100 300,200 160,190" fill="#f8fafc" stroke="#334155" stroke-width="2" ondragover="allowDrop(event)" ondrop="dropOnDistrictMap(event, 'dist-center')"/>
+              <text x="200" y="145" font-size="10">Центральный р-н</text>
+              <g id="center-bar-visual" style="display:none;" fill="#16a34a">
+                <rect x="220" y="110" width="12" height="40"/>
+                <rect x="236" y="90" width="12" height="60"/>
+              </g>
+
+              <!-- Восточный холмистый район -->
+              <polygon points="330,60 460,50 440,220 320,200" fill="#f8fafc" stroke="#334155" stroke-width="2" ondragover="allowDrop(event)" ondrop="dropOnDistrictMap(event, 'dist-east')"/>
+              <text x="360" y="130" font-size="10">Восточный р-н</text>
+              <g id="east-iso-visual" style="display:none;" fill="none" stroke="#9a3412" stroke-width="2">
+                <circle cx="390" cy="140" r="30"/>
+                <circle cx="390" cy="140" r="15"/>
+              </g>
+            </svg>
           </div>
-          <div id="p910-g3-fb" class="status-callout"></div>
+          <div id="p910-t3-fb" class="status-callout"></div>
         </div>
 
       </main>

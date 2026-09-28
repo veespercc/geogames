@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GeoSpatial Core — Strict SaaS Design System (Light Theme)
+   GeoSpatial Core — Cartographic SaaS Design System (Light Theme)
    ========================================================================== */
 :root {
   --bg-app: #f8fafc;
@@ -7,38 +7,42 @@
   --bg-subtle: #f1f5f9;
   --bg-hover: #e2e8f0;
   
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --border-focus: #4f46e5;
+  --border: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-focus: #3b82f6;
 
   --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  --text-muted: #475569;
+  --text-light: #64748b;
 
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-subtle: #eef2ff;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-subtle: #eff6ff;
 
-  --success: #10b981;
-  --success-bg: #ecfdf5;
-  --success-border: #a7f3d0;
-  --success-text: #065f46;
+  --topo-water: #0284c7;
+  --topo-water-bg: #e0f2fe;
+  --topo-forest: #15803d;
+  --topo-forest-bg: #dcfce7;
+  --topo-contour: #9a3412;
+  --topo-contour-bg: #ffedd5;
+  --topo-road: #dc2626;
 
-  --danger: #ef4444;
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+  --success-text: #14532d;
+
+  --danger: #dc2626;
   --danger-bg: #fef2f2;
   --danger-border: #fecaca;
-  --danger-text: #991b1b;
-
-  --warning-bg: #fffbeb;
-  --warning-border: #fde68a;
-  --warning-text: #92400e;
+  --danger-text: #7f1d1d;
 
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,7 +50,7 @@ body {
   background-color: var(--bg-app);
   color: var(--text-main);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -63,15 +67,15 @@ body {
   flex-shrink: 0;
 }
 .brand {
-  padding: 18px 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 10px;
 }
 .brand-icon {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   background: var(--accent);
   color: #fff;
   border-radius: var(--radius-sm);
@@ -79,7 +83,7 @@ body {
   place-items: center;
   font-weight: 700;
 }
-.nav-group { padding: 16px 12px; flex-grow: 1; overflow-y: auto; }
+.nav-group { padding: 14px 10px; flex-grow: 1; overflow-y: auto; }
 .nav-label {
   font-size: 10px;
   font-weight: 700;
@@ -131,27 +135,27 @@ body {
 .crumb { font-size: 13px; color: var(--text-muted); display: flex; gap: 8px; align-items: center; }
 .crumb strong { color: var(--text-main); }
 
-.content { padding: 28px; max-width: 1080px; width: 100%; margin: 0 auto; }
+.content { padding: 24px; max-width: 1100px; width: 100%; margin: 0 auto; }
 
 /* Cards & Containers */
 .card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 20px;
   margin-bottom: 24px;
 }
-.card-title { font-size: 17px; font-weight: 600; color: var(--text-main); }
-.card-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; margin-bottom: 16px; }
+.card-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+.card-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; margin-bottom: 14px; }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
@@ -160,9 +164,9 @@ body {
 }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); }
-.btn-secondary { background: var(--bg-surface); border-color: var(--border-strong); color: var(--text-main); }
+.btn-secondary { background: var(--bg-surface); border-color: var(--border); color: var(--text-main); }
 .btn-secondary:hover { background: var(--bg-subtle); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
 
 .status-callout {
   padding: 12px 16px;
@@ -175,9 +179,24 @@ body {
 .status-callout.ok { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success-text); }
 .status-callout.err { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger-text); }
 
-/* Interactive Chips & Slots */
+/* Cartographic Neatline Frame */
+.map-viewport-frame {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  background: #fffdfa; /* Warm cartographic paper */
+  border: 2px solid #334155;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 4px #ffffff, inset 0 0 0 5px #64748b;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+.map-viewport-frame svg { width: 100%; height: 100%; display: block; }
+
+/* Interactive Chips */
 .token-chip {
-  padding: 8px 14px;
+  padding: 6px 12px;
   background: var(--bg-surface);
   border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-md);
@@ -195,260 +214,43 @@ body {
   border-color: var(--accent) !important;
   background-color: var(--accent-subtle) !important;
   color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 .token-chip.disabled { opacity: 0.35; pointer-events: none; }
 
-.layer-slot, .map-window {
+/* Map Object States */
+.map-clickable-feature {
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: opacity 0.2s, stroke-width 0.2s;
 }
-.layer-slot:hover, .map-window:hover { border-color: var(--accent); }
-.layer-slot.filled {
-  border-style: solid;
-  border-color: var(--accent);
-  background: var(--accent-subtle);
-  color: var(--accent);
-  font-weight: 600;
+.map-clickable-feature:hover {
+  opacity: 0.8;
+  stroke-width: 3;
 }
 
-.drag-hint { font-size: 11px; color: var(--text-light); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
-
-/* § 5-6 Game 1: Zoom Split */
-.zoom-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.map-window {
-  background: #fff;
-  border: 2px dashed var(--border-strong);
-  border-radius: var(--radius-md);
-  height: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  user-select: none;
-}
-.pixel-canvas-box {
-  width: 100px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* § 5-6 Game 2: Tinder Swipe */
-.tinder-zone {
-  height: 300px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-app);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  touch-action: none;
-}
-.swipe-target {
-  position: absolute;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-  padding: 6px 12px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  z-index: 2;
-  pointer-events: none;
-}
-.swipe-top { top: 10px; }
-.swipe-right { right: 10px; }
-.swipe-bottom { bottom: 10px; }
-.swipe-left { left: 10px; }
-
-.tinder-card {
-  width: 240px;
-  min-height: 130px;
-  padding: 20px;
-  background: var(--bg-surface);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: grab;
-  user-select: none;
-  position: absolute;
-  z-index: 10;
-  transition: box-shadow 0.2s ease;
-}
-.tinder-card:active { cursor: grabbing; box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15); }
-
-/* § 5-6 Game 3: Rotary Dial */
-.rotary-layout {
-  display: grid;
-  grid-template-columns: 1fr 220px;
-  gap: 20px;
-  align-items: center;
-}
-.landscape-view {
-  height: 200px;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  position: relative;
-  overflow: hidden;
-}
-.rotary-controller {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.dial-housing {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, #e2e8f0, #ffffff, #cbd5e1, #ffffff, #e2e8f0);
-  border: 3px solid var(--border-strong);
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 6px 16px rgba(0,0,0,0.1);
-  position: relative;
-  cursor: pointer;
-  touch-action: none;
-  user-select: none;
-}
-.dial-marker {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 6px var(--accent);
-}
-
-/* Canvas Tracers */
-.canvas-holder {
-  position: relative;
+/* 3D Surface for Terrain Extrusion */
+.scene-3d-perspective {
+  perspective: 1000px;
   width: 100%;
-  height: 240px;
-  background: #ffffff;
-  border: 1px solid var(--border);
+  height: 300px;
+  background: #fdfbf7;
+  border: 2px solid #334155;
   border-radius: var(--radius-md);
-  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
-canvas { width: 100%; height: 100%; display: block; }
-
-/* § 9-10 Game 1: Layer Stacking */
-.stack-bench { display: grid; grid-template-columns: 240px 1fr; gap: 16px; min-height: 230px; }
-.layer-slot {
-  border: 2px dashed var(--border-strong);
-  border-radius: var(--radius-md);
-  height: 46px;
-  margin-bottom: 8px;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* § 12 Game 2: Audio Sliders */
-.faders-grid { display: flex; justify-content: space-around; padding: 20px 0; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
-.fader-col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.fader-col input[type=range] {
-  writing-mode: vertical-lr;
-  direction: rtl;
-  width: 20px;
-  height: 140px;
-  cursor: pointer;
+.terrain-3d-sheet {
+  width: 360px;
+  height: 220px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @media (max-width: 768px) {
   .app-container { flex-direction: column; }
   .sidebar { width: 100%; }
   .main-wrapper { height: auto; }
-  .zoom-split, .stack-bench, .rotary-layout { grid-template-columns: 1fr; }
-}
-
-/* ==========================================================================
-   TRUE 3D SCENE & ISOMETRIC PROJECTIONS
-   ========================================================================== */
-
-/* 3D Изометрическая сцена слоев ГИС */
-.scene-3d-wrapper {
-  perspective: 1000px;
-  width: 100%;
-  height: 320px;
-  background: radial-gradient(circle at 50% 30%, #ffffff 0%, #f1f5f9 100%);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.stage-3d {
-  width: 260px;
-  height: 200px;
-  position: relative;
-  transform-style: preserve-3d;
-  transform: rotateX(55deg) rotateZ(-35deg);
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.layer-plane-3d {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius-md);
-  border: 2px dashed var(--border-strong);
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 13px;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform: translateZ(var(--z-offset, 0px));
-}
-
-.layer-plane-3d.filled {
-  border-style: solid;
-  border-color: var(--accent);
-  background: rgba(238, 242, 255, 0.85);
-  color: var(--accent);
-  box-shadow: 0 15px 30px rgba(79, 70, 229, 0.15);
-}
-
-.layer-plane-3d.locked-base {
-  border-color: #10b981 !important;
-  background: rgba(236, 253, 245, 0.9) !important;
-  color: #065f46 !important;
-}
-
-/* 3D Canvas вьюпорты */
-.viewport-3d-canvas {
-  width: 100%;
-  height: 250px;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  cursor: grab;
-  touch-action: none;
-}
-.viewport-3d-canvas:active {
-  cursor: grabbing;
 }

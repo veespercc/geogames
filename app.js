@@ -1,8 +1,8 @@
 /**
- * GeoSpatial Core LMS - Engine for 15 Interactive Map Mini-Games
+ * GeoSpatial Core LMS - 15 Cartographic Tasks Engine
  */
 
-const STORAGE_KEY = 'geospatial_map_games_v3';
+const STORAGE_KEY = 'geospatial_carto_v4';
 
 const LMS = {
   getStore() {
@@ -17,15 +17,14 @@ const LMS = {
   },
   refreshBadges() {
     const data = this.getStore();
-    const totalGames = 15;
-    const doneKeys = Object.keys(data).filter(k => data[k]);
-    const count = doneKeys.length;
-    const percent = Math.round((count / totalGames) * 100);
+    const total = 15;
+    const count = Object.keys(data).filter(k => data[k]).length;
+    const percent = Math.round((count / total) * 100);
 
     const fill = document.getElementById('global-fill');
     const label = document.getElementById('global-label');
     if (fill) fill.style.width = `${percent}%`;
-    if (label) label.innerText = `${count} / ${totalGames} (${percent}%)`;
+    if (label) label.innerText = `${count} / ${total} (${percent}%)`;
 
     document.querySelectorAll('[data-game-badge]').forEach(el => {
       const gid = el.getAttribute('data-game-badge');
@@ -39,209 +38,155 @@ const LMS = {
 
 document.addEventListener('DOMContentLoaded', () => {
   LMS.refreshBadges();
-  initAllMapGames();
+  initAllCartoTasks();
 });
 
-function initAllMapGames() {
+function initAllCartoTasks() {
   // § 5—6
-  initPinchDefectMap();
-  initRadialClassifierMap();
-  initStructuralReliefMap();
+  initTopoMarkupTask();
+  initRasterVectorCompareTask();
+  initHypsometricDensityTask();
 
   // § 7—8
-  initKazEOSatOrbitMap();
-  initFloodPortalMap();
-  initGeodeticTriangleMap();
+  initKazEOSatPolarCorridorTask();
+  initMarineNavCentresTask();
+  initKazakhstanContractMonitoringTask();
 
   // § 9—10
-  initMultiLayerGISMap();
-  initMapInfoLassoMap();
-  initGeoGraphGISManipulator();
+  initLayerByLayerAssemblyTask();
+  initPipelineBufferMapInfoTask();
+  initGeoGraphGISThematicMapTask();
 
   // § 11
-  initMicrosoftAgroRadarMap();
-  initERMapperProbeMap();
-  initLogisticsTracerMap();
+  initAbandonedFarmlandMicrosoftTask();
+  initERMapperOreSearchTask();
+  initSafeLogisticsRoutingTask();
 
   // § 12
-  initTopologicalStencilMap();
-  initCoordinateInspectorMap();
-  init3DReliefTransformerMap();
+  initVectorDigitizingPrimitivesTask();
+  initCoordinateAndDateFixTask();
+  initTopographic3DExtrusionTask();
 }
 
 /* ==========================================================================
    § 5—6. ЦИФРОВАЯ МОДЕЛЬ КАРТЫ
    ========================================================================== */
 
-// 1. «Pinch-дефектоскопия на цифровой карте местности»
-function initPinchDefectMap() {
-  const container = document.getElementById('pinch-map-container');
+// 1. Интерактивная разметка топографической карты
+function initTopoMarkupTask() {
+  const container = document.getElementById('topo-markup-map');
   if (!container) return;
 
-  let mode = 'raster'; // raster | vector
-  let zoom = 1.0;
-  let rasterBugFixed = false;
-  let vectorBoundFixed = false;
-
-  const rasterLayer = document.getElementById('map-raster-layer');
-  const vectorLayer = document.getElementById('map-vector-layer');
-  const zoomSlider = document.getElementById('pinch-zoom-slider');
-
-  window.setMapRenderMode = (newMode) => {
-    mode = newMode;
-    document.getElementById('btn-mode-raster').classList.toggle('active', mode === 'raster');
-    document.getElementById('btn-mode-vector').classList.toggle('active', mode === 'vector');
-    rasterLayer.style.display = mode === 'raster' ? 'block' : 'none';
-    vectorLayer.style.display = mode === 'vector' ? 'block' : 'none';
+  let activeFeature = null;
+  const tagged = new Set();
+  const correct = {
+    'feat-borehole': 'digital',
+    'feat-pipeline': 'digital',
+    'feat-marsh': 'digital',
+    'feat-contour': 'metric',
+    'feat-forest': 'semantic',
+    'feat-village': 'general'
   };
 
-  zoomSlider.addEventListener('input', (e) => {
-    zoom = parseFloat(e.target.value);
-    rasterLayer.style.transform = `scale(${zoom})`;
-    rasterLayer.style.imageRendering = zoom > 1.5 ? 'pixelated' : 'auto';
-    vectorLayer.style.transform = `scale(${zoom})`;
+  window.selectTopoFeature = (el, id) => {
+    activeFeature = id;
+    document.querySelectorAll('.map-clickable-feature').forEach(f => f.classList.remove('selected-feature'));
+    el.classList.add('selected-feature');
+    document.getElementById('topo-badges-menu').style.display = 'flex';
+  };
 
-    if (mode === 'raster' && zoom >= 2.0 && !rasterBugFixed) {
-      document.getElementById('trigger-pixel-matrix').style.display = 'inline-flex';
+  window.assignTopoCategory = (category) => {
+    if (!activeFeature) return;
+    const fb = document.getElementById('p56-t1-fb');
+
+    if (correct[activeFeature] === category) {
+      const el = document.getElementById(activeFeature);
+      if (category === 'digital') el.setAttribute('stroke', '#0284c7');
+      if (category === 'metric') el.setAttribute('stroke', '#ea580c');
+      if (category === 'semantic') el.setAttribute('fill', '#16a34a');
+      if (category === 'general') el.setAttribute('fill', '#4f46e5');
+
+      tagged.add(activeFeature);
+      document.getElementById('topo-markup-count').innerText = `Размечено: ${tagged.size} из 4 обязательных групп`;
+
+      // Require well/pipeline/marsh + contour + forest + village
+      if (tagged.size >= 4) {
+        fb.className = 'status-callout ok show';
+        fb.innerHTML = '<strong>Карта размечена!</strong> Все объекты топографической карты привязаны к слоям базы данных: Цифровая, Размерная, Смысловая и Общая.';
+        LMS.setDone('p56_t1');
+      }
+    } else {
+      fb.className = 'status-callout err show';
+      fb.innerText = 'Неверная категория для данного топографического объекта!';
+      setTimeout(() => fb.classList.remove('show'), 1500);
     }
-    if (mode === 'vector' && zoom >= 2.0 && !vectorBoundFixed) {
-      document.getElementById('river-vector-path').setAttribute('stroke', '#ef4444');
+  };
+}
+
+// 2. Сравнение растрового и векторного участка на карте
+function initRasterVectorCompareTask() {
+  const slider = document.getElementById('rv-zoom-slider');
+  if (!slider) return;
+
+  const rasterSide = document.getElementById('raster-half-canvas');
+  const vectorSide = document.getElementById('vector-half-svg');
+  let pixelMatrixIdentified = false;
+  let roadAttributeBound = false;
+
+  slider.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    rasterSide.style.transform = `scale(${val})`;
+    rasterSide.style.imageRendering = val > 1.3 ? 'pixelated' : 'auto';
+    vectorSide.style.transform = `scale(${val})`;
+
+    if (val >= 2.0 && !pixelMatrixIdentified) {
+      document.getElementById('btn-matrix-pixel').style.display = 'inline-flex';
     }
   });
 
-  window.fixRasterBug = () => {
-    rasterBugFixed = true;
-    document.getElementById('trigger-pixel-matrix').style.display = 'none';
-    document.getElementById('raster-status-text').innerText = '✓ Зафиксирована матрица пикселей';
-    checkTaskDone();
+  window.confirmPixelMatrix = () => {
+    pixelMatrixIdentified = true;
+    document.getElementById('btn-matrix-pixel').style.display = 'none';
+    document.getElementById('raster-badge-label').innerText = '✓ Матрица пикселей зафиксирована';
+    checkRVComplete();
   };
 
-  window.dragAttrDB = (ev) => ev.dataTransfer.setData('text/plain', 'db_table');
-  window.allowDrop = (ev) => ev.preventDefault();
-
-  window.dropAttrOnRiver = (ev) => {
-    ev.preventDefault();
-    vectorBoundFixed = true;
-    const river = document.getElementById('river-vector-path');
-    river.setAttribute('stroke', '#0284c7');
-    document.getElementById('chip-attr-db').classList.add('disabled');
-    document.getElementById('vector-status-text').innerText = '✓ Таблица атрибутов БД привязана к реке';
-    checkTaskDone();
+  window.bindRoadAttributes = () => {
+    roadAttributeBound = true;
+    document.getElementById('road-attribute-card').style.display = 'block';
+    document.getElementById('vector-road-line').setAttribute('stroke', '#16a34a');
+    checkRVComplete();
   };
 
-  function checkTaskDone() {
-    if (rasterBugFixed && vectorBoundFixed) {
-      const fb = document.getElementById('p56-g1-fb');
+  function checkRVComplete() {
+    if (pixelMatrixIdentified && roadAttributeBound) {
+      const fb = document.getElementById('p56-t2-fb');
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Карта валидирована!</strong> Растровый слой распознан как матрица пикселей, векторная река связана с атрибутами БД.';
-      LMS.setDone('p56_m1');
+      fb.innerHTML = '<strong>Сравнение завершено!</strong> Растр определен как масштабируемая пиксельная матрица, а векторная дорога получила атрибуты базы данных (ул. Абая, асфальтобетон, 14м).';
+      LMS.setDone('p56_t2');
     }
   }
 }
 
-// 2. «Интерактивный классификатор объектов на карте»
-function initRadialClassifierMap() {
-  const container = document.getElementById('classifier-map');
+// 3. Настройка плотности высотных точек на гипсометрической карте
+function initHypsometricDensityTask() {
+  const container = document.getElementById('hypso-map-container');
   if (!container) return;
 
-  const radial = document.getElementById('radial-selector');
-  let activeTarget = null;
-  let classifiedCount = 0;
-  const correct = {
-    'obj-well': 'digital',
-    'obj-relief': 'metric',
-    'obj-forest': 'semantic',
-    'obj-name': 'general'
-  };
+  window.setHypsoMode = (mode) => {
+    const wallLayer = document.getElementById('hypso-wall-layer');
+    const contLayer = document.getElementById('hypso-cont-layer');
+    const structLayer = document.getElementById('hypso-struct-layer');
+    const fb = document.getElementById('p56-t3-fb');
 
-  window.openRadialMenu = (ev, targetId) => {
-    ev.stopPropagation();
-    activeTarget = targetId;
-    const rect = container.getBoundingClientRect();
-    radial.style.left = `${ev.clientX - rect.left}px`;
-    radial.style.top = `${ev.clientY - rect.top}px`;
-    radial.style.display = 'block';
-  };
+    wallLayer.style.display = mode === 'wall' ? 'block' : 'none';
+    contLayer.style.display = mode === 'cont' ? 'block' : 'none';
+    structLayer.style.display = mode === 'struct' ? 'block' : 'none';
 
-  container.addEventListener('click', () => { radial.style.display = 'none'; });
-
-  window.chooseRadialSector = (sectorType) => {
-    radial.style.display = 'none';
-    if (!activeTarget) return;
-
-    if (correct[activeTarget] === sectorType) {
-      const el = document.getElementById(activeTarget);
-      el.classList.add('classified-ok');
-      if (sectorType === 'digital') el.setAttribute('fill', '#0284c7');
-      if (sectorType === 'metric') el.setAttribute('stroke', '#10b981');
-      if (sectorType === 'semantic') el.setAttribute('fill', '#059669');
-      if (sectorType === 'general') el.setAttribute('fill', '#4f46e5');
-
-      classifiedCount++;
-      if (classifiedCount === 4) {
-        const fb = document.getElementById('p56-g2-fb');
-        fb.className = 'status-callout ok show';
-        fb.innerHTML = '<strong>Win State: Все 4 объекта классифицированы!</strong> Объекты окрашены в цвета своих информационных слоев.';
-        LMS.setDone('p56_m2');
-      }
-    } else {
-      const fb = document.getElementById('p56-g2-fb');
-      fb.className = 'status-callout err show';
-      fb.innerText = 'Неверная категория информации для этого объекта! Попробуйте снова.';
-      setTimeout(() => fb.classList.remove('show'), 1400);
-    }
-  };
-}
-
-// 3. «Формирователь структурного рельефа карты»
-function initStructuralReliefMap() {
-  const canvas = document.getElementById('structural-relief-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let currentMode = 'wall'; // wall | continuous | structural
-
-  function renderMap() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (currentMode === 'wall') {
-      ctx.fillStyle = '#4f46e5';
-      ctx.font = '11px Inter';
-      ctx.fillText('▲ Холм (Качественный знак)', 70, 110);
-      ctx.fillText('■ Котловина (Качественный знак)', 220, 150);
-    } else if (currentMode === 'continuous') {
-      ctx.fillStyle = '#0284c7';
-      for (let x = 30; x < 370; x += 12) {
-        for (let y = 30; y < 190; y += 12) {
-          ctx.fillRect(x, y, 2, 2);
-        }
-      }
-      ctx.fillStyle = '#0369a1';
-      ctx.fillText('Непрерывная сетка частых точек', 40, 20);
-    } else if (currentMode === 'structural') {
-      ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(120, 100, 45, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(270, 110, 35, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.fillStyle = '#065f46';
-      ctx.fillText('● Ср. уровень рельефа H=150м', 60, 105);
-      ctx.fillText('● Ср. уровень рельефа H=90м', 210, 115);
-    }
-  }
-  renderMap();
-
-  window.setReliefGenMode = (m) => {
-    currentMode = m;
-    renderMap();
-
-    if (m === 'structural') {
-      const fb = document.getElementById('p56-g3-fb');
+    if (mode === 'struct') {
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Структурная цифровая модель сформирована!</strong> Точки рельефа зафиксированы строго по среднему высотному уровню.';
-      LMS.setDone('p56_m3');
+      fb.innerHTML = '<strong>Структурный рельеф настроен!</strong> Высотные точки выровнены строго по линиям среднего гипсометрического уровня местности.';
+      LMS.setDone('p56_t3');
     }
   };
 }
@@ -250,368 +195,347 @@ function initStructuralReliefMap() {
    § 7—8. МЕТОДЫ ДИСТАНЦИОННОГО ЗОНДИРОВАНИЯ
    ========================================================================== */
 
-// 1. «Орбитальная проекция KazEOSat-1»
-function initKazEOSatOrbitMap() {
-  const canvas = document.getElementById('kazeosat-orbit-canvas');
+// 1. Полярный коридор съемки KazEOSat-1
+function initKazEOSatPolarCorridorTask() {
+  const canvas = document.getElementById('kazeosat-eurasia-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
   let isTracing = false;
-  let traceComplete = false;
+  let lineDrawn = false;
   let swathWidth = 10;
-  let isSensorPanMulti = false;
+  let modeActive = false;
 
-  function renderBase() {
+  function renderEurasiaMap() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Target points
-    ctx.fillStyle = '#ef4444';
+    // Geographic baseline
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Kazakhstan land contour fill
+    ctx.fillStyle = '#fef3c7';
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(80, 40, 6, 0, Math.PI * 2); // Taymyr
-    ctx.arc(320, 200, 6, 0, Math.PI * 2); // India
-    ctx.fill();
+    ctx.moveTo(150, 110); ctx.lineTo(270, 110); ctx.lineTo(280, 160); ctx.lineTo(140, 160);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
 
-    ctx.fillStyle = '#1e293b';
+    // Landmark anchors
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath(); ctx.arc(190, 40, 6, 0, Math.PI * 2); ctx.fill(); // Taymyr
+    ctx.beginPath(); ctx.arc(230, 230, 6, 0, Math.PI * 2); ctx.fill(); // India
+
+    ctx.fillStyle = '#0f172a';
     ctx.font = '11px Inter';
-    ctx.fillText('п-ов Таймыр (Север)', 20, 30);
-    ctx.fillText('Север Индии', 280, 225);
-    ctx.fillText('Территория Казахстана', 140, 120);
+    ctx.fillText('п-ов Таймыр (Север)', 130, 30);
+    ctx.fillText('Север Индии', 240, 240);
+    ctx.fillText('Казахстан (14 витков/сут)', 160, 135);
 
-    if (traceComplete) {
-      ctx.strokeStyle = 'rgba(79, 70, 229, 0.4)';
+    if (lineDrawn) {
+      ctx.strokeStyle = modeActive ? 'rgba(22, 163, 74, 0.45)' : 'rgba(37, 99, 235, 0.35)';
       ctx.lineWidth = swathWidth;
       ctx.beginPath();
-      ctx.moveTo(80, 40);
-      ctx.lineTo(200, 120);
-      ctx.lineTo(320, 200);
+      ctx.moveTo(190, 40); ctx.lineTo(210, 135); ctx.lineTo(230, 230);
       ctx.stroke();
 
-      ctx.strokeStyle = '#4f46e5';
+      ctx.strokeStyle = modeActive ? '#16a34a' : '#2563eb';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(80, 40);
-      ctx.lineTo(200, 120);
-      ctx.lineTo(320, 200);
+      ctx.moveTo(190, 40); ctx.lineTo(210, 135); ctx.lineTo(230, 230);
       ctx.stroke();
     }
   }
-  renderBase();
+  renderEurasiaMap();
 
-  canvas.addEventListener('pointerdown', () => { isTracing = true; });
+  canvas.addEventListener('pointerdown', () => isTracing = true);
   window.addEventListener('pointerup', () => {
     isTracing = false;
-    if (traceComplete) {
-      document.getElementById('swath-control-panel').style.display = 'block';
-    }
+    if (lineDrawn) document.getElementById('corridor-controls').style.display = 'block';
   });
-
   canvas.addEventListener('pointermove', (e) => {
     if (!isTracing) return;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    ctx.fillStyle = '#4f46e5';
+    ctx.fillStyle = '#2563eb';
     ctx.fillRect(x, y, 4, 4);
 
-    if (x > 290 && y > 180) {
-      traceComplete = true;
-      renderBase();
+    if (y > 210 && x > 210) {
+      lineDrawn = true;
+      renderEurasiaMap();
     }
   });
 
-  const swathSlider = document.getElementById('swath-slider');
-  if (swathSlider) {
-    swathSlider.addEventListener('input', (e) => {
+  const slider = document.getElementById('swath-slider');
+  if (slider) {
+    slider.addEventListener('input', (e) => {
       swathWidth = parseInt(e.target.value);
-      document.getElementById('swath-val-label').innerText = `${swathWidth} × ${swathWidth} км`;
-      renderBase();
-      checkKazEOSatDone();
+      document.getElementById('swath-label').innerText = `${swathWidth} × ${swathWidth} км`;
+      renderEurasiaMap();
+      checkKazEOSat();
     });
   }
 
-  window.togglePanMultiSensor = (btn) => {
-    isSensorPanMulti = true;
+  window.toggleKazEOSatMode = (btn) => {
+    modeActive = true;
     btn.classList.add('btn-primary');
-    btn.innerText = '✓ [Панхроматический + Мультиспектральный: ВКЛ]';
-    checkKazEOSatDone();
+    renderEurasiaMap();
+    checkKazEOSat();
   };
 
-  function checkKazEOSatDone() {
-    if (traceComplete && swathWidth >= 20 && isSensorPanMulti) {
-      const fb = document.getElementById('p78-g1-fb');
+  function checkKazEOSat() {
+    if (lineDrawn && swathWidth >= 20 && modeActive) {
+      const fb = document.getElementById('p78-t1-fb');
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: KazEOSat-1 выведен на заданный коридор!</strong> Полоса 20×20 км покрывает маршрут Таймыр—Индия, зафиксировано 14 суточных оборотов.';
-      LMS.setDone('p78_m1');
+      fb.innerHTML = '<strong>Полярный коридор KazEOSat-1 утвержден!</strong> Трасса Таймыр—Индия покрыта полосой 20×20 км. Суточный охват спутника — 14 витков в панхроматическом и мультиспектральном режимах.';
+      LMS.setDone('p78_t1');
     }
   }
 }
 
-// 2. «Геопортал противопаводкового мониторинга Казахстана»
-function initFloodPortalMap() {
-  const container = document.getElementById('flood-portal-svg');
+// 2. Расстановка морских навигационных центров на карте мира
+function initMarineNavCentresTask() {
+  const container = document.getElementById('world-nav-map');
   if (!container) return;
 
-  const validRegions = [
-    'aktobe', 'almaty', 'atyrau', 'vko', 'zko', 'karaganda', 'pavlodar', 'turkestan'
-  ];
-  let selectedRegions = new Set();
+  const targets = { 'slot-aore': 'AORE', 'slot-ior': 'IOR', 'slot-waas': 'WAAS', 'slot-msas': 'MSAS' };
+  let placed = 0;
+  let selectedBadge = null;
 
-  window.handleRegionClick = (el, regKey) => {
-    const fb = document.getElementById('p78-g2-fb');
+  window.selectNavBadge = (name, el) => {
+    document.querySelectorAll('.token-chip-nav').forEach(c => c.classList.remove('selected'));
+    if (selectedBadge === name) selectedBadge = null;
+    else { selectedBadge = name; el.classList.add('selected'); }
+  };
 
-    if (validRegions.includes(regKey)) {
-      el.classList.add('active-monitored');
-      selectedRegions.add(regKey);
-      document.getElementById('flood-counter').innerText = `Активировано: ${selectedRegions.size} из 8 областей договора`;
+  window.dropNavBeacon = (slotId) => {
+    if (!selectedBadge) return;
+    const fb = document.getElementById('p78-t2-fb');
 
-      if (selectedRegions.size === 8) {
+    if (targets[slotId] === selectedBadge) {
+      const el = document.getElementById(slotId);
+      if (el.classList.contains('placed-ok')) return;
+
+      el.classList.add('placed-ok');
+      el.innerText = `📡 [${selectedBadge}] Активен`;
+      document.getElementById(`badge-${selectedBadge}`).classList.add('disabled');
+      selectedBadge = null;
+      placed++;
+
+      if (placed === 4) {
+        document.getElementById('nav-waves-layer').style.display = 'block';
         fb.className = 'status-callout ok show';
-        fb.innerHTML = '<strong>Win State: Космический мониторинг активен!</strong> Все 8 областей договора с «Қазақстан Ғарыш Сапары» подключены к геопорталу МЧС/КЧС.';
-        LMS.setDone('p78_m2');
+        fb.innerHTML = '<strong>Навигационная система развернута!</strong> AORE, IOR, WAAS и MSAS синхронизированы, точность GPS на карте мира достигла 1 метра.';
+        LMS.setDone('p78_t2');
       }
     } else {
       fb.className = 'status-callout err show';
-      fb.innerText = 'Предупреждение: Данная область не заключала договор на оперативный мониторинг с «Қазақстан Ғарыш Сапары»!';
-      setTimeout(() => fb.classList.remove('show'), 2000);
+      fb.innerText = 'Неверная морская акватория для данного навигационного значка!';
+      setTimeout(() => fb.classList.remove('show'), 1500);
     }
   };
 }
 
-// 3. «Наземный геодезический треугольник опорных станций»
-function initGeodeticTriangleMap() {
-  const canvas = document.getElementById('geodetic-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+// 3. Договорная карта космического мониторинга Казахстана
+function initKazakhstanContractMonitoringTask() {
+  const container = document.getElementById('kz-contract-svg');
+  if (!container) return;
 
-  let stations = [];
-  let gpsPlaced = false;
+  const contractRegions = new Set(['aktobe', 'almaty', 'atyrau', 'vko', 'zko', 'karaganda', 'pavlodar', 'turkestan']);
+  const activeRegions = new Set();
+  let stationsPlaced = 0;
 
-  function renderTriangle() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  window.toggleKZRegion = (el, regKey) => {
+    const fb = document.getElementById('p78-t3-fb');
 
-    // City center (Nur-Sultan)
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.arc(200, 120, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.font = '11px Inter';
-    ctx.fillText('Нур-Султан (Акмолинская обл.)', 140, 105);
-
-    // Draw reference stations
-    ctx.fillStyle = '#4f46e5';
-    stations.forEach((st, idx) => {
-      ctx.beginPath();
-      ctx.arc(st.x, st.y, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillText(`Станция ${idx+1}`, st.x + 10, st.y + 4);
-    });
-
-    // Draw radio link triangle if 3 stations exist
-    if (stations.length === 3) {
-      ctx.strokeStyle = '#4f46e5';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(stations[0].x, stations[0].y);
-      ctx.lineTo(stations[1].x, stations[1].y);
-      ctx.lineTo(stations[2].x, stations[2].y);
-      ctx.closePath();
-      ctx.stroke();
-
-      if (gpsPlaced) {
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-        ctx.fill();
-      }
+    if (contractRegions.has(regKey)) {
+      el.classList.add('active-monitored');
+      activeRegions.add(regKey);
+      document.getElementById('kz-contract-count').innerText = `Активировано областей договора: ${activeRegions.size} из 8`;
+      checkMonitoringDone();
+    } else {
+      fb.className = 'status-callout err show';
+      fb.innerText = 'Предупреждение: Данная область не заключала договор космического мониторинга с «Казахстан Гарыш Сапары»!';
+      setTimeout(() => fb.classList.remove('show'), 1600);
     }
+  };
 
-    if (gpsPlaced) {
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
-      ctx.arc(200, 130, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillText('📡 GPS-приемник: Точность ≤ 1м', 140, 155);
+  window.placeAkmolaStation = () => {
+    if (stationsPlaced < 3) {
+      stationsPlaced++;
+      document.getElementById(`akmola-station-${stationsPlaced}`).style.display = 'block';
+      document.getElementById('station-btn').innerText = `Установить референц-станцию «Аэтапография» (${stationsPlaced}/3)`;
+      checkMonitoringDone();
+    }
+  };
+
+  function checkMonitoringDone() {
+    if (activeRegions.size === 8 && stationsPlaced === 3) {
+      const fb = document.getElementById('p78-t3-fb');
+      fb.className = 'status-callout ok show';
+      fb.innerHTML = '<strong>Космический геопортал активен!</strong> 8 областей Казахстана покрыты снимками мониторинга паводков и пожаров, а 3 станции «Аэтапография» зафиксировали опорную сеть Акмолинской области и Нур-Султана.';
+      LMS.setDone('p78_t3');
     }
   }
-  renderTriangle();
-
-  canvas.addEventListener('click', (e) => {
-    if (stations.length < 3) {
-      const rect = canvas.getBoundingClientRect();
-      stations.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-      renderTriangle();
-
-      if (stations.length === 3) {
-        document.getElementById('gps-place-trigger').style.display = 'inline-flex';
-      }
-    }
-  });
-
-  window.placeGpsReceiver = () => {
-    gpsPlaced = true;
-    renderTriangle();
-    const fb = document.getElementById('p78-g3-fb');
-    fb.className = 'status-callout ok show';
-    fb.innerHTML = '<strong>Win State: Геодезический купол связи активирован!</strong> «Аэтапография» зафиксировала точность определения координат до 1 метра.';
-    LMS.setDone('p78_m3');
-  };
 }
 
 /* ==========================================================================
    § 9—10. ОСОБЕННОСТИ ГИС-ТЕХНОЛОГИЙ
    ========================================================================== */
 
-// 1. «Конструктор многослойной электронной карты»
-function initMultiLayerGISMap() {
+// 1. Послойная сборка географической карты
+function initLayerByLayerAssemblyTask() {
   const stack = [];
-  const validOrder = ['base', 'hydro', 'forest', 'roads'];
+  const valid = ['base', 'rivers', 'roads', 'forest'];
   const names = {
-    'base': 'Опорный слой (географическое положение)',
-    'hydro': 'Гидрография',
-    'forest': 'Лесной фонд',
-    'roads': 'Дорожная сеть'
+    'base': 'Опорный слой (географическое положение территории)',
+    'rivers': 'Речная сеть',
+    'roads': 'Автомобильные дороги',
+    'forest': 'Лесной фонд'
   };
 
   window.dragGISLayer = (ev, id) => ev.dataTransfer.setData('text/plain', id);
   window.allowDrop = (ev) => ev.preventDefault();
 
-  window.dropGISLayerOnTable = (ev) => {
+  window.dropGISLayerToFrame = (ev) => {
     ev.preventDefault();
     const id = ev.dataTransfer.getData('text/plain');
-    const fb = document.getElementById('p910-g1-fb');
+    const fb = document.getElementById('p910-t1-fb');
 
     if (stack.length === 0 && id !== 'base') {
       fb.className = 'status-callout err show';
-      fb.innerText = 'Ошибка! На самое дно рабочего стола карты необходимо положить [Опорный слой (геоположение)].';
-      setTimeout(() => fb.classList.remove('show'), 2000);
+      fb.innerText = 'Ошибка сборки! Первым на дно рамки укладывается «Опорный слой».';
+      setTimeout(() => fb.classList.remove('show'), 1600);
       return;
     }
 
     if (!stack.includes(id)) {
       stack.push(id);
-      const slot = document.getElementById(`gis-slot-${stack.length}`);
-      slot.classList.add('filled');
-      slot.innerText = `${id === 'base' ? '🔒' : '📄'} Слой ${stack.length}: ${names[id]}`;
-      document.getElementById(`chip-layer-${id}`).classList.add('disabled');
+      document.getElementById(`map-layer-visual-${id}`).style.display = 'block';
+      document.getElementById(`layer-chip-${id}`).classList.add('disabled');
       fb.classList.remove('show');
     }
 
     if (stack.length === 4) {
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Многослойная электронная карта создана!</strong> Опорный слой зафиксирован замком, тематические слои распределены.';
-      LMS.setDone('p910_m1');
+      fb.innerHTML = '<strong>Многослойная электронная карта собрана!</strong> Опорный слой закреплен на дне карты, гидрография, дороги и леса сформировали цельную геоинформационную модель.';
+      LMS.setDone('p910_t1');
     }
   };
 }
 
-// 2. «Лассо-генератор буферной зоны MapInfo»
-function initMapInfoLassoMap() {
-  const canvas = document.getElementById('mapinfo-lasso-canvas');
+// 2. Построение буферной зоны вокруг трубопровода в MapInfo
+function initPipelineBufferMapInfoTask() {
+  const canvas = document.getElementById('pipeline-mapinfo-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let isDrawing = false;
+  let isLassoing = false;
   let points = [];
   let bufferCreated = false;
 
-  function renderPipeline() {
+  function renderMap() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#0284c7';
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.moveTo(40, 120);
-    ctx.lineTo(360, 120);
-    ctx.stroke();
 
-    ctx.fillStyle = '#0369a1';
+    // Forest patches & rivers
+    ctx.fillStyle = '#dcfce7';
+    ctx.fillRect(40, 20, 100, 80);
+    ctx.fillRect(250, 140, 120, 70);
+
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(180, 0); ctx.lineTo(180, 240); ctx.stroke();
+
+    // Pipeline line
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(20, 120); ctx.lineTo(380, 120); ctx.stroke();
+
+    ctx.fillStyle = '#9a3412';
     ctx.font = '11px Inter';
-    ctx.fillText('Магистральный газопровод', 130, 105);
+    ctx.fillText('Трасса нефтепровода', 50, 110);
 
     if (bufferCreated) {
-      ctx.fillStyle = 'rgba(79, 70, 229, 0.2)';
-      ctx.strokeStyle = '#4f46e5';
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.2)';
+      ctx.strokeStyle = '#2563eb';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(30, 80, 340, 80, 20);
-      ctx.fill();
-      ctx.stroke();
+      ctx.roundRect(15, 85, 370, 70, 14);
+      ctx.fill(); ctx.stroke();
     }
   }
-  renderPipeline();
+  renderMap();
 
-  canvas.addEventListener('pointerdown', () => { isDrawing = true; points = []; });
+  canvas.addEventListener('pointerdown', () => { isLassoing = true; points = []; });
   window.addEventListener('pointerup', () => {
-    isDrawing = false;
-    if (points.length > 10) {
-      document.getElementById('btn-create-buffer').style.display = 'inline-flex';
-    }
+    isLassoing = false;
+    if (points.length > 8) document.getElementById('btn-create-buffer').style.display = 'inline-flex';
   });
   canvas.addEventListener('pointermove', (e) => {
-    if (!isDrawing) return;
+    if (!isLassoing) return;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     points.push({ x, y });
 
-    ctx.strokeStyle = 'rgba(79, 70, 229, 0.5)';
+    ctx.strokeStyle = 'rgba(37, 99, 235, 0.4)';
     ctx.lineWidth = 14;
     ctx.lineTo(x, y);
     ctx.stroke();
   });
 
-  window.createMapInfoBuffer = () => {
+  window.generateBufferCorridor = () => {
     bufferCreated = true;
-    renderPipeline();
+    renderMap();
     document.getElementById('btn-create-buffer').style.display = 'none';
-    document.getElementById('btn-geom-calc').style.display = 'inline-flex';
+    document.getElementById('btn-calc-geom').style.display = 'inline-flex';
   };
 
-  window.calcMapInfoGeometry = () => {
-    const fb = document.getElementById('p910-g2-fb');
+  window.calculateBufferGeometry = () => {
+    const fb = document.getElementById('p910-t2-fb');
     fb.className = 'status-callout ok show';
-    fb.innerHTML = '<strong>Win State: Буферная зона сформирована!</strong> MapInfo рассчитал геометрию: Площадь отчуждения = 24.5 га, Периметр = 4.8 км.';
-    LMS.setDone('p910_m2');
+    fb.innerHTML = '<strong>Геометрические расчеты MapInfo выполнены!</strong> Длина = 18.4 км, Ширина буфера = 500 м, Площадь отчуждения = 9.2 км², Периметр = 37.8 км.';
+    LMS.setDone('p910_t2');
   };
 }
 
-// 3. «Пространственный манипулятор "ГеоГраф ГИС"»
-function initGeoGraphGISManipulator() {
-  let placedDiagram = false;
-  let placedCartogram = false;
-  let isolinesBuilt = false;
+// 3. Наложение картограмм и диаграмм на карту районов
+function initGeoGraphGISThematicMapTask() {
+  let hasBar = false, hasCarto = false, hasIso = false;
 
-  window.dragManipulator = (ev, type) => ev.dataTransfer.setData('text/plain', type);
-  window.allowDrop = (ev) => ev.preventDefault();
+  window.dragGeoGraphModule = (ev, type) => ev.dataTransfer.setData('text/plain', type);
 
-  window.dropOnDistrict = (ev, districtId) => {
+  window.dropOnDistrictMap = (ev, distId) => {
     ev.preventDefault();
     const type = ev.dataTransfer.getData('text/plain');
 
-    if (districtId === 'dist-center' && type === 'diagram') {
-      placedDiagram = true;
-      document.getElementById('dist-center-label').innerText = '📊 [Блок-диаграмма активна]';
-      document.getElementById('chip-diagram').classList.add('disabled');
+    if (distId === 'dist-center' && type === 'bar') {
+      hasBar = true;
+      document.getElementById('center-bar-visual').style.display = 'block';
+      document.getElementById('badge-bar').classList.add('disabled');
     }
-    if (districtId === 'dist-side' && type === 'cartogram') {
-      placedCartogram = true;
-      document.getElementById('dist-side-label').innerText = '🗺️ [Картограмма активна]';
-      document.getElementById('chip-cartogram').classList.add('disabled');
+    if (distId === 'dist-north' && type === 'cartogram') {
+      hasCarto = true;
+      document.getElementById('north-carto-visual').style.display = 'block';
+      document.getElementById('badge-carto').classList.add('disabled');
     }
-    checkGeoGraphDone();
-  };
-
-  window.buildIsolines = (btn) => {
-    isolinesBuilt = true;
-    btn.classList.add('btn-primary');
-    document.getElementById('dist-mountain-label').innerText = '〰️ [Изолинии рельефа построены]';
+    if (distId === 'dist-east' && type === 'isolines') {
+      hasIso = true;
+      document.getElementById('east-iso-visual').style.display = 'block';
+      document.getElementById('badge-iso').classList.add('disabled');
+    }
     checkGeoGraphDone();
   };
 
   function checkGeoGraphDone() {
-    if (placedDiagram && placedCartogram && isolinesBuilt) {
-      const fb = document.getElementById('p910-g3-fb');
+    if (hasBar && hasCarto && hasIso) {
+      const fb = document.getElementById('p910-t3-fb');
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Манипуляции «ГеоГраф ГИС» завершены!</strong> Карта обогащена блок-диаграммами, картограммой и рельефными изолиниями.';
-      LMS.setDone('p910_m3');
+      fb.innerHTML = '<strong>Тематическая карта «ГеоГраф ГИС» построена!</strong> На район нанесена блок-диаграмма, северный окрашен картограммой по плотности данных, а на востоке прорисованы изолинии рельефа.';
+      LMS.setDone('p910_t3');
     }
   }
 }
@@ -620,133 +544,121 @@ function initGeoGraphGISManipulator() {
    § 11. СВЯЗЬ ГИС С ОТРАСЛЯМИ
    ========================================================================== */
 
-// 1. «Агро-радар неиспользуемых земель Microsoft»
-function initMicrosoftAgroRadarMap() {
-  const canvas = document.getElementById('agro-scratch-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let scratched = 0;
-  let isScratching = false;
+// 1. Мониторинг заброшенных пашен на карте сельхозугодий
+function initAbandonedFarmlandMicrosoftTask() {
+  const container = document.getElementById('farmland-cadastre-map');
+  if (!container) return;
 
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#1e293b';
-  ctx.font = '12px Inter';
-  ctx.fillText('Сотрите защитный серый слой с пашни...', 60, 75);
+  let ownerActive = false;
+  let termActive = false;
 
-  canvas.addEventListener('pointerdown', () => isScratching = true);
-  window.addEventListener('pointerup', () => isScratching = false);
-  canvas.addEventListener('pointermove', (e) => {
-    if (!isScratching) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  window.revealUnusedField = () => {
+    document.getElementById('field-status-overlay').style.background = '#fef3c7';
+    document.getElementById('field-audit-card').style.display = 'block';
+  };
 
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 22, 0, Math.PI * 2);
-    ctx.fill();
+  window.toggleFieldTag = (tagType, btn) => {
+    if (tagType === 'owner') ownerActive = true;
+    if (tagType === 'term') termActive = true;
+    btn.classList.add('btn-primary');
 
-    scratched++;
-    if (scratched > 35) {
-      document.getElementById('ms-field-card').style.display = 'block';
+    if (ownerActive && termActive) {
+      const fb = document.getElementById('p11-t1-fb');
+      fb.className = 'status-callout ok show';
+      fb.innerHTML = '<strong>Участок зафиксирован!</strong> Алгоритм программы Microsoft определил собственника и срок неиспользования пашни (2 года). Поле внесено в реестр программы «Цифровой Казахстан».';
+      LMS.setDone('p11_t1');
     }
-  });
-
-  window.claimUnusedField = () => {
-    const fb = document.getElementById('p11-g1-fb');
-    fb.className = 'status-callout ok show';
-    fb.innerHTML = '<strong>Win State: Земля зафиксирована в «Цифровой Казахстан»!</strong> Собственник установлен, срок неиспользования: 2 года.';
-    LMS.setDone('p11_m1');
   };
 }
 
-// 2. «Спектральный геологический щуп ER Mapper»
-function initERMapperProbeMap() {
-  const pad = document.getElementById('ermapper-pad');
+// 2. Поиск рудных очагов на космической карте ER Mapper
+function initERMapperOreSearchTask() {
+  const pad = document.getElementById('ermapper-satellite-pad');
   if (!pad) return;
 
-  const targetX = 230;
-  const targetY = 85;
-  let found = false;
+  const targetX = 260;
+  const targetY = 90;
+  let anomalyHit = false;
 
   pad.addEventListener('pointermove', (e) => {
     const rect = pad.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const lens = document.getElementById('ermapper-lens');
-    lens.style.left = `${x}px`;
-    lens.style.top = `${y}px`;
+    const reticle = document.getElementById('ermapper-reticle');
+    reticle.style.left = `${x}px`;
+    reticle.style.top = `${y}px`;
 
     const dist = Math.hypot(x - targetX, y - targetY);
     if (dist < 32) {
-      lens.style.borderColor = '#ef4444';
-      lens.style.background = 'rgba(239, 68, 68, 0.35)';
-      if ('vibrate' in navigator) navigator.vibrate(40);
-      document.getElementById('ermapper-gps-btn').style.display = 'inline-flex';
-      found = true;
+      reticle.style.borderColor = '#dc2626';
+      reticle.style.background = 'rgba(220, 38, 38, 0.4)';
+      document.getElementById('btn-drop-gps-ore').style.display = 'inline-flex';
+      anomalyHit = true;
     } else {
-      lens.style.borderColor = '#4f46e5';
-      lens.style.background = 'rgba(79, 70, 229, 0.15)';
+      reticle.style.borderColor = '#2563eb';
+      reticle.style.background = 'rgba(37, 99, 235, 0.15)';
     }
   });
 
-  window.dropGeologyGpsPin = () => {
-    if (!found) return;
-    const fb = document.getElementById('p11-g2-fb');
+  window.dropOreGpsPin = () => {
+    if (!anomalyHit) return;
+    const fb = document.getElementById('p11-t2-fb');
     fb.className = 'status-callout ok show';
-    fb.innerHTML = '<strong>Win State: Месторождение зафиксировано!</strong> Высокоминерализованный очаг грунта отмечен GPS-привязкой для геологов.';
-    LMS.setDone('p11_m2');
+    fb.innerHTML = '<strong>Высокоминерализованный очаг грунта зафиксирован!</strong> ER Mapper определил спектральную аномалию, на точку поставлен значок «GPS-навигатор: полевая привязка месторождения».';
+    LMS.setDone('p11_t2');
   };
 }
 
-// 3. «Трассировщик логистических и кабельных сетей»
-function initLogisticsTracerMap() {
-  const canvas = document.getElementById('network-tracer-canvas');
+// 3. Прокладка безопасного транспортного маршрута
+function initSafeLogisticsRoutingTask() {
+  const canvas = document.getElementById('logistics-safe-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let cableDone = false;
-  let freightDone = false;
   let isTracing = false;
+  let isFailed = false;
 
-  function renderMap() {
+  function renderRoadMap() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Red Danger Zone
-    ctx.fillStyle = '#fee2e2';
-    ctx.fillRect(100, 30, 100, 90);
+    // Hazard polygons
+    ctx.fillStyle = '#bfdbfe'; // Flood
+    ctx.fillRect(100, 20, 110, 80);
+    ctx.fillStyle = '#1e40af'; ctx.font = '10px Inter';
+    ctx.fillText('Зона паводка (Затоплено)', 105, 65);
+
+    ctx.fillStyle = '#fecaca'; // Fire
+    ctx.fillRect(100, 120, 110, 80);
     ctx.fillStyle = '#991b1b';
-    ctx.font = '10px Inter';
-    ctx.fillText('Зона риска ЧС', 115, 80);
+    ctx.fillText('Очаг лесного пожара', 110, 165);
 
-    // Telecom Station & Houses
-    ctx.fillStyle = '#4f46e5';
-    ctx.fillRect(20, 20, 40, 25);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Вышка', 24, 37);
+    // Highways
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 6;
+    // Highway top bypass
+    ctx.beginPath(); ctx.moveTo(30, 110); ctx.lineTo(100, 10); ctx.lineTo(310, 10); ctx.lineTo(370, 110); ctx.stroke();
+    // Highway center (through hazard)
+    ctx.beginPath(); ctx.moveTo(30, 110); ctx.lineTo(370, 110); ctx.stroke();
 
-    ctx.fillStyle = '#4f46e5';
-    ctx.fillRect(320, 20, 50, 25);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Дома', 330, 37);
+    // Logistic Hubs
+    ctx.fillStyle = '#16a34a'; ctx.fillRect(10, 95, 45, 30);
+    ctx.fillStyle = '#fff'; ctx.fillText('Парк А', 14, 114);
 
-    // Freight Park & Logistic Hub
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(20, 140, 40, 25);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Парк', 25, 157);
-
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(320, 140, 50, 25);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Хаб', 335, 157);
+    ctx.fillStyle = '#2563eb'; ctx.fillRect(345, 95, 45, 30);
+    ctx.fillStyle = '#fff'; ctx.fillText('Город Б', 350, 114);
   }
-  renderMap();
+  renderRoadMap();
 
-  canvas.addEventListener('pointerdown', () => isTracing = true);
-  window.addEventListener('pointerup', () => isTracing = false);
+  canvas.addEventListener('pointerdown', () => { isTracing = true; isFailed = false; renderRoadMap(); });
+  window.addEventListener('pointerup', () => {
+    isTracing = false;
+    if (!isFailed) {
+      const fb = document.getElementById('p11-t3-fb');
+      fb.className = 'status-callout ok show';
+      fb.innerHTML = '<strong>Безопасный маршрут утвержден!</strong> Колонна направлена по свободной автомагистрали в обход зон затопления и лесного пожара с расчетом максимального грузооборота.';
+      LMS.setDone('p11_t3');
+    }
+  });
 
   canvas.addEventListener('pointermove', (e) => {
     if (!isTracing) return;
@@ -754,19 +666,15 @@ function initLogisticsTracerMap() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    ctx.fillStyle = '#4f46e5';
-    ctx.fillRect(x, y, 3, 3);
+    ctx.fillStyle = '#16a34a';
+    ctx.fillRect(x, y, 4, 4);
 
-    // Trace cable at top
-    if (y < 60 && x > 300) cableDone = true;
-    // Trace freight at bottom
-    if (y > 130 && x > 300) freightDone = true;
-
-    if (cableDone && freightDone) {
-      const fb = document.getElementById('p11-g3-fb');
-      fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Сети проложены успешно!</strong> Оптоволоконный кабель подключен, грузопоток направлен в обход зоны кризиса.';
-      LMS.setDone('p11_m3');
+    // Check hazard zones
+    if ((x > 100 && x < 210 && y > 20 && y < 100) || (x > 100 && x < 210 && y > 120 && y < 200) || (x > 100 && x < 210 && y > 100 && y < 120)) {
+      isFailed = true;
+      const fb = document.getElementById('p11-t3-fb');
+      fb.className = 'status-callout err show';
+      fb.innerText = 'Маршрут пересек зону опасности (паводок / огонь)! Проведите колонну по свободному объезду сверху.';
     }
   });
 }
@@ -775,102 +683,100 @@ function initLogisticsTracerMap() {
    § 12. ГЕОГРАФИЧЕСКАЯ БАЗА ДАННЫХ
    ========================================================================== */
 
-// 1. «Топологический трафарет пространственных объектов»
-function initTopologicalStencilMap() {
-  let currentTool = null;
-  let pointDone = false;
-  let lineDone = false;
-  let polyDone = false;
+// 1. Оцифровка объектов на карте в «Точку, Линию, Полигон»
+function initVectorDigitizingPrimitivesTask() {
+  let tool = null;
+  let repDone = false, pipeDone = false, zaysanDone = false, soilDone = false;
 
-  window.setTopoTool = (tool, btn) => {
-    currentTool = tool;
-    document.querySelectorAll('.btn-tool-topo').forEach(b => b.classList.remove('btn-primary'));
+  window.setDigitizeTool = (t, btn) => {
+    tool = t;
+    document.querySelectorAll('.btn-tool-dig').forEach(b => b.classList.remove('btn-primary'));
     btn.classList.add('btn-primary');
   };
 
-  window.handleTopoObjectClick = (objType) => {
-    const fb = document.getElementById('p12-g1-fb');
+  window.digitizeMapFeature = (type, elId) => {
+    const fb = document.getElementById('p12-t1-fb');
 
-    if (objType === 'point' && currentTool === 'point') {
-      pointDone = true;
-      document.getElementById('topo-point-obj').setAttribute('fill', '#10b981');
-    } else if (objType === 'line' && currentTool === 'line') {
-      lineDone = true;
-      document.getElementById('topo-road-obj').setAttribute('stroke', '#10b981');
-    } else if (objType === 'poly' && currentTool === 'poly') {
-      polyDone = true;
-      document.getElementById('topo-lake-obj').setAttribute('fill', '#a7f3d0');
-      document.getElementById('topo-lake-obj').setAttribute('stroke', '#10b981');
+    if (type === 'point' && tool === 'point') {
+      repDone = true;
+      document.getElementById('feat-repar-point').setAttribute('fill', '#16a34a');
+    } else if (type === 'line' && tool === 'line') {
+      pipeDone = true;
+      document.getElementById('feat-pipeline-line').setAttribute('stroke', '#16a34a');
+    } else if (type === 'poly' && tool === 'poly') {
+      if (elId === 'feat-zaysan-poly') zaysanDone = true;
+      if (elId === 'feat-soils-poly') soilDone = true;
+      document.getElementById(elId).setAttribute('stroke', '#16a34a');
     } else {
       fb.className = 'status-callout err show';
-      fb.innerText = 'Несоответствие инструмента и геометрического типа объекта!';
-      setTimeout(() => fb.classList.remove('show'), 1200);
+      fb.innerText = 'Несоответствие инструмента типу геометрического примитива (Точка / Линия / Полигон)!';
+      setTimeout(() => fb.classList.remove('show'), 1500);
       return;
     }
 
-    if (pointDone && lineDone && polyDone) {
+    if (repDone && pipeDone && zaysanDone && soilDone) {
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Все объекты оцифрованы по ГОСТу!</strong> Точка (координаты), Линия (длина) и Полигон (площадь: длина и ширина) занесены в БД.';
-      LMS.setDone('p12_m1');
+      fb.innerHTML = '<strong>Объекты оцифрованы по ГОСТу!</strong> Геодезический пункт (Точка, 0D), трубопровод (Линия, 1D), озеро Зайсан и контур каштановых почв (Полигоны, 2D) занесены в векторную базу данных.';
+      LMS.setDone('p12_t1');
     }
   };
 }
 
-// 2. «Инспектор координатных и временных ошибок на карте»
-function initCoordinateInspectorMap() {
-  let bridgeCorrected = false;
-  let timeUpdated = false;
+// 2. Исправление ошибок координат и дат прямо на карте
+function initCoordinateAndDateFixTask() {
+  let bridgeOnRiver = false;
+  let floodUpdated = false;
 
-  window.dragBridge = (ev) => ev.dataTransfer.setData('text/plain', 'bridge');
+  window.dragBridgeSymbol = (ev) => ev.dataTransfer.setData('text/plain', 'bridge');
   window.allowDrop = (ev) => ev.preventDefault();
 
-  window.dropBridgeOnRiver = (ev) => {
+  window.dropBridgeToRiverAlignment = (ev) => {
     ev.preventDefault();
-    bridgeCorrected = true;
-    const bridge = document.getElementById('bridge-symbol');
-    bridge.style.left = '160px';
-    bridge.style.top = '70px';
-    document.getElementById('bridge-status-txt').innerText = '✓ Мост состыкован с рекой (Точность)';
-    checkInspectorDone();
+    bridgeOnRiver = true;
+    const bridge = document.getElementById('bridge-feature-item');
+    bridge.style.left = '175px';
+    bridge.style.top = '100px';
+    document.getElementById('bridge-coord-status').innerText = '✓ Мост состыкован с руслом реки (Точность: Соблюдена)';
+    checkCoordDateDone();
   };
 
-  window.updateFloodLayer = () => {
-    timeUpdated = true;
-    document.getElementById('flood-time-tag').innerText = '✓ Свежий снимок: Сегодня 08:00 (Своевременность)';
-    document.getElementById('btn-time-update').style.display = 'none';
-    checkInspectorDone();
+  window.applyFreshSatelliteFlood = () => {
+    floodUpdated = true;
+    document.getElementById('flood-date-badge').innerText = '✓ Свежий космический снимок: Сегодня (Своевременность: Соблюдена)';
+    document.getElementById('btn-update-flood-date').style.display = 'none';
+    checkCoordDateDone();
   };
 
-  function checkInspectorDone() {
-    if (bridgeCorrected && timeUpdated) {
-      const fb = document.getElementById('p12-g2-fb');
+  function checkCoordDateDone() {
+    if (bridgeOnRiver && floodUpdated) {
+      const fb = document.getElementById('p12-t2-fb');
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Ошибки устранены!</strong> Достигнуты требования ТОЧНОСТИ (пространственная привязка) и СВОЕВРЕМЕННОСТИ (актуальные данные).';
-      LMS.setDone('p12_m2');
+      fb.innerHTML = '<strong>Карта исправлена!</strong> Требование ТОЧНОСТИ (пространственная привязка моста) и СВОЕВРЕМЕННОСТИ (актуальная дата паводковой обстановки) полностью выполнены.';
+      LMS.setDone('p12_t2');
     }
   }
 }
 
-// 3. «3D-трансформер картографического рельефа»
-function init3DReliefTransformerMap() {
-  const surface = document.getElementById('tilt-map-surface');
-  const slider = document.getElementById('tilt-3d-slider');
-  if (!surface || !slider) return;
+// 3. 3D-подъем рельефа на топографической карте
+function initTopographic3DExtrusionTask() {
+  const sheet = document.getElementById('topo-3d-sheet');
+  const slider = document.getElementById('topo-tilt-slider');
+  if (!sheet || !slider) return;
 
   slider.addEventListener('input', (e) => {
     const val = parseInt(e.target.value);
-    surface.style.transform = `rotateX(${val * 0.6}deg) rotateZ(${-val * 0.3}deg)`;
+    sheet.style.transform = `rotateX(${val * 0.65}deg) rotateZ(${-val * 0.25}deg)`;
 
-    const isolines = document.querySelectorAll('.tilt-isoline');
+    const isolines = document.querySelectorAll('.topo-extruded-contour');
     isolines.forEach((iso, idx) => {
-      iso.style.transform = `translateZ(${val * (idx + 1) * 0.4}px)`;
+      iso.style.transform = `translateZ(${val * (idx + 1) * 0.5}px)`;
     });
 
-    if (val >= 80) {
-      const fb = document.getElementById('p12-g3-fb');
+    if (val >= 75) {
+      const fb = document.getElementById('p12-t3-fb');
       fb.className = 'status-callout ok show';
-      fb.innerHTML = '<strong>Win State: Плоская основа превращена в 3D-модель!</strong> Изолинии рельефа сформировали объемные перепады высот местности.';
-      LMS.setDone('p12_m3');
+      fb.innerHTML = '<strong>3D-модель рельефа сформирована!</strong> Плоские горизонтали топографической карты вытянулись вверх, образовав наглядную трехмерную цифровую модель высот и склонов.';
+      LMS.setDone('p12_t3');
     }
   });
 }
