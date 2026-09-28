@@ -2,83 +2,67 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>§ 9—10. Методы ГИС-технологий</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>§ 7—8. Методы дистанционного зондирования</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090b0e;
-      --panel: #11151d;
-      --panel-2: #181f2b;
-      --hairline: #222b3d;
-      --ink: #f0f4f8;
-      --ink-muted: #8594a6;
-      --accent: #00d285;
-      --accent-soft: rgba(0, 210, 133, 0.15);
-      --cyan: #38bdf8;
-      --font-ui: 'Inter', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --bg: #07090d; --panel: #0f131a; --panel-2: #171d28;
+      --hairline: #1e2636; --hairline-focus: #33405b;
+      --ink: #f1f5f9; --ink-muted: #8493a8;
+      --accent: #00d285; --accent-soft: rgba(0, 210, 133, 0.15);
+      --cyan: #38bdf8; --warn: #f59e0b;
+      --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
-    .nav { height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; }
-    .nav-left { display: flex; align-items: center; gap: 1rem; }
-    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono); }
-    .back-btn:hover { color: var(--accent); }
-    .nav-title { font-size: 0.9rem; font-weight: 600; border-left: 1px solid var(--hairline); padding-left: 1rem; }
-    
-    .tabs { display: flex; gap: 4px; }
-    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    .nav { min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; gap: 0.5rem; }
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--panel-2); }
+    .nav-title { font-size: 0.85rem; font-weight: 600; }
+    .tabs { display: flex; gap: 4px; overflow-x: auto; width: 100%; padding-bottom: 2px; }
+    @media(min-width: 768px) { .tabs { width: auto; } }
+    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; white-space: nowrap; min-height: 40px; }
     .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
-    
-    .workspace { flex: 1; display: grid; grid-template-columns: 340px 1fr; overflow: hidden; }
-    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; overflow-y: auto; }
-    .viewport { position: relative; background: #05070a; display: flex; flex-direction: column; }
-    
-    .step-badge { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); text-transform: uppercase; }
-    .task-title { font-size: 1.15rem; font-weight: 600; }
-    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.5; }
-    
-    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-    .tool-label { font-size: 0.75rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
-    
-    .layer-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--panel); border: 1px solid var(--hairline); border-radius: 6px; font-size: 0.8rem; }
-    .layer-toggle { cursor: pointer; }
-    
-    .btn { background: var(--panel-2); border: 1px solid var(--hairline); color: var(--ink); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
-    .btn:hover { border-color: var(--accent); color: var(--accent); }
-    .btn.active { background: var(--accent); color: #000; font-weight: 600; }
-    
-    .map-canvas-wrap { flex: 1; position: relative; cursor: crosshair; }
+    .workspace { flex: 1; display: grid; grid-template-columns: 1fr; }
+    @media(min-width: 860px) { .workspace { grid-template-columns: 340px 1fr; height: calc(100vh - 52px); overflow: hidden; } }
+    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+    .viewport { position: relative; background: #040608; display: flex; flex-direction: column; min-height: 380px; }
+    .step-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); text-transform: uppercase; }
+    .task-title { font-size: 1.1rem; font-weight: 600; }
+    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.45; }
+    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .tool-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
+    .btn { background: var(--panel-2); border: 1px solid var(--hairline-focus); color: var(--ink); padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+    .btn:active, .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
+    .map-canvas-wrap { flex: 1; position: relative; width: 100%; min-height: 340px; touch-action: none; cursor: crosshair; }
     canvas { width: 100%; height: 100%; display: block; }
-    
-    .telemetry-bar { height: 36px; background: var(--panel); border-top: 1px solid var(--hairline); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted); }
-    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; display: none; }
+    .telemetry-bar { background: var(--panel); border-top: 1px solid var(--hairline); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.8rem; display: none; }
     .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
+    .feedback-warn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--warn); color: #fbbf24; }
   </style>
 </head>
 <body>
   <header class="nav">
     <div class="nav-left">
-      <a href="index.html" class="back-btn">← ПОРТАЛ</a>
-      <div class="nav-title">§ 9—10. Особенности ГИС-технологий (ГеоГраф / MapInfo)</div>
+      <a href="index.html" class="back-btn">← МЕНЮ</a>
+      <div class="nav-title">§ 7—8. Дистанционное зондирование</div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTask(1)">ЗАДАНИЕ 1: СЛОИ ГИС</button>
-      <button class="tab-btn" onclick="switchTask(2)">ЗАДАНИЕ 2: БУФЕРНАЯ ЗОНА</button>
-      <button class="tab-btn" onclick="switchTask(3)">ЗАДАНИЕ 3: КАЛЬКУЛЯТОР И ИЗОЛИНИИ</button>
+      <button class="tab-btn active" onclick="switchTask(1)">1. ОРБИТА KazEOSat</button>
+      <button class="tab-btn" onclick="switchTask(2)">2. ГЕОПОРТАЛ ЧС</button>
+      <button class="tab-btn" onclick="switchTask(3)">3. РЕФЕРЕНЦ-СТАНЦИИ</button>
     </div>
   </header>
 
   <div class="workspace">
     <aside class="sidebar">
       <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
-      <h2 class="task-title" id="task-title">Сборка многослойного пирога ГИС</h2>
-      <p class="task-desc" id="task-desc">Концепция ГИС основана на многослойности: снизу опорный слой рельефа, затем гидрография, дорожная сеть и точечные объекты инфраструктуры.</p>
-
+      <h2 class="task-title" id="task-title">Орбитальный захват: KazEOSat-1 & 2</h2>
+      <p class="task-desc" id="task-desc">Орбита проходит от Таймыра до Индии (14 витков/сут). Выберите спутник (20x20 км или 77x77 км) и коснитесь очага паводка на карте.</p>
       <div class="tool-box" id="task-controls"></div>
       <div id="feedback" class="feedback-banner"></div>
     </aside>
@@ -88,45 +72,63 @@
         <canvas id="gis-canvas"></canvas>
       </div>
       <div class="telemetry-bar">
-        <div>ПЛАТФОРМА: MapInfo Professional / ГеоГраф ГИС</div>
-        <div style="color:var(--cyan);">SQL / Spatial Analyzer: ГОТОВ</div>
+        <div>СПУТНИК: <span id="sat-readout">KazEOSat-1 (20x20 км)</span></div>
+        <div>ТОЧНОСТЬ: <span id="acc-readout" style="color:var(--cyan)">≤ 1.0 м</span> | ЦЕНТР EGNOS</div>
       </div>
     </main>
   </div>
 
   <script>
+    const V_WIDTH = 800, V_HEIGHT = 500;
     let currentTask = 1;
     const canvas = document.getElementById('gis-canvas');
     const ctx = canvas.getContext('2d');
-    let width, height;
+    let scale = 1, offsetX = 0, offsetY = 0;
 
-    // Task 1: Layers
-    let t1_layers = {
-      base: true,
-      hydro: false,
-      roads: false,
-      poi: false
-    };
+    // Task 1 State
+    let t1_satellite = 'sat1';
+    let t1_targetArea = { vx: 450, vy: 230, name: 'Паводок р. Есиль (СКО)', captured: false };
 
-    // Task 2: Buffer
-    let t2_bufferRadius = 0; // 0, 250, 500
-    let t2_violators = [
-      { name: 'Жилой дом №12', x: 380, y: 220, inside: false },
-      { name: 'Хозпостройка', x: 440, y: 260, inside: false },
-      { name: 'Склад ГСМ', x: 250, y: 350, inside: false }
+    // Task 2 State
+    let t2_layer = 'floods';
+    let t2_regions = [
+      { id: 'aktobe', name: 'Актюбинская обл.', vx: 260, vy: 210, risk: 'floods', resolved: false },
+      { id: 'almaty', name: 'Алматинская обл.', vx: 560, vy: 340, risk: 'fires', resolved: false },
+      { id: 'vko', name: 'ВКО (Лесные массивы)', vx: 630, vy: 200, risk: 'fires', resolved: false },
+      { id: 'zko', name: 'Западно-Казахстанская', vx: 160, vy: 180, risk: 'floods', resolved: false },
+      { id: 'turkestan', name: 'Туркестанская обл.', vx: 420, vy: 380, risk: 'fires', resolved: false }
     ];
 
-    // Task 3: Polygon & Contours
-    let t3_polyCalculated = false;
-    let t3_contoursVisible = false;
+    // Task 3 State
+    let t3_stations = [
+      { id: 1, name: 'Станция №1 (Астана-Север)', vx: 400, vy: 170, connected: false },
+      { id: 2, name: 'Станция №2 (Косшы-Юг)', vx: 330, vy: 320, connected: false },
+      { id: 3, name: 'Станция №3 (Акмол-Восток)', vx: 530, vy: 290, connected: false }
+    ];
+    let t3_calibrated = false;
 
     function resize() {
       const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = width = rect.width;
-      canvas.height = height = rect.height;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const scaleX = rect.width / V_WIDTH;
+      const scaleY = rect.height / V_HEIGHT;
+      scale = Math.min(scaleX, scaleY);
+      offsetX = (rect.width - V_WIDTH * scale) / 2;
+      offsetY = (rect.height - V_HEIGHT * scale) / 2;
+      ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr);
       render();
     }
     window.addEventListener('resize', resize);
+
+    function toVirtual(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        vx: (clientX - rect.left - offsetX) / scale,
+        vy: (clientY - rect.top - offsetY) / scale
+      };
+    }
 
     function switchTask(taskId) {
       currentTask = taskId;
@@ -140,192 +142,165 @@
 
       if (taskId === 1) {
         badge.innerText = 'ЭТАП 1 ИЗ 3';
-        title.innerText = 'Сборка многослойного пирога ГИС';
-        desc.innerText = 'Включите все слои в правильной иерархии: 1. Опорный рельеф; 2. Гидрография; 3. Дорожная сеть; 4. Инфраструктура.';
+        title.innerText = 'Орбитальный захват KazEOSat';
+        desc.innerText = 'Выберите сенсор: KazEOSat-1 (20x20 км) для высокодетальной съемки или KazEOSat-2 (77x77 км) для широкого охвата, затем коснитесь очага ЧС.';
         controls.innerHTML = `
-          <div class="tool-label">Слои электронной карты</div>
+          <div class="tool-label">Выбор аппарата</div>
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <label class="layer-item"><span>1. Опорный рельеф</span> <input type="checkbox" ${t1_layers.base?'checked':''} onchange="toggleL('base')"></label>
-            <label class="layer-item"><span>2. Гидрография (Реки/Озера)</span> <input type="checkbox" ${t1_layers.hydro?'checked':''} onchange="toggleL('hydro')"></label>
-            <label class="layer-item"><span>3. Дорожная сеть</span> <input type="checkbox" ${t1_layers.roads?'checked':''} onchange="toggleL('roads')"></label>
-            <label class="layer-item"><span>4. Объекты инфраструктуры</span> <input type="checkbox" ${t1_layers.poi?'checked':''} onchange="toggleL('poi')"></label>
+            <button class="btn ${t1_satellite==='sat1'?'active':''}" onclick="setT1Sat('sat1')">KazEOSat-1 (20×20 км, Детальный)</button>
+            <button class="btn ${t1_satellite==='sat2'?'active':''}" onclick="setT1Sat('sat2')">KazEOSat-2 (77×77 км, Обзорный)</button>
           </div>
         `;
       } else if (taskId === 2) {
         badge.innerText = 'ЭТАП 2 ИЗ 3';
-        title.innerText = 'Инструмент «Буферная зона» (MapInfo)';
-        desc.innerText = 'Задайте нормативный буфер безопасности вокруг магистрального трубопровода (500 м), чтобы автоматически обнаружить объекты в охранной зоне.';
+        title.innerText = 'Оперативный геопортал ЧС';
+        desc.innerText = 'По договору с «Қазақстан Ғарыш Сапары» снимки поступают 2 раза в день. Выберите спектр («Паводки» или «Термоточки») и отметьте области с угрозой.';
         controls.innerHTML = `
-          <div class="tool-label">Радиус буферной зоны</div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn ${t2_bufferRadius===0?'active':''}" onclick="setBuffer(0)">0 м</button>
-            <button class="btn ${t2_bufferRadius===250?'active':''}" onclick="setBuffer(250)">250 м</button>
-            <button class="btn ${t2_bufferRadius===500?'active':''}" onclick="setBuffer(500)">500 м (Норматив)</button>
+          <div class="tool-label">Спектральный слой</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <button class="btn ${t2_layer==='floods'?'active':''}" onclick="setT2Layer('floods')">Паводки</button>
+            <button class="btn ${t2_layer==='fires'?'active':''}" onclick="setT2Layer('fires')">Термоточки</button>
           </div>
         `;
       } else if (taskId === 3) {
         badge.innerText = 'ЭТАП 3 ИЗ 3';
-        title.innerText = 'Метрический калькулятор и изолинии';
-        desc.innerText = 'Используйте пространственный геометрический анализ для вычисления площади полигона лесного массива и генерации изолиний сечения склона.';
+        title.innerText = 'Триангуляция референц-станций';
+        desc.innerText = 'Предприятие «Аэтапография» развернуло 3 базовые станции в Акмолинском регионе. Коснитесь всех 3 станций, чтобы откалибровать точность полевого объекта до 1 метра.';
         controls.innerHTML = `
-          <div class="tool-label">Пространственные операции</div>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <button class="btn ${t3_polyCalculated?'active':''}" onclick="calcPoly()">Рассчитать площадь и периметр</button>
-            <button class="btn ${t3_contoursVisible?'active':''}" onclick="toggleContours()">Построить изолинии высот</button>
+          <div class="tool-label">Статус сети</div>
+          <div style="font-size:0.8rem; font-family:var(--font-mono); color:var(--cyan);">
+            Подключено станций: ${t3_stations.filter(s=>s.connected).length} из 3
           </div>
         `;
       }
       render();
     }
 
-    function toggleL(key) {
-      t1_layers[key] = !t1_layers[key];
-      if (Object.values(t1_layers).every(v=>v)) {
-        const fb = document.getElementById('feedback');
-        fb.className = 'feedback-banner feedback-success';
-        fb.style.display = 'block';
-        fb.innerText = '✓ Многослойный картографический пирог успешно сформирован без взаимного перекрытия!';
-      }
-      switchTask(1);
+    function setT1Sat(s) { 
+      t1_satellite = s; 
+      document.getElementById('sat-readout').innerText = s==='sat1'?'KazEOSat-1 (20x20 км)': 'KazEOSat-2 (77x77 км)';
+      switchTask(1); 
     }
+    function setT2Layer(l) { t2_layer = l; switchTask(2); }
 
-    function setBuffer(r) {
-      t2_bufferRadius = r;
-      const fb = document.getElementById('feedback');
-      if (r === 500) {
-        fb.className = 'feedback-banner feedback-success';
-        fb.style.display = 'block';
-        fb.innerText = '✓ Буфер 500м активирован! Выявлены нарушения: Жилой дом №12 и Хозпостройка попали в охранную зону.';
-      }
-      switchTask(2);
-    }
-
-    function calcPoly() {
-      t3_polyCalculated = true;
-      const fb = document.getElementById('feedback');
-      fb.className = 'feedback-banner feedback-success';
-      fb.style.display = 'block';
-      fb.innerText = '✓ Метрика полигона: Площадь S = 142.8 га | Периметр P = 4.92 км.';
-      switchTask(3);
-    }
-
-    function toggleContours() {
-      t3_contoursVisible = !t3_contoursVisible;
-      switchTask(3);
-    }
-
-    function render() {
-      ctx.clearRect(0, 0, width, height);
+    canvas.addEventListener('pointerdown', (e) => {
+      const { vx, vy } = toVirtual(e.clientX, e.clientY);
 
       if (currentTask === 1) {
-        // Опорный
-        if (t1_layers.base) {
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(80, 60, width - 160, height - 120);
-          ctx.strokeStyle = '#334155';
-          ctx.strokeRect(80, 60, width - 160, height - 120);
-          ctx.fillStyle = '#475569';
-          ctx.font = '11px JetBrains Mono';
-          ctx.fillText('[СЛОЙ 1]: Опорная цифровая модель рельефа', 100, 90);
+        if (Math.hypot(vx - t1_targetArea.vx, vy - t1_targetArea.vy) < 55) {
+          t1_targetArea.captured = true;
+          const fb = document.getElementById('feedback');
+          fb.className = 'feedback-banner feedback-success';
+          fb.style.display = 'block';
+          fb.innerText = t1_satellite === 'sat1' 
+            ? '✓ Снимок KazEOSat-1 (20×20 км) передан в МЧС РК.' 
+            : '✓ Мультиспектральная полоса KazEOSat-2 (77×77 км) охватила весь бассейн реки.';
         }
-        // Гидро
-        if (t1_layers.hydro) {
-          ctx.strokeStyle = '#0284c7';
-          ctx.lineWidth = 8;
-          ctx.beginPath();
-          ctx.moveTo(100, 320);
-          ctx.bezierCurveTo(300, 280, 450, 400, 680, 240);
-          ctx.stroke();
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillText('[СЛОЙ 2]: Русло реки Есиль', 320, 310);
-        }
-        // Дороги
-        if (t1_layers.roads) {
-          ctx.strokeStyle = '#f59e0b';
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.moveTo(180, 80);
-          ctx.lineTo(480, 420);
-          ctx.stroke();
-          ctx.fillStyle = '#fbbf24';
-          ctx.fillText('[СЛОЙ 3]: Автомагистраль М-36', 360, 260);
-        }
-        // POI
-        if (t1_layers.poi) {
-          ctx.fillStyle = '#00d285';
-          ctx.beginPath(); ctx.arc(480, 160, 8, 0, Math.PI*2); ctx.fill();
-          ctx.fillText('● [СЛОЙ 4]: Метеостанция', 495, 164);
-        }
-
       } else if (currentTask === 2) {
-        // Трубопровод
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.moveTo(120, 280);
-        ctx.lineTo(650, 280);
-        ctx.stroke();
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '12px JetBrains Mono';
-        ctx.fillText('МАГИСТРАЛЬНЫЙ ТРУБОПРОВОД ВЫСОКОГО ДАВЛЕНИЯ', 200, 265);
+        t2_regions.forEach(r => {
+          if (Math.hypot(vx - r.vx, vy - r.vy) < 45) {
+            if (r.risk === t2_layer) {
+              r.resolved = true;
+              const fb = document.getElementById('feedback');
+              fb.className = 'feedback-banner feedback-success';
+              fb.style.display = 'block';
+              fb.innerText = `✓ Данные мониторинга (${t2_layer==='floods'?'Паводки':'Термоточки'}) переданы в ДЧС: ${r.name}`;
+            } else {
+              const fb = document.getElementById('feedback');
+              fb.className = 'feedback-banner feedback-warn';
+              fb.style.display = 'block';
+              fb.innerText = `Внимание: в регионе ${r.name} профильная угроза — ${r.risk==='floods'?'Паводки':'Пожары'}. Смените фильтр!`;
+            }
+          }
+        });
+      } else if (currentTask === 3) {
+        t3_stations.forEach(s => {
+          if (Math.hypot(vx - s.vx, vy - s.vy) < 30) {
+            s.connected = true;
+          }
+        });
+        if (t3_stations.every(s => s.connected)) {
+          t3_calibrated = true;
+          const fb = document.getElementById('feedback');
+          fb.className = 'feedback-banner feedback-success';
+          fb.style.display = 'block';
+          fb.innerText = '✓ Дифференциальная сеть активна! Точность координат скорректирована до 0.85м (< 1м).';
+        }
+        switchTask(3);
+      }
+      render();
+    });
 
-        // Буфер
-        if (t2_bufferRadius > 0) {
-          const bH = t2_bufferRadius === 250 ? 40 : 80;
-          ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = 1.5;
-          ctx.setLineDash([6, 4]);
-          ctx.fillRect(120, 280 - bH, 530, bH * 2);
-          ctx.strokeRect(120, 280 - bH, 530, bH * 2);
-          ctx.setLineDash([]);
-          ctx.fillStyle = '#fca5a5';
-          ctx.fillText(`БУФЕРНАЯ ЗОНА ОГРАНИЧЕНИЯ: ${t2_bufferRadius} МЕТРОВ`, 140, 280 - bH - 6);
+    function render() {
+      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
+
+      if (currentTask === 1) {
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath(); ctx.moveTo(340, 30); ctx.lineTo(520, 470); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#38bdf8'; ctx.font = '11px JetBrains Mono';
+        ctx.fillText('СЕВЕР: п-ов Таймыр', 300, 25);
+        ctx.fillText('ЮГ: Север Индии', 530, 475);
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+        ctx.strokeStyle = '#2c384d'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.ellipse(450, 240, 200, 100, 0.05, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#64748b'; ctx.fillText('ТЕРРИТОРИЯ РЕСПУБЛИКИ КАЗАХСТАН', 340, 255);
+
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath(); ctx.arc(t1_targetArea.vx, t1_targetArea.vy, 9, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fca5a5'; ctx.font = '12px Inter';
+        ctx.fillText('● ' + t1_targetArea.name, t1_targetArea.vx + 14, t1_targetArea.vy + 4);
+
+        const boxSize = t1_satellite === 'sat1' ? 48 : 100;
+        ctx.strokeStyle = '#00d285'; ctx.lineWidth = 2;
+        ctx.strokeRect(t1_targetArea.vx - boxSize/2, t1_targetArea.vy - boxSize/2, boxSize, boxSize);
+        ctx.fillStyle = 'rgba(0, 210, 133, 0.15)';
+        ctx.fillRect(t1_targetArea.vx - boxSize/2, t1_targetArea.vy - boxSize/2, boxSize, boxSize);
+      } else if (currentTask === 2) {
+        t2_regions.forEach(r => {
+          ctx.fillStyle = r.resolved ? 'rgba(0, 210, 133, 0.25)' : 'rgba(30, 41, 59, 0.7)';
+          ctx.strokeStyle = r.resolved ? '#00d285' : '#334155'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.ellipse(r.vx, r.vy, 48, 32, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+          ctx.fillStyle = '#f8fafc'; ctx.font = '11px Inter';
+          ctx.fillText(r.name, r.vx - 42, r.vy - 6);
+
+          ctx.fillStyle = r.risk === 'floods' ? '#38bdf8' : '#f97316';
+          ctx.font = '10px JetBrains Mono';
+          ctx.fillText(r.risk === 'floods' ? '~ Паводок' : '▲ Термоточка', r.vx - 35, r.vy + 12);
+        });
+      } else if (currentTask === 3) {
+        if (t3_stations.filter(s=>s.connected).length >= 2) {
+          ctx.strokeStyle = 'rgba(0, 210, 133, 0.6)'; ctx.lineWidth = 2;
+          ctx.beginPath();
+          let started = false;
+          t3_stations.forEach(s => {
+            if (s.connected) {
+              if (!started) { ctx.moveTo(s.vx, s.vy); started = true; }
+              else ctx.lineTo(s.vx, s.vy);
+            }
+          });
+          if (t3_stations.every(s=>s.connected)) {
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(0, 210, 133, 0.1)'; ctx.fill();
+          }
+          ctx.stroke();
         }
 
-        // Объекты
-        t2_violators.forEach(v => {
-          const inBuf = t2_bufferRadius === 500 && Math.abs(v.y - 280) <= 80;
-          ctx.fillStyle = inBuf ? '#ef4444' : '#00d285';
-          ctx.fillRect(v.x - 8, v.y - 8, 16, 16);
-          ctx.fillStyle = '#fff';
-          ctx.fillText(v.name + (inBuf ? ' [НАРУШЕНИЕ]' : ''), v.x + 12, v.y + 4);
+        t3_stations.forEach(s => {
+          ctx.fillStyle = s.connected ? '#00d285' : '#64748b';
+          ctx.beginPath(); ctx.arc(s.vx, s.vy, 11, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#fff'; ctx.font = '11px JetBrains Mono';
+          ctx.fillText(s.name + (s.connected?' [ON]':' [ТАП]'), s.vx + 16, s.vy + 4);
         });
 
-      } else if (currentTask === 3) {
-        // Полигон леса
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(220, 140);
-        ctx.lineTo(440, 120);
-        ctx.lineTo(520, 260);
-        ctx.lineTo(340, 320);
-        ctx.lineTo(200, 240);
-        ctx.closePath();
-        ctx.fill(); ctx.stroke();
-
-        ctx.fillStyle = '#a7f3d0';
-        ctx.fillText('Полигон лесного фонда №7', 280, 220);
-
-        if (t3_polyCalculated) {
-          ctx.fillStyle = '#00d285';
-          ctx.font = '12px JetBrains Mono';
-          ctx.fillText('S = 142.8 га | P = 4.92 км', 280, 240);
-        }
-
-        if (t3_contoursVisible) {
-          ctx.strokeStyle = '#38bdf8';
-          ctx.lineWidth = 1.5;
-          for (let i = 0; i < 4; i++) {
-            ctx.beginPath();
-            ctx.ellipse(350, 210, 180 - i*30, 120 - i*20, 0.1, 0, Math.PI*2);
-            ctx.stroke();
-          }
-          ctx.fillStyle = '#7dd3fc';
-          ctx.fillText('Изолинии рельефа с шагом 5.0м', 380, 95);
-        }
+        ctx.fillStyle = t3_calibrated ? '#38bdf8' : '#f59e0b';
+        ctx.beginPath(); ctx.arc(410, 260, 8, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#e2e8f0'; ctx.font = '12px Inter';
+        ctx.fillText(`Полевой объект: ${t3_calibrated?'Точность 0.85м ✓':'Точность GPS 12.4м'}`, 330, 290);
       }
     }
 

@@ -2,62 +2,44 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>§ 5—6. Цифровая модель карты</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090b0e;
-      --panel: #11141a;
-      --panel-2: #181d26;
-      --hairline: #222938;
-      --hairline-focus: #3b4761;
-      --ink: #edf2f7;
-      --ink-muted: #8a96a8;
-      --accent: #00d285;
-      --accent-soft: rgba(0, 210, 133, 0.15);
-      --cyan: #38bdf8;
-      --font-ui: 'Inter', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --bg: #090b0e; --panel: #11141a; --panel-2: #181d26;
+      --hairline: #222938; --hairline-focus: #3b4761;
+      --ink: #edf2f7; --ink-muted: #8a96a8;
+      --accent: #00d285; --accent-soft: rgba(0, 210, 133, 0.15);
+      --cyan: #38bdf8; --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
-    .nav { height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; }
-    .nav-left { display: flex; align-items: center; gap: 1rem; }
-    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono); display: flex; align-items: center; gap: 6px; }
-    .back-btn:hover { color: var(--accent); }
-    .nav-title { font-size: 0.9rem; font-weight: 600; border-left: 1px solid var(--hairline); padding-left: 1rem; }
-    
-    .tabs { display: flex; gap: 4px; }
-    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; transition: all 120ms; }
-    .tab-btn:hover { color: var(--ink); background: var(--panel-2); }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    .nav { min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; gap: 0.5rem; }
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--panel-2); }
+    .nav-title { font-size: 0.85rem; font-weight: 600; }
+    .tabs { display: flex; gap: 4px; overflow-x: auto; width: 100%; padding-bottom: 2px; }
+    @media(min-width: 768px) { .tabs { width: auto; } }
+    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; white-space: nowrap; min-height: 40px; }
     .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
-    
-    .workspace { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
-    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; overflow-y: auto; }
-    .viewport { position: relative; background: #06080a; display: flex; flex-direction: column; }
-    
-    .step-badge { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; }
-    .task-title { font-size: 1.15rem; font-weight: 600; line-height: 1.3; }
-    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.5; }
-    
-    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-    .tool-label { font-size: 0.75rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
-    
-    .btn { background: var(--panel-2); border: 1px solid var(--hairline-focus); color: var(--ink); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; }
-    .btn:hover { border-color: var(--accent); color: var(--accent); }
-    .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
-    
-    .map-canvas-wrap { flex: 1; position: relative; overflow: hidden; cursor: crosshair; }
+    .workspace { flex: 1; display: grid; grid-template-columns: 1fr; }
+    @media(min-width: 860px) { .workspace { grid-template-columns: 320px 1fr; height: calc(100vh - 52px); overflow: hidden; } }
+    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+    .viewport { position: relative; background: #06080a; display: flex; flex-direction: column; min-height: 380px; }
+    .step-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); text-transform: uppercase; }
+    .task-title { font-size: 1.1rem; font-weight: 600; }
+    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.45; }
+    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .tool-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
+    .btn { background: var(--panel-2); border: 1px solid var(--hairline-focus); color: var(--ink); padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+    .btn:active, .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
+    .map-canvas-wrap { flex: 1; position: relative; width: 100%; min-height: 340px; touch-action: none; cursor: crosshair; }
     canvas { width: 100%; height: 100%; display: block; }
-    
-    .telemetry-bar { height: 36px; background: var(--panel); border-top: 1px solid var(--hairline); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted); }
-    .coords-readout { color: var(--cyan); }
-    
-    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; display: none; line-height: 1.4; }
+    .telemetry-bar { background: var(--panel); border-top: 1px solid var(--hairline); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.8rem; display: none; line-height: 1.4; }
     .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
     .feedback-info { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--cyan); color: #7dd3fc; }
   </style>
@@ -65,13 +47,13 @@
 <body>
   <header class="nav">
     <div class="nav-left">
-      <a href="index.html" class="back-btn">← ПОРТАЛ</a>
+      <a href="index.html" class="back-btn">← МЕНЮ</a>
       <div class="nav-title">§ 5—6. Цифровая модель карты</div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTask(1)">ЗАДАНИЕ 1: РАСТР / ВЕКТОР</button>
-      <button class="tab-btn" onclick="switchTask(2)">ЗАДАНИЕ 2: СЛОИ И СВЯЗИ</button>
-      <button class="tab-btn" onclick="switchTask(3)">ЗАДАНИЕ 3: КАРТЫ РЕЛЬЕФА</button>
+      <button class="tab-btn active" onclick="switchTask(1)">1. РАСТР / ВЕКТОР</button>
+      <button class="tab-btn" onclick="switchTask(2)">2. СЛОИ И ТОПОЛОГИЯ</button>
+      <button class="tab-btn" onclick="switchTask(3)">3. КАРТЫ РЕЛЬЕФА</button>
     </div>
   </header>
 
@@ -79,12 +61,8 @@
     <aside class="sidebar">
       <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
       <h2 class="task-title" id="task-title">Растр против вектора</h2>
-      <p class="task-desc" id="task-desc">На растровой матрице при увеличении детали пикселизуются. Переключите слой на «Векторный режим», приблизьте секретный реперный геодезический пункт, определите его точные координаты X, Y и установите фиксирующий маркер.</p>
-
-      <div class="tool-box" id="task-controls">
-        <!-- Вставляется скриптом под каждое задание -->
-      </div>
-
+      <p class="task-desc" id="task-desc">При сильном зуме растр пикселизуется. Переключите режим на «Векторный», выберите зум 2x или 4x и коснитесь центра геодезического репера.</p>
+      <div class="tool-box" id="task-controls"></div>
       <div id="feedback" class="feedback-banner"></div>
     </aside>
 
@@ -94,51 +72,71 @@
       </div>
       <div class="telemetry-bar">
         <div>МАСШТАБ: <span id="scale-readout">1:25000</span> | РЕЖИМ: <span id="mode-readout">РАСТР</span></div>
-        <div class="coords-readout">X: <span id="cur-x">0.00</span> | Y: <span id="cur-y">0.00</span> | СТАТУС: OGC GML 3.2.1</div>
+        <div>КООРД: <span id="cur-coords" style="color:var(--cyan)">X: 400.0, Y: 250.0</span> | OGC GML</div>
       </div>
     </main>
   </div>
 
   <script>
+    const V_WIDTH = 800, V_HEIGHT = 500;
     let currentTask = 1;
     const canvas = document.getElementById('gis-canvas');
     const ctx = canvas.getContext('2d');
-    let width, height;
+    let scale = 1, offsetX = 0, offsetY = 0;
 
-    // Состояние задания 1
-    let t1_mode = 'raster'; // 'raster' | 'vector'
-    let t1_zoom = 1; // 1 to 4
-    let t1_target = { x: 420, y: 280, found: false };
+    // Task 1 State
+    let t1_mode = 'raster';
+    let t1_zoom = 1;
+    let t1_found = false;
 
-    // Состояние задания 2
+    // Task 2 State
     let t2_filter = 'all';
     let t2_selectedObj = null;
     let t2_pipeConnected = false;
     let t2_objects = [
-      { id: 1, type: 'metric', name: 'Высотная отметка 418.2м', x: 220, y: 150, radius: 12, checked: false },
-      { id: 2, type: 'semantic', name: 'Лесной массив (Берёза, 85%)', x: 500, y: 180, radius: 45, checked: false },
-      { id: 3, type: 'structural', name: 'Артезианская скважина №4', x: 280, y: 360, radius: 16 },
-      { id: 4, type: 'structural', name: 'Водонапорный резервуар', x: 480, y: 360, radius: 18 }
+      { id: 1, type: 'metric', name: 'Высотная отметка 418.2м', vx: 220, vy: 160, r: 24, checked: false },
+      { id: 2, type: 'semantic', name: 'Лесной массив (Береза 85%)', vx: 580, vy: 170, r: 50, checked: false },
+      { id: 3, type: 'structural', name: 'Скважина №4', vx: 280, vy: 360, r: 26 },
+      { id: 4, type: 'structural', name: 'Водонапорный резервуар', vx: 520, vy: 360, r: 28 }
     ];
 
-    // Состояние задания 3
-    let t3_mapType = 'standard'; // 'postennaya', 'continuous', 'structural'
+    // Task 3 State
+    let t3_mapType = 'postennaya';
     let t3_points = [
-      { x: 180, y: 140, h: 320, val: 'Плотность: Высокая' },
-      { x: 300, y: 200, h: 340, val: 'Категория А' },
-      { x: 450, y: 160, h: 320, val: 'Плотность: Средняя' },
-      { x: 240, y: 320, h: 380, val: 'Категория B' },
-      { x: 400, y: 300, h: 380, val: 'Плотность: Высокая' },
-      { x: 540, y: 280, h: 340, val: 'Категория А' }
+      { vx: 180, vy: 140, h: 320, val: 'Плотность: Выс.' },
+      { vx: 320, vy: 200, h: 340, val: 'Категория А' },
+      { vx: 520, vy: 150, h: 320, val: 'Плотность: Сред.' },
+      { vx: 240, vy: 340, h: 380, val: 'Категория B' },
+      { vx: 440, vy: 310, h: 380, val: 'Плотность: Выс.' },
+      { vx: 620, vy: 300, h: 340, val: 'Категория А' }
     ];
 
     function resize() {
       const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = width = rect.width;
-      canvas.height = height = rect.height;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      const scaleX = rect.width / V_WIDTH;
+      const scaleY = rect.height / V_HEIGHT;
+      scale = Math.min(scaleX, scaleY);
+      offsetX = (rect.width - V_WIDTH * scale) / 2;
+      offsetY = (rect.height - V_HEIGHT * scale) / 2;
+      
+      ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr);
       render();
     }
     window.addEventListener('resize', resize);
+
+    function toVirtual(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const screenX = clientX - rect.left;
+      const screenY = clientY - rect.top;
+      return {
+        vx: (screenX - offsetX) / scale,
+        vy: (screenY - offsetY) / scale
+      };
+    }
 
     function switchTask(taskId) {
       currentTask = taskId;
@@ -153,15 +151,15 @@
       if (taskId === 1) {
         badge.innerText = 'ЭТАП 1 ИЗ 3';
         title.innerText = 'Растр против вектора';
-        desc.innerText = 'На растровой матрице при 4x увеличении реперный знак размывается. Переключитесь в Векторный режим для сохранения математической точности и кликните точно по центру знака (X: 420, Y: 280).';
+        desc.innerText = 'На растровой матрице при 4x увеличении знак пикселизуется. Переключитесь на Векторный режим и коснитесь центра геодезического репера (X: 400, Y: 250).';
         controls.innerHTML = `
           <div class="tool-label">Режим отображения</div>
-          <div style="display:flex; gap:8px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
             <button class="btn ${t1_mode==='raster'?'active':''}" onclick="setT1Mode('raster')">Растровый</button>
             <button class="btn ${t1_mode==='vector'?'active':''}" onclick="setT1Mode('vector')">Векторный</button>
           </div>
-          <div class="tool-label" style="margin-top:8px;">Масштабирование матрицы</div>
-          <div style="display:flex; gap:8px;">
+          <div class="tool-label" style="margin-top:6px;">Масштаб</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
             <button class="btn ${t1_zoom===1?'active':''}" onclick="setT1Zoom(1)">1x</button>
             <button class="btn ${t1_zoom===2?'active':''}" onclick="setT1Zoom(2)">2x</button>
             <button class="btn ${t1_zoom===4?'active':''}" onclick="setT1Zoom(4)">4x Zoom</button>
@@ -170,7 +168,7 @@
       } else if (taskId === 2) {
         badge.innerText = 'ЭТАП 2 ИЗ 3';
         title.innerText = 'Информационные слои и топология';
-        desc.innerText = 'Активируйте смысловую и размерную информацию. Для завершения структурного слоя протяните векторную связь водопровода между Скважиной и Резервуаром (кликните сначала на скважину, затем на резервуар).';
+        desc.innerText = 'Изучите слои карты. Для построения структурного слоя коснитесь сначала Скважины, затем Резервуара, чтобы связать их вектором водопровода.';
         controls.innerHTML = `
           <div class="tool-label">Фильтр слоя карты</div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
@@ -182,8 +180,8 @@
         `;
       } else if (taskId === 3) {
         badge.innerText = 'ЭТАП 3 ИЗ 3';
-        title.innerText = 'Классификация цифровых карт рельефа';
-        desc.innerText = 'Исследуйте три способа отображения: 1. Постенная карта (показатели точек); 2. Непрерывная карта (плотность точек); 3. Структурная карта (изолинии равных уровней).';
+        title.innerText = 'Карты рельефа';
+        desc.innerText = 'Переключайте режимы отображения рельефа холмистой местности: постенная карта (показатели), непрерывная (плотность) и структурная (изолинии).';
         controls.innerHTML = `
           <div class="tool-label">Тип цифровой карты</div>
           <div style="display:flex; flex-direction:column; gap:6px;">
@@ -205,249 +203,181 @@
       const fb = document.getElementById('feedback');
       fb.className = 'feedback-banner feedback-success';
       fb.style.display = 'block';
-      fb.innerText = t === 'postennaya' ? 'Постенная карта: отображены качественные и количественные маркеры объектов.' :
-                     t === 'continuous' ? 'Непрерывная карта: точки сгруппированы по плотности и частоте распределения.' :
-                     'Структурная карта: построены структурные сечения и изолинии среднего уровня рельефа.';
+      fb.innerText = t === 'postennaya' ? '✓ Постенная карта: визуализированы качественные и количественные маркеры.' :
+                     t === 'continuous' ? '✓ Непрерывная карта: точки объединены в градиентное поле плотности.' :
+                     '✓ Структурная карта: построены сечения и изолинии среднего уровня рельефа.';
     }
 
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = (e.clientX - rect.left).toFixed(1);
-      const y = (e.clientY - rect.top).toFixed(1);
-      document.getElementById('cur-x').innerText = x;
-      document.getElementById('cur-y').innerText = y;
-    });
-
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const cx = e.clientX - rect.left;
-      const cy = e.clientY - rect.top;
+    canvas.addEventListener('pointerdown', (e) => {
+      const { vx, vy } = toVirtual(e.clientX, e.clientY);
+      document.getElementById('cur-coords').innerText = `X: ${Math.max(0, vx).toFixed(1)}, Y: ${Math.max(0, vy).toFixed(1)}`;
 
       if (currentTask === 1) {
-        const dx = cx - t1_target.x * (t1_zoom > 1 ? 1 : 1);
-        const dy = cy - t1_target.y * (t1_zoom > 1 ? 1 : 1);
-        if (Math.hypot(cx - 420, cy - 280) < 30) {
+        if (Math.hypot(vx - 400, vy - 250) < 45) {
           if (t1_mode === 'vector' && t1_zoom >= 2) {
-            t1_target.found = true;
+            t1_found = true;
             const fb = document.getElementById('feedback');
             fb.className = 'feedback-banner feedback-success';
             fb.style.display = 'block';
-            fb.innerText = '✓ Реперный знак зафиксирован! Точные координаты: 420.00 E, 280.00 N в системе OGC GML.';
-            render();
+            fb.innerText = '✓ Репер зафиксирован! Метрические координаты: 400.00 E, 250.00 N (OGC GML).';
           } else {
             const fb = document.getElementById('feedback');
             fb.className = 'feedback-banner feedback-info';
             fb.style.display = 'block';
-            fb.innerText = 'Разрешение растра недостаточно. Переключитесь на Векторный режим и зум 2x/4x для точной фиксации.';
+            fb.innerText = 'Разрешение растра недостаточно. Включите «Векторный» режим и 2x/4x Zoom.';
           }
         }
       } else if (currentTask === 2) {
         t2_objects.forEach(obj => {
-          if (Math.hypot(cx - obj.x, cy - obj.y) < obj.radius + 10) {
+          if (Math.hypot(vx - obj.vx, vy - obj.vy) < obj.r + 15) {
             if (obj.type === 'metric') {
               obj.checked = true;
-              showMsg('Размерные данные: рельеф H=418.2м, координаты WGS84 занесены в формуляр.');
+              showMsg('✓ Размерные данные: Рельеф H=418.2м занесен в формуляр.');
             } else if (obj.type === 'semantic') {
               obj.checked = true;
-              showMsg('Смысловые данные: к лесному контуру прикреплена таксационная характеристика древостоя.');
+              showMsg('✓ Смысловые данные: Прикреплены характеристики древостоя (Береза 85%).');
             } else if (obj.type === 'structural') {
               if (!t2_selectedObj) {
                 t2_selectedObj = obj;
-                showMsg('Выбрана начальная точка водопровода: ' + obj.name + '. Теперь выберите резервуар.');
+                showMsg('Начальная точка: ' + obj.name + '. Теперь коснитесь Резервуара.');
               } else if (t2_selectedObj.id !== obj.id) {
                 t2_pipeConnected = true;
                 t2_selectedObj = null;
-                showMsg('✓ Топологическая связь построена: Векторный водопровод соединил скважину и башню!');
+                showMsg('✓ Топологическая связь замкнута: Вектор водопровода активен!');
               }
             }
           }
         });
-        render();
       }
+      render();
     });
 
-    function showMsg(text) {
+    function showMsg(txt) {
       const fb = document.getElementById('feedback');
       fb.className = 'feedback-banner feedback-success';
       fb.style.display = 'block';
-      fb.innerText = text;
+      fb.innerText = txt;
     }
 
     function render() {
-      ctx.clearRect(0, 0, width, height);
+      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
 
-      // Фоновая сетка
-      ctx.strokeStyle = '#161c26';
+      // Coordinate Grid
+      ctx.strokeStyle = '#151b26';
       ctx.lineWidth = 1;
-      const gridSize = 40;
-      for (let x = 0; x < width; x += gridSize) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+      for (let x = 0; x <= V_WIDTH; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, V_HEIGHT); ctx.stroke();
       }
-      for (let y = 0; y < height; y += gridSize) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+      for (let y = 0; y <= V_HEIGHT; y += 50) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(V_WIDTH, y); ctx.stroke();
       }
 
       if (currentTask === 1) {
-        renderTask1();
-      } else if (currentTask === 2) {
-        renderTask2();
-      } else if (currentTask === 3) {
-        renderTask3();
-      }
-    }
+        if (t1_mode === 'raster') {
+          const pSize = t1_zoom === 1 ? 8 : t1_zoom === 2 ? 22 : 44;
+          for (let x = 120; x < 680; x += pSize) {
+            for (let y = 80; y < 420; y += pSize) {
+              const dist = Math.hypot(x - 400, y - 250);
+              const val = Math.sin(x * 0.02) * Math.cos(y * 0.02) + (dist < 90 ? 0.6 : 0.2);
+              const c = Math.floor(25 + val * 45);
+              ctx.fillStyle = `rgb(${c}, ${c+15}, ${c+10})`;
+              ctx.fillRect(x, y, pSize - 1, pSize - 1);
+            }
+          }
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(400 - pSize, 250 - pSize, pSize * 2, pSize * 2);
+        } else {
+          ctx.strokeStyle = '#2dd4bf';
+          ctx.lineWidth = 2;
+          for (let r = 40; r <= 160; r += 40) {
+            ctx.beginPath();
+            ctx.ellipse(400, 250, r * 1.3, r, 0.2, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.fillStyle = '#00d285';
+          ctx.beginPath(); ctx.arc(400, 250, 9, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
 
-    function renderTask1() {
-      // Изображение холмистого рельефа
-      if (t1_mode === 'raster') {
-        // Симуляция пиксельной матрицы
-        const pSize = t1_zoom === 1 ? 4 : t1_zoom === 2 ? 14 : 32;
-        for (let x = 100; x < 650; x += pSize) {
-          for (let y = 80; y < 450; y += pSize) {
-            const dist = Math.hypot(x - 420, y - 280);
-            const val = Math.sin(x * 0.02) * Math.cos(y * 0.02) + (dist < 80 ? 0.6 : 0.2);
-            const c = Math.floor(25 + val * 40);
-            ctx.fillStyle = `rgb(${c}, ${c+15}, ${c+10})`;
-            ctx.fillRect(x, y, pSize - 1, pSize - 1);
+          ctx.font = '13px JetBrains Mono';
+          ctx.fillStyle = '#fff';
+          ctx.fillText('ГЕО-РЕПЕР №104 (400.0, 250.0)', 418, 245);
+        }
+
+        if (t1_found) {
+          ctx.strokeStyle = '#00d285';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(350, 200, 100, 100);
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#00d285';
+          ctx.font = '12px JetBrains Mono';
+          ctx.fillText('ФИКСИРОВАНО ✓', 355, 190);
+        }
+      } else if (currentTask === 2) {
+        if (t2_filter === 'all' || t2_filter === 'semantic') {
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+          ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.ellipse(580, 170, 90, 60, 0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#a7f3d0'; ctx.font = '13px Inter';
+          ctx.fillText('Лесной массив кв. 14', 510, 175);
+        }
+        if (t2_filter === 'all' || t2_filter === 'metric') {
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath(); ctx.arc(220, 160, 8, 0, Math.PI*2); ctx.fill();
+          ctx.font = '12px JetBrains Mono'; ctx.fillStyle = '#7dd3fc';
+          ctx.fillText('▲ 418.2м [X:220, Y:160]', 235, 165);
+        }
+        if (t2_filter === 'all' || t2_filter === 'structural') {
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath(); ctx.arc(280, 360, 10, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#fde68a'; ctx.font = '12px Inter';
+          ctx.fillText('Скважина №4', 235, 395);
+
+          ctx.fillStyle = '#6366f1';
+          ctx.fillRect(505, 345, 30, 30);
+          ctx.fillStyle = '#c7d2fe';
+          ctx.fillText('Резервуар', 490, 395);
+
+          if (t2_pipeConnected) {
+            ctx.strokeStyle = '#00d285'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(280, 360); ctx.lineTo(520, 360); ctx.stroke();
+            ctx.fillStyle = '#00d285'; ctx.font = '11px JetBrains Mono';
+            ctx.fillText('ТОПОЛОГИЧЕСКИЙ ВЕКТОР ВОДОПРОВОДА [АКТИВЕН]', 250, 345);
+          } else if (t2_selectedObj) {
+            ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.setLineDash([6, 6]);
+            ctx.beginPath(); ctx.moveTo(280, 360); ctx.lineTo(520, 360); ctx.stroke();
+            ctx.setLineDash([]);
           }
         }
-        // Размытый пиксельный гео-знак
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(420 - pSize, 280 - pSize, pSize * 2, pSize * 2);
-      } else {
-        // Векторные четкие изолинии
-        ctx.strokeStyle = '#2dd4bf';
-        ctx.lineWidth = 2;
-        for (let r = 30; r <= 150; r += 30) {
-          ctx.beginPath();
-          ctx.ellipse(420, 280, r * 1.3, r, 0.2, 0, Math.PI * 2);
-          ctx.stroke();
+      } else if (currentTask === 3) {
+        if (t3_mapType === 'postennaya') {
+          t3_points.forEach(p => {
+            ctx.fillStyle = '#f43f5e';
+            ctx.beginPath(); ctx.arc(p.vx, p.vy, 8, 0, Math.PI*2); ctx.fill();
+            ctx.font = '11px JetBrains Mono'; ctx.fillStyle = '#fda4af';
+            ctx.fillText(`${p.val} (H=${p.h}м)`, p.vx + 12, p.vy + 4);
+          });
+        } else if (t3_mapType === 'continuous') {
+          t3_points.forEach(p => {
+            const grad = ctx.createRadialGradient(p.vx, p.vy, 10, p.vx, p.vy, 90);
+            grad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(p.vx, p.vy, 90, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath(); ctx.arc(p.vx, p.vy, 4, 0, Math.PI*2); ctx.fill();
+          });
+        } else if (t3_mapType === 'structural') {
+          ctx.strokeStyle = '#eab308'; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(140, 130); ctx.quadraticCurveTo(320, 100, 560, 150); ctx.stroke();
+          ctx.fillStyle = '#fef08a'; ctx.font = '12px JetBrains Mono';
+          ctx.fillText('Изолиния 320м (Средний уровень)', 280, 115);
+
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(180, 350); ctx.quadraticCurveTo(360, 310, 520, 320); ctx.stroke();
+          ctx.fillStyle = '#fca5a5';
+          ctx.fillText('Изолиния 380м (Водораздел)', 280, 305);
         }
-        // Четкий геодезический пункт
-        ctx.fillStyle = '#00d285';
-        ctx.beginPath();
-        ctx.arc(420, 280, 7, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.font = '12px JetBrains Mono';
-        ctx.fillStyle = '#fff';
-        ctx.fillText('ГЕО-РЕПЕР №104 (420.0, 280.0)', 435, 275);
-      }
-
-      if (t1_target.found) {
-        ctx.strokeStyle = '#00d285';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([4, 4]);
-        ctx.strokeRect(380, 240, 80, 80);
-        ctx.setLineDash([]);
-        ctx.fillStyle = '#00d285';
-        ctx.fillText('ФИКСИРОВАНО', 385, 235);
-      }
-    }
-
-    function renderTask2() {
-      // Лес
-      if (t2_filter === 'all' || t2_filter === 'semantic') {
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.ellipse(500, 180, 70, 50, 0.4, 0, Math.PI*2);
-        ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#a7f3d0';
-        ctx.font = '12px Inter';
-        ctx.fillText('Лесной массив кв. 14', 450, 180);
-      }
-
-      // Высотная отметка
-      if (t2_filter === 'all' || t2_filter === 'metric') {
-        ctx.fillStyle = '#38bdf8';
-        ctx.beginPath(); ctx.arc(220, 150, 6, 0, Math.PI*2); ctx.fill();
-        ctx.font = '11px JetBrains Mono';
-        ctx.fillStyle = '#7dd3fc';
-        ctx.fillText('▲ 418.2м [X:220, Y:150]', 232, 154);
-      }
-
-      // Объекты водопровода
-      if (t2_filter === 'all' || t2_filter === 'structural') {
-        // Скважина
-        ctx.fillStyle = '#f59e0b';
-        ctx.beginPath(); ctx.arc(280, 360, 8, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#fde68a';
-        ctx.fillText('Скважина №4', 240, 390);
-
-        // Резервуар
-        ctx.fillStyle = '#6366f1';
-        ctx.fillRect(465, 345, 30, 30);
-        ctx.fillStyle = '#c7d2fe';
-        ctx.fillText('Резервуар', 455, 390);
-
-        // Трубопровод
-        if (t2_pipeConnected) {
-          ctx.strokeStyle = '#00d285';
-          ctx.lineWidth = 4;
-          ctx.beginPath();
-          ctx.moveTo(280, 360);
-          ctx.lineTo(480, 360);
-          ctx.stroke();
-          ctx.fillStyle = '#00d285';
-          ctx.fillText('ТОПОЛОГИЧЕСКИЙ ВЕКТОР ВОДОПРОВОДА (АКТИВЕН)', 270, 345);
-        } else if (t2_selectedObj) {
-          ctx.strokeStyle = '#f59e0b';
-          ctx.setLineDash([6, 6]);
-          ctx.beginPath();
-          ctx.moveTo(280, 360);
-          ctx.lineTo(480, 360);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
-      }
-    }
-
-    function renderTask3() {
-      if (t3_mapType === 'postennaya') {
-        t3_points.forEach(p => {
-          ctx.fillStyle = '#f43f5e';
-          ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill();
-          ctx.font = '11px JetBrains Mono';
-          ctx.fillStyle = '#fda4af';
-          ctx.fillText(`${p.val} (H=${p.h}м)`, p.x + 10, p.y + 4);
-        });
-      } else if (t3_mapType === 'continuous') {
-        // Тепловая плотность
-        t3_points.forEach(p => {
-          const grad = ctx.createRadialGradient(p.x, p.y, 10, p.x, p.y, 80);
-          grad.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
-          grad.addColorStop(1, 'transparent');
-          ctx.fillStyle = grad;
-          ctx.beginPath(); ctx.arc(p.x, p.y, 80, 0, Math.PI*2); ctx.fill();
-
-          ctx.fillStyle = '#38bdf8';
-          ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
-        });
-        ctx.fillStyle = '#bae6fd';
-        ctx.font = '12px Inter';
-        ctx.fillText('Поле непрерывной плотности распределения высотных отметок', 180, 80);
-      } else if (t3_mapType === 'structural') {
-        ctx.strokeStyle = '#eab308';
-        ctx.lineWidth = 2;
-        // Линия 320м
-        ctx.beginPath();
-        ctx.moveTo(150, 130); ctx.quadraticCurveTo(300, 110, 480, 150);
-        ctx.stroke();
-        ctx.fillStyle = '#fef08a';
-        ctx.font = '11px JetBrains Mono';
-        ctx.fillText('Изолиния 320м (Средний уровень)', 310, 120);
-
-        // Линия 380м
-        ctx.strokeStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.moveTo(200, 340); ctx.quadraticCurveTo(320, 310, 440, 320);
-        ctx.stroke();
-        ctx.fillStyle = '#fca5a5';
-        ctx.fillText('Изолиния 380м (Водораздел)', 270, 305);
       }
     }
 

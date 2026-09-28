@@ -1,130 +1,273 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>§ 12. Географическая БД — GeoSpatial Core</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>§ 12. Географическая база данных</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090d; --panel: #0f131a; --panel-2: #161c28;
+      --hairline: #1f283a; --ink: #f0f4f8; --ink-muted: #8393a7;
+      --accent: #00d285; --accent-soft: rgba(0, 210, 133, 0.15);
+      --cyan: #38bdf8; --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    .nav { min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; gap: 0.5rem; }
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--panel-2); }
+    .nav-title { font-size: 0.85rem; font-weight: 600; }
+    .tabs { display: flex; gap: 4px; overflow-x: auto; width: 100%; padding-bottom: 2px; }
+    @media(min-width: 768px) { .tabs { width: auto; } }
+    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; white-space: nowrap; min-height: 40px; }
+    .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
+    .workspace { flex: 1; display: grid; grid-template-columns: 1fr; }
+    @media(min-width: 860px) { .workspace { grid-template-columns: 360px 1fr; height: calc(100vh - 52px); overflow: hidden; } }
+    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+    .viewport { position: relative; background: #05070a; display: flex; flex-direction: column; min-height: 380px; }
+    .step-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); text-transform: uppercase; }
+    .task-title { font-size: 1.1rem; font-weight: 600; }
+    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.45; }
+    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .tool-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
+    .btn { background: var(--panel-2); border: 1px solid var(--hairline); color: var(--ink); padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; }
+    .btn:active, .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
+    .attr-row { display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem; }
+    .attr-row span { color: var(--ink-muted); font-family: var(--font-mono); }
+    .attr-row input { background: var(--bg); border: 1px solid var(--hairline); color: #fff; padding: 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; }
+    .map-canvas-wrap { flex: 1; position: relative; width: 100%; min-height: 340px; touch-action: none; cursor: crosshair; }
+    canvas { width: 100%; height: 100%; display: block; }
+    .telemetry-bar { background: var(--panel); border-top: 1px solid var(--hairline); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.8rem; display: none; }
+    .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
+  </style>
 </head>
 <body>
-  <div class="app-container">
+  <header class="nav">
+    <div class="nav-left">
+      <a href="index.html" class="back-btn">← МЕНЮ</a>
+      <div class="nav-title">§ 12. Географическая база данных</div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTask(1)">1. ОЦИФРОВКА</button>
+      <button class="tab-btn" onclick="switchTask(2)">2. АТРИБУТЫ СУБД</button>
+      <button class="tab-btn" onclick="switchTask(3)">3. ВЫБОР ОСНОВЫ</button>
+    </div>
+  </header>
+
+  <div class="workspace">
     <aside class="sidebar">
-      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
-      <nav class="nav-group">
-        <a href="index.html" class="nav-item">← Дашборд</a>
-        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
-        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
-        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
-        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
-        <a href="p12.html" class="nav-item active">§ 12. Географическая БД</a>
-      </nav>
-      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+      <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
+      <h2 class="task-title" id="task-title">Векторная оцифровка местности</h2>
+      <p class="task-desc" id="task-desc">Оцифруйте объекты карты: Точка (скважина), Линия (дорога), Полигон (озеро).</p>
+      <div class="tool-box" id="task-controls"></div>
+      <div id="feedback" class="feedback-banner"></div>
     </aside>
 
-    <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 12</span> <span>/</span> <strong>3 картографических тренажера</strong></div></header>
-      <main class="content">
-
-        <!-- 1. Точка, Линия, Полигон -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">1. Оцифровка объектов на карте в «Точку, Линию, Полигон»</h2>
-            <span class="badge" data-game-badge="p12_t1">WAIT</span>
-          </div>
-          <p class="card-subtitle">Выберите инструмент и кликайте по объектам: Точка (репер), Линия (трубопровод), Полигон (озеро Зайсан и почвы).</p>
-
-          <div style="display:flex; gap:8px; margin-bottom:10px;">
-            <button class="btn btn-secondary btn-sm btn-tool-dig" onclick="setDigitizeTool('point', this)">[ТОЧКА]</button>
-            <button class="btn btn-secondary btn-sm btn-tool-dig" onclick="setDigitizeTool('line', this)">[ЛИНИЯ]</button>
-            <button class="btn btn-secondary btn-sm btn-tool-dig" onclick="setDigitizeTool('poly', this)">[ПОЛИГОН]</button>
-          </div>
-
-          <div class="map-viewport-frame" style="height:250px;">
-            <svg viewBox="0 0 500 250">
-              <!-- Озеро Зайсан -->
-              <polygon id="feat-zaysan-poly" points="260,30 380,20 420,90 320,100" fill="#e0f2fe" stroke="#0284c7" stroke-width="2" class="map-clickable-feature" onclick="digitizeMapFeature('poly', 'feat-zaysan-poly')"/>
-              <text x="310" y="65" font-size="11" font-weight="700" fill="#0369a1">оз. Зайсан</text>
-
-              <!-- Контур почв -->
-              <polygon id="feat-soils-poly" points="40,130 180,120 170,220 30,210" fill="#fef3c7" stroke="#d97706" stroke-width="2" class="map-clickable-feature" onclick="digitizeMapFeature('poly', 'feat-soils-poly')"/>
-              <text x="60" y="170" font-size="10" fill="#92400e">каштановые почвы</text>
-
-              <!-- Трубопровод -->
-              <path id="feat-pipeline-line" d="M20,60 Q200,120 460,180" fill="none" stroke="#ea580c" stroke-width="4" class="map-clickable-feature" onclick="digitizeMapFeature('line', 'feat-pipeline-line')"/>
-              <text x="180" y="100" font-size="10" fill="#ea580c">трубопровод</text>
-
-              <!-- Репер -->
-              <circle id="feat-repar-point" cx="220" cy="50" r="7" fill="#dc2626" stroke="#0f172a" stroke-width="2" class="map-clickable-feature" onclick="digitizeMapFeature('point', 'feat-repar-point')"/>
-              <text x="235" y="54" font-size="10" fill="#0f172a">репер №12 (Геопункт)</text>
-            </svg>
-          </div>
-          <div id="p12-t1-fb" class="status-callout"></div>
-        </div>
-
-        <!-- 2. Исправление ошибок координат и дат -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">2. Исправление ошибок координат и дат прямо на карте</h2>
-            <span class="badge" data-game-badge="p12_t2">WAIT</span>
-          </div>
-          <p class="card-subtitle">1. Перетащите смещенный мост ровно на русло реки (Точность). 2. Смахните устаревший слой паводка (Своевременность).</p>
-
-          <div class="map-viewport-frame" style="height:240px;" ondragover="allowDrop(event)" ondrop="dropBridgeToRiverAlignment(event)">
-            <!-- Река -->
-            <svg viewBox="0 0 450 240">
-              <path d="M40,20 Q180,120 400,220" fill="none" stroke="#0284c7" stroke-width="16"/>
-              <text x="240" y="170" font-size="11" fill="#0369a1" font-weight="700">р. Есиль</text>
-            </svg>
-
-            <!-- Мост смещенный -->
-            <div id="bridge-feature-item" draggable="true" ondragstart="dragBridgeSymbol(event)" style="position:absolute; top:30px; left:40px; padding:4px 8px; background:#334155; color:#fff; font-size:11px; font-weight:700; border-radius:4px; cursor:grab;">
-              🌉 Мост (Смещен на 500м)
-            </div>
-
-            <!-- Слой паводка -->
-            <div style="position:absolute; bottom:10px; right:10px; font-size:11px; background:#fff; padding:6px 10px; border:1px solid var(--border); border-radius:4px;">
-              <span id="flood-date-badge">⚠️ Паводок: «14 дней назад»</span>
-              <button id="btn-update-flood-date" class="btn btn-secondary btn-sm" style="margin-left:6px;" onclick="applyFreshSatelliteFlood()">[Свежий снимок]</button>
-            </div>
-          </div>
-
-          <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
-            <span id="bridge-coord-status">Мост смещен в 500 метрах от русла реки</span>
-          </div>
-          <div id="p12-t2-fb" class="status-callout"></div>
-        </div>
-
-        <!-- 3. 3D-подъем рельефа -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">3. 3D-подъем рельефа на топографической карте</h2>
-            <span class="badge" data-game-badge="p12_t3">WAIT</span>
-          </div>
-          <p class="card-subtitle">Наклоните плоскость 2D-карты жестом/ползунком: плоские коричневые горизонтали вытянутся вверх в 3D-модель перепадов высот.</p>
-
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-            <span style="font-size:12px; font-weight:600;">Наклон перспективы (2 пальца снизу вверх):</span>
-            <input type="range" id="topo-tilt-slider" min="0" max="100" value="0" style="width:160px;">
-          </div>
-
-          <div class="scene-3d-perspective">
-            <div id="topo-3d-sheet" class="terrain-3d-sheet">
-              <svg viewBox="0 0 360 220">
-                <rect width="360" height="220" fill="#fffdfa" stroke="#64748b" stroke-width="2"/>
-                <!-- 2D -> 3D Горизонтали холма -->
-                <circle cx="180" cy="110" r="80" fill="none" stroke="#9a3412" stroke-width="2" class="topo-extruded-contour"/>
-                <circle cx="180" cy="110" r="55" fill="none" stroke="#9a3412" stroke-width="2" class="topo-extruded-contour"/>
-                <circle cx="180" cy="110" r="30" fill="none" stroke="#9a3412" stroke-width="2.5" class="topo-extruded-contour"/>
-                <text x="165" y="114" font-size="11" font-weight="700" fill="#9a3412">H=240м</text>
-              </svg>
-            </div>
-          </div>
-          <div id="p12-t3-fb" class="status-callout"></div>
-        </div>
-
-      </main>
-    </div>
+    <main class="viewport">
+      <div class="map-canvas-wrap">
+        <canvas id="gis-canvas"></canvas>
+      </div>
+      <div class="telemetry-bar">
+        <div>СТРУКТУРА: Пространственные (2D/3D) + Семантика</div>
+        <div style="color:var(--cyan)">СУБД: РАСПРЕДЕЛЕННАЯ БАЗА</div>
+      </div>
+    </main>
   </div>
-  <script src="app.js"></script>
+
+  <script>
+    const V_WIDTH = 800, V_HEIGHT = 500;
+    let currentTask = 1;
+    const canvas = document.getElementById('gis-canvas');
+    const ctx = canvas.getContext('2d');
+    let scale = 1, offsetX = 0, offsetY = 0;
+
+    let t1_tool = 'point';
+    let t1_done = { point: false, line: false, polygon: false };
+    let t2_saved = false;
+    let t3_selectedBase = null;
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const scaleX = rect.width / V_WIDTH;
+      const scaleY = rect.height / V_HEIGHT;
+      scale = Math.min(scaleX, scaleY);
+      offsetX = (rect.width - V_WIDTH * scale) / 2;
+      offsetY = (rect.height - V_HEIGHT * scale) / 2;
+      ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr);
+      render();
+    }
+    window.addEventListener('resize', resize);
+
+    function toVirtual(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        vx: (clientX - rect.left - offsetX) / scale,
+        vy: (clientY - rect.top - offsetY) / scale
+      };
+    }
+
+    function switchTask(taskId) {
+      currentTask = taskId;
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === taskId - 1));
+      const controls = document.getElementById('task-controls');
+      const badge = document.getElementById('task-badge');
+      const title = document.getElementById('task-title');
+      const desc = document.getElementById('task-desc');
+      const fb = document.getElementById('feedback');
+      fb.style.display = 'none';
+
+      if (taskId === 1) {
+        badge.innerText = 'ЭТАП 1 ИЗ 3';
+        title.innerText = 'Векторная оцифровка местности';
+        desc.innerText = 'Выберите примитив (Точка, Линия, Полигон) и коснитесь соответствующего объекта на карте.';
+        controls.innerHTML = `
+          <div class="tool-label">Геометрический примитив</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+            <button class="btn ${t1_tool==='point'?'active':''}" onclick="setT1Tool('point')">Точка</button>
+            <button class="btn ${t1_tool==='line'?'active':''}" onclick="setT1Tool('line')">Линия</button>
+            <button class="btn ${t1_tool==='polygon'?'active':''}" onclick="setT1Tool('polygon')">Полигон</button>
+          </div>
+        `;
+      } else if (taskId === 2) {
+        badge.innerText = 'ЭТАП 2 ИЗ 3';
+        title.innerText = 'Атрибутивная карточка СУБД';
+        desc.innerText = 'Заполните триаду характеристик объекта: Пространство, Время, Семантика.';
+        controls.innerHTML = `
+          <div class="tool-label">Параметры объекта</div>
+          <div class="attr-row">
+            <span>ПРОСТРАНСТВО (WGS-84):</span>
+            <input type="text" value="51°10' N, 71°26' E (Астана)" readonly>
+          </div>
+          <div class="attr-row">
+            <span>ВРЕМЕННАЯ ОТМЕТКА:</span>
+            <input type="text" id="attr-date" value="2026-09-28 10:00 UTC">
+          </div>
+          <div class="attr-row">
+            <span>СЕМАНТИЧЕСКОЕ ОПИСАНИЕ:</span>
+            <input type="text" id="attr-theme" value="Озеро Тенгиз, минерализация соленая">
+          </div>
+          <button class="btn" style="margin-top:4px;" onclick="saveAttr()">Синхронизировать с БД</button>
+        `;
+      } else if (taskId === 3) {
+        badge.innerText = 'ЭТАП 3 ИЗ 3';
+        title.innerText = 'Выбор базовой карты';
+        desc.innerText = 'Задача: «Учет границ земельных участков и прав собственности». Выберите верную базовую основу.';
+        controls.innerHTML = `
+          <div class="tool-label">Базовая основа</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <button class="btn ${t3_selectedBase==='admin'?'active':''}" onclick="selectBase('admin')">Карта административного деления</button>
+            <button class="btn ${t3_selectedBase==='cadastral'?'active':''}" onclick="selectBase('cadastral')">Кадастровая карта и планы</button>
+            <button class="btn ${t3_selectedBase==='landscape'?'active':''}" onclick="selectBase('landscape')">Ландшафтная карта</button>
+          </div>
+        `;
+      }
+      render();
+    }
+
+    function setT1Tool(t) { t1_tool = t; switchTask(1); }
+    function saveAttr() {
+      t2_saved = true;
+      const fb = document.getElementById('feedback');
+      fb.className = 'feedback-banner feedback-success';
+      fb.style.display = 'block';
+      fb.innerText = '✓ Атрибутивная запись успешно зафиксирована в реляционной базе данных!';
+      render();
+    }
+
+    function selectBase(b) {
+      t3_selectedBase = b;
+      const fb = document.getElementById('feedback');
+      fb.style.display = 'block';
+      if (b === 'cadastral') {
+        fb.className = 'feedback-banner feedback-success';
+        fb.innerText = '✓ Верно! Кадастровая карта содержит юридические границы собственности участков.';
+      } else {
+        fb.className = 'feedback-banner';
+        fb.style.background = 'rgba(245, 158, 11, 0.15)';
+        fb.style.color = '#fbbf24';
+        fb.innerText = 'Выбранная основа не отображает границы участков. Нужна кадастровая основа.';
+      }
+      switchTask(3);
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      const { vx, vy } = toVirtual(e.clientX, e.clientY);
+
+      if (currentTask === 1) {
+        if (t1_tool === 'point' && Math.hypot(vx - 200, vy - 180) < 40) t1_done.point = true;
+        else if (t1_tool === 'line' && Math.hypot(vx - 380, vy - 300) < 50) t1_done.line = true;
+        else if (t1_tool === 'polygon' && Math.hypot(vx - 540, vy - 180) < 60) t1_done.polygon = true;
+
+        if (t1_done.point && t1_done.line && t1_done.polygon) {
+          const fb = document.getElementById('feedback');
+          fb.className = 'feedback-banner feedback-success';
+          fb.style.display = 'block';
+          fb.innerText = '✓ Все три примитива (Point, Line, Polygon) оцифрованы!';
+        }
+        render();
+      }
+    });
+
+    function render() {
+      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
+
+      if (currentTask === 1) {
+        ctx.fillStyle = t1_done.point ? '#00d285' : '#64748b';
+        ctx.beginPath(); ctx.arc(200, 180, 10, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = '12px JetBrains Mono';
+        ctx.fillText('Скважина (Point) ' + (t1_done.point?'[✓]':'[ТАП]'), 130, 215);
+
+        ctx.strokeStyle = t1_done.line ? '#00d285' : '#64748b'; ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.moveTo(280, 340); ctx.lineTo(480, 260); ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.fillText('Дорога (Line) ' + (t1_done.line?'[✓]':'[ТАП]'), 320, 325);
+
+        ctx.fillStyle = t1_done.polygon ? 'rgba(0, 210, 133, 0.3)' : 'rgba(100, 116, 139, 0.2)';
+        ctx.strokeStyle = t1_done.polygon ? '#00d285' : '#64748b'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.ellipse(540, 180, 75, 45, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.fillText('Озеро (Polygon) ' + (t1_done.polygon?'[✓]':'[ТАП]'), 470, 185);
+      } else if (currentTask === 2) {
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(400, 240, 150, 90, 0.1, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#bae6fd'; ctx.font = '13px JetBrains Mono';
+        ctx.fillText('ОБЪЕКТ СУБД: Озеро Тенгиз', 310, 235);
+        ctx.fillText('WGS-84: 51°10\' N, 71°26\' E', 300, 255);
+
+        if (t2_saved) {
+          ctx.fillStyle = '#00d285';
+          ctx.fillText('[АТРИБУТЫ СИНХРОНИЗИРОВАНЫ ✓]', 275, 285);
+        }
+      } else if (currentTask === 3) {
+        if (t3_selectedBase === 'cadastral') {
+          for (let x = 160; x < 640; x += 110) {
+            for (let y = 100; y < 380; y += 85) {
+              ctx.strokeStyle = '#00d285'; ctx.lineWidth = 1.5;
+              ctx.strokeRect(x, y, 100, 75);
+              ctx.fillStyle = '#a7f3d0'; ctx.font = '10px JetBrains Mono';
+              ctx.fillText(`УЧ. 01:${Math.floor(x/10)}:${Math.floor(y/10)}`, x + 8, y + 22);
+            }
+          }
+          ctx.fillStyle = '#fff'; ctx.font = '13px Inter';
+          ctx.fillText('Кадастровая основа: границы согласованы', 250, 65);
+        } else {
+          ctx.fillStyle = '#64748b'; ctx.font = '13px Inter';
+          ctx.fillText('Выберите базовую основу на панели для согласования слоев.', 160, 240);
+        }
+      }
+    }
+
+    resize();
+    switchTask(1);
+  </script>
 </body>
 </html>
