@@ -3,79 +3,316 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GeoSpatial Core LMS — Картография и ГИС</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <title>Геоинформационный образовательный комплекс</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --surface: #0a0c10;
+      --surface-1: #12151c;
+      --surface-2: #1a1f2c;
+      --surface-hover: #22293a;
+      --ink: #f0f3f8;
+      --ink-muted: #8c96a8;
+      --ink-subtle: #566175;
+      --hairline: #202736;
+      --hairline-strong: #2e384d;
+      --accent: #00d285;
+      --accent-soft: rgba(0, 210, 133, 0.12);
+      --accent-cyan: #00b4d8;
+      --font-text: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+    .header {
+      border-bottom: 1px solid var(--hairline);
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface-1);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: #000;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      color: var(--accent);
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+    .hero {
+      margin-bottom: 3rem;
+    }
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+    }
+    .headline {
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    .lead {
+      font-size: 1.125rem;
+      color: var(--ink-muted);
+      max-width: 760px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 180ms ease;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--hairline);
+      transition: background 180ms ease;
+    }
+    .card:hover {
+      background: var(--surface-hover);
+      border-color: var(--hairline-strong);
+      transform: translateY(-2px);
+    }
+    .card:hover::before {
+      background: var(--accent);
+    }
+    .card-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--ink-subtle);
+      margin-bottom: 0.75rem;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+    }
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--ink-muted);
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+    .task-list {
+      list-style: none;
+      border-top: 1px solid var(--hairline);
+      padding-top: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .task-item {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .task-item-bullet {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+    .footer {
+      border-top: 1px solid var(--hairline);
+      padding: 1.5rem 2rem;
+      background: var(--surface-1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--ink-subtle);
+      font-family: var(--font-mono);
+    }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">G</div>
-        <div>
-          <strong style="font-size:14px;">GeoSpatial Core</strong>
-          <div style="font-size:11px; color:var(--text-muted);">SaaS LMS Platform</div>
-        </div>
+  <header class="header">
+    <div class="brand">
+      <div class="brand-logo">G</div>
+      <div>
+        <div class="brand-title">ГИС & Картография</div>
+        <div class="brand-subtitle">Интерактивный тренажерный комплекс</div>
       </div>
-      <nav class="nav-group">
-        <div class="nav-label">Навигация</div>
-        <a href="index.html" class="nav-item active">Дашборд курса</a>
-        <div class="nav-label">Параграфы (15 картографических тренажеров)</div>
-        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
-        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
-        <a href="p9-10.html" class="nav-item">§ 9—10. Особенности ГИС</a>
-        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
-        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
-      </nav>
-      <div class="sidebar-foot">
-        <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600;">
-          <span>Общий прогресс</span>
-          <span id="global-label">0 / 15 (0%)</span>
-        </div>
-        <div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div>
-      </div>
-    </aside>
-
-    <div class="main-wrapper">
-      <header class="header-bar">
-        <div class="crumb"><span>Курс</span> <span>/</span> <strong>Дашборд 15 картографических заданий</strong></div>
-      </header>
-      <main class="content">
-        <div class="card">
-          <h1 class="card-title">Практикум: 15 интерактивных заданий на картографической основе</h1>
-          <p class="card-subtitle">Все задачи выполняются на реалистичных топографических, физических, административных и гипсометрических картах с зарамочным оформлением и стандартной гидрографией/рельефом.</p>
-        </div>
-
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-          <div class="card">
-            <h2 style="font-size:15px; font-weight:700;">§ 5—6. Цифровая модель карты</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Топографическая разметка 4 категорий, растрово-векторное сравнение дорог, гипсометрическая сетка высот.</p>
-            <a href="p5-6.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть модуль (3 карты) →</a>
-          </div>
-          <div class="card">
-            <h2 style="font-size:15px; font-weight:700;">§ 7—8. Методы дистанционного зондирования</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Полярный коридор KazEOSat-1 (Таймыр—Индия), навигационные центры океанов, договорной геопортал 8 областей РК.</p>
-            <a href="p7-8.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть модуль (3 карты) →</a>
-          </div>
-          <div class="card">
-            <h2 style="font-size:15px; font-weight:700;">§ 9—10. Особенности ГИС-технологий</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Послойная сборка рамки карты, буферная зона нефтепровода MapInfo, картограммы и диаграммы «ГеоГраф ГИС».</p>
-            <a href="p9-10.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть модуль (3 карты) →</a>
-          </div>
-          <div class="card">
-            <h2 style="font-size:15px; font-weight:700;">§ 11. Связь ГИС с другими отраслями</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Агро-мониторинг пашен Microsoft («Цифровой Казахстан»), поиск руды ER Mapper, безопасная логистика в обход ЧС.</p>
-            <a href="p11.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть модуль (3 карты) →</a>
-          </div>
-          <div class="card">
-            <h2 style="font-size:15px; font-weight:700;">§ 12. Географическая база данных</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px;">Оцифровка озера Зайсан и репера (0D/1D/2D), устранение ошибок моста и даты, 3D-подъем горизонталей рельефа.</p>
-            <a href="p12.html" class="btn btn-secondary btn-sm" style="width:100%;">Открыть модуль (3 карты) →</a>
-          </div>
-        </div>
-      </main>
     </div>
-  </div>
-  <script src="app.js"></script>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      СИСТЕМА АКТИВНА
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="hero">
+      <div class="kicker">Практическая геоинформатика</div>
+      <h1 class="headline">Цифровая картография и анализ геоданных</h1>
+      <p class="lead">Комплекс интерактивных лабораторных работ по темам дистанционного зондирования Земли, слоев ГИС, спутниковой группировки KazEOSat и структуры пространственных баз данных.</p>
+    </div>
+
+    <div class="grid">
+      <a href="p5-6.html" class="card">
+        <div>
+          <div class="card-num">МОДУЛЬ 01 • § 5—6</div>
+          <h2 class="card-title">Цифровая модель карты</h2>
+          <p class="card-desc">Исследование растровых и векторных структур данных, классификация информационных слоев и типы цифровых карт рельефа.</p>
+          <ul class="task-list">
+            <li class="task-item"><span class="task-item-bullet"></span> Растр против вектора (Координаты X, Y)</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Информационные слои и топология</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Постенные, непрерывные и структурные карты</li>
+          </ul>
+        </div>
+        <div class="card-cta">Запустить модуль →</div>
+      </a>
+
+      <a href="p7-8.html" class="card">
+        <div>
+          <div class="card-num">МОДУЛЬ 02 • § 7—8</div>
+          <h2 class="card-title">Дистанционное зондирование</h2>
+          <p class="card-desc">Управление полосой захвата спутников KazEOSat-1/2, спектральный мониторинг ЧС Казахстана и сеть референц-станций.</p>
+          <ul class="task-list">
+            <li class="task-item"><span class="task-item-bullet"></span> Орбитальный захват KazEOSat-1 & 2</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Геопортал ЧС: паводки и термоточки</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Триангуляция референц-станций GPS</li>
+          </ul>
+        </div>
+        <div class="card-cta">Запустить модуль →</div>
+      </a>
+
+      <a href="p9-10.html" class="card">
+        <div>
+          <div class="card-num">МОДУЛЬ 03 • § 9—10</div>
+          <h2 class="card-title">Методы ГИС-технологий</h2>
+          <p class="card-desc">Построение многослойного картографического пирога в среде ГеоГраф/MapInfo, расчет 500-метровых буферных зон и изолиний.</p>
+          <ul class="task-list">
+            <li class="task-item"><span class="task-item-bullet"></span> Сборка многослойного пирога ГИС</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Буферная зона безопасности трубопровода</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Метрический калькулятор и изолинии</li>
+          </ul>
+        </div>
+        <div class="card-cta">Запустить модуль →</div>
+      </a>
+
+      <a href="p11.html" class="card">
+        <div>
+          <div class="card-num">МОДУЛЬ 04 • § 11</div>
+          <h2 class="card-title">ГИС в отраслях экономики</h2>
+          <p class="card-desc">Применение ГИС в программе «Цифровой Казахстан»: трассировка инфраструктуры, инспекция сельхозугодий и разведка ER Mapper.</p>
+          <ul class="task-list">
+            <li class="task-item"><span class="task-item-bullet"></span> Трассировка логистического коридора</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Детектор неиспользуемых пашен</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Разведка ископаемых: ER Mapper</li>
+          </ul>
+        </div>
+        <div class="card-cta">Запустить модуль →</div>
+      </a>
+
+      <a href="p12.html" class="card">
+        <div>
+          <div class="card-num">МОДУЛЬ 05 • § 12</div>
+          <h2 class="card-title">Географическая база данных</h2>
+          <p class="card-desc">Векторизация примитивами (Point, Line, Polygon), структурирование атрибутов (Пространство-Время-Тема) и выбор базовых основ.</p>
+          <ul class="task-list">
+            <li class="task-item"><span class="task-item-bullet"></span> Векторная оцифровка местности</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Атрибутивная карточка объекта БД</li>
+            <li class="task-item"><span class="task-item-bullet"></span> Согласование базовой основы ГИС</li>
+          </ul>
+        </div>
+        <div class="card-cta">Запустить модуль →</div>
+      </a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div>РГКП «Аэтапография» • Обучающий программный комплекс</div>
+    <div>СТАНДАРТ OGC GML • WGS-84</div>
+  </footer>
 </body>
 </html>

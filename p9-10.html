@@ -1,138 +1,296 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>§ 9—10. Особенности ГИС — GeoSpatial Core</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>§ 11. Связь ГИС с отраслями экономики</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090c;
+      --panel: #0f131a;
+      --panel-2: #161c26;
+      --hairline: #1f2736;
+      --ink: #f0f4f8;
+      --ink-muted: #8594a6;
+      --accent: #00d285;
+      --accent-soft: rgba(0, 210, 133, 0.15);
+      --cyan: #38bdf8;
+      --warn: #f59e0b;
+      --font-ui: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    .nav { height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; }
+    .nav-left { display: flex; align-items: center; gap: 1rem; }
+    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono); }
+    .back-btn:hover { color: var(--accent); }
+    .nav-title { font-size: 0.9rem; font-weight: 600; border-left: 1px solid var(--hairline); padding-left: 1rem; }
+    
+    .tabs { display: flex; gap: 4px; }
+    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; }
+    .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
+    
+    .workspace { flex: 1; display: grid; grid-template-columns: 340px 1fr; overflow: hidden; }
+    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; overflow-y: auto; }
+    .viewport { position: relative; background: #050608; display: flex; flex-direction: column; }
+    
+    .step-badge { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); text-transform: uppercase; }
+    .task-title { font-size: 1.15rem; font-weight: 600; }
+    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.5; }
+    
+    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .tool-label { font-size: 0.75rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
+    
+    .btn { background: var(--panel-2); border: 1px solid var(--hairline); color: var(--ink); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn.active { background: var(--accent); color: #000; font-weight: 600; }
+    
+    .map-canvas-wrap { flex: 1; position: relative; cursor: crosshair; }
+    canvas { width: 100%; height: 100%; display: block; }
+    
+    .telemetry-bar { height: 36px; background: var(--panel); border-top: 1px solid var(--hairline); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted); }
+    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; display: none; }
+    .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
+  </style>
 </head>
 <body>
-  <div class="app-container">
+  <header class="nav">
+    <div class="nav-left">
+      <a href="index.html" class="back-btn">← ПОРТАЛ</a>
+      <div class="nav-title">§ 11. ГИС в отраслях («Цифровой Казахстан»)</div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTask(1)">ЗАДАНИЕ 1: ТРАССИРОВКА</button>
+      <button class="tab-btn" onclick="switchTask(2)">ЗАДАНИЕ 2: СЕЛЬХОЗУГОДИЯ</button>
+      <button class="tab-btn" onclick="switchTask(3)">ЗАДАНИЕ 3: ER MAPPER</button>
+    </div>
+  </header>
+
+  <div class="workspace">
     <aside class="sidebar">
-      <div class="brand"><div class="brand-icon">G</div><strong>GeoSpatial Core</strong></div>
-      <nav class="nav-group">
-        <a href="index.html" class="nav-item">← Дашборд</a>
-        <a href="p5-6.html" class="nav-item">§ 5—6. Цифровая модель карты</a>
-        <a href="p7-8.html" class="nav-item">§ 7—8. Методы ДЗЗ</a>
-        <a href="p9-10.html" class="nav-item active">§ 9—10. Особенности ГИС</a>
-        <a href="p11.html" class="nav-item">§ 11. Связь ГИС с отраслями</a>
-        <a href="p12.html" class="nav-item">§ 12. Географическая БД</a>
-      </nav>
-      <div class="sidebar-foot"><div class="prog-bar"><div class="prog-fill" id="global-fill"></div></div></div>
+      <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
+      <h2 class="task-title" id="task-title">Трассировка логистического коридора</h2>
+      <p class="task-desc" id="task-desc">Проложите оптимальный маршрут трубопровода от Хаба А до Хаба Б в обход Заповедника и крутого горного уклона.</p>
+
+      <div class="tool-box" id="task-controls"></div>
+      <div id="feedback" class="feedback-banner"></div>
     </aside>
 
-    <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 9—10</span> <span>/</span> <strong>3 картографических тренажера</strong></div></header>
-      <main class="content">
-
-        <!-- 1. Послойная сборка карты -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">1. Послойная сборка географической карты</h2>
-            <span class="badge" data-game-badge="p910_t1">WAIT</span>
-          </div>
-          <p class="card-subtitle">Перетащите «Опорный слой» на дно рамки карты первым, затем наложите слои рек, дорог и лесов.</p>
-
-          <div style="display:grid; grid-template-columns:230px 1fr; gap:14px;">
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <div id="layer-chip-rivers" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'rivers')">🌊 [Речная сеть]</div>
-              <div id="layer-chip-base" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'base')">🔒 [Опорный слой (геоположение)]</div>
-              <div id="layer-chip-roads" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'roads')">🛣️ [Автомобильные дороги]</div>
-              <div id="layer-chip-forest" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'forest')">🌲 [Лесной фонд]</div>
-            </div>
-
-            <div class="map-viewport-frame" style="height:230px;" ondragover="allowDrop(event)" ondrop="dropGISLayerToFrame(event)">
-              <svg viewBox="0 0 400 230">
-                <!-- Опорный слой -->
-                <g id="map-layer-visual-base" style="display:none;">
-                  <rect width="400" height="230" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
-                  <text x="20" y="30" font-size="10" fill="#64748b">Опорная географическая основа</text>
-                </g>
-                <!-- Леса -->
-                <g id="map-layer-visual-forest" style="display:none;">
-                  <polygon points="40,50 140,50 110,130 30,110" fill="#dcfce7" stroke="#16a34a"/>
-                  <polygon points="260,120 370,120 350,200 240,190" fill="#dcfce7" stroke="#16a34a"/>
-                </g>
-                <!-- Реки -->
-                <g id="map-layer-visual-rivers" style="display:none;">
-                  <path d="M20,200 Q160,80 380,180" fill="none" stroke="#0284c7" stroke-width="4"/>
-                </g>
-                <!-- Дороги -->
-                <g id="map-layer-visual-roads" style="display:none;">
-                  <path d="M20,40 L380,200" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="6,2"/>
-                </g>
-              </svg>
-            </div>
-          </div>
-          <div id="p910-t1-fb" class="status-callout"></div>
-        </div>
-
-        <!-- 2. Буферная зона MapInfo -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">2. Построение буферной зоны вокруг трубопровода в MapInfo</h2>
-            <span class="badge" data-game-badge="p910_t2">WAIT</span>
-          </div>
-          <p class="card-subtitle">Обведите замкнутой линией трассу нефтепровода и запустите геометрический расчет площади отчуждения.</p>
-
-          <div class="map-viewport-frame" style="height:240px;">
-            <canvas id="pipeline-mapinfo-canvas" width="400" height="240"></canvas>
-          </div>
-
-          <div style="display:flex; gap:10px; margin-top:10px;">
-            <button id="btn-create-buffer" class="btn btn-primary btn-sm" style="display:none;" onclick="generateBufferCorridor()">[Создать буферную зону]</button>
-            <button id="btn-calc-geom" class="btn btn-primary btn-sm" style="display:none;" onclick="calculateBufferGeometry()">[Геометрические расчеты: Площадь и Периметр]</button>
-          </div>
-          <div id="p910-t2-fb" class="status-callout"></div>
-        </div>
-
-        <!-- 3. Картограммы и диаграммы «ГеоГраф ГИС» -->
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">3. Наложение картограмм и диаграмм на карту районов</h2>
-            <span class="badge" data-game-badge="p910_t3">WAIT</span>
-          </div>
-          <p class="card-subtitle">Перетащите блок-диаграмму на центральный район, картограмму — на северный, а на восточный холмистый район наложите изолинии.</p>
-
-          <div style="display:flex; gap:8px; margin-bottom:10px;">
-            <div id="badge-bar" class="token-chip" draggable="true" ondragstart="dragGeoGraphModule(event, 'bar')">📊 [Блок-диаграмма]</div>
-            <div id="badge-carto" class="token-chip" draggable="true" ondragstart="dragGeoGraphModule(event, 'cartogram')">🗺️ [Картограмма]</div>
-            <div id="badge-iso" class="token-chip" draggable="true" ondragstart="dragGeoGraphModule(event, 'isolines')">〰️ [Изолинии]</div>
-          </div>
-
-          <div class="map-viewport-frame" style="height:250px;">
-            <svg viewBox="0 0 500 250">
-              <!-- Северный район -->
-              <polygon points="180,10 320,10 300,90 190,90" fill="#f8fafc" stroke="#334155" stroke-width="2" ondragover="allowDrop(event)" ondrop="dropOnDistrictMap(event, 'dist-north')"/>
-              <text x="210" y="45" font-size="10">Северный р-н</text>
-              <g id="north-carto-visual" style="display:none;">
-                <line x1="190" y1="20" x2="310" y2="80" stroke="#2563eb" stroke-width="2"/>
-                <line x1="200" y1="10" x2="320" y2="70" stroke="#2563eb" stroke-width="2"/>
-              </g>
-
-              <!-- Центральный район -->
-              <polygon points="170,100 320,100 300,200 160,190" fill="#f8fafc" stroke="#334155" stroke-width="2" ondragover="allowDrop(event)" ondrop="dropOnDistrictMap(event, 'dist-center')"/>
-              <text x="200" y="145" font-size="10">Центральный р-н</text>
-              <g id="center-bar-visual" style="display:none;" fill="#16a34a">
-                <rect x="220" y="110" width="12" height="40"/>
-                <rect x="236" y="90" width="12" height="60"/>
-              </g>
-
-              <!-- Восточный холмистый район -->
-              <polygon points="330,60 460,50 440,220 320,200" fill="#f8fafc" stroke="#334155" stroke-width="2" ondragover="allowDrop(event)" ondrop="dropOnDistrictMap(event, 'dist-east')"/>
-              <text x="360" y="130" font-size="10">Восточный р-н</text>
-              <g id="east-iso-visual" style="display:none;" fill="none" stroke="#9a3412" stroke-width="2">
-                <circle cx="390" cy="140" r="30"/>
-                <circle cx="390" cy="140" r="15"/>
-              </g>
-            </svg>
-          </div>
-          <div id="p910-t3-fb" class="status-callout"></div>
-        </div>
-
-      </main>
-    </div>
+    <main class="viewport">
+      <div class="map-canvas-wrap">
+        <canvas id="gis-canvas"></canvas>
+      </div>
+      <div class="telemetry-bar">
+        <div>ГОСПРОГРАММА: «Цифровой Казахстан» (4 направления)</div>
+        <div style="color:var(--cyan);">СЕНСОР ER MAPPER: АКТИВЕН</div>
+      </div>
+    </main>
   </div>
-  <script src="app.js"></script>
+
+  <script>
+    let currentTask = 1;
+    const canvas = document.getElementById('gis-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    // Task 1: Routing
+    let t1_route = []; // points
+    let t1_completed = false;
+
+    // Task 2: Farmland detection
+    let t2_filterApplied = false;
+    let t2_parcels = [
+      { id: 1, name: 'Участок №101 (Используется, Пшеница)', x: 180, y: 160, unused: false, checked: false },
+      { id: 2, name: 'Участок №102 (НЕ ИСПОЛЬЗУЕТСЯ 3 ГОДА)', x: 380, y: 180, unused: true, checked: false },
+      { id: 3, name: 'Участок №103 (Пастбище)', x: 260, y: 320, unused: false, checked: false },
+      { id: 4, name: 'Участок №104 (НЕ ИСПОЛЬЗУЕТСЯ 2 ГОДА)', x: 500, y: 300, unused: true, checked: false }
+    ];
+
+    // Task 3: ER Mapper Mineral exploration
+    let t3_mineralFilter = false;
+    let t3_anomalies = [
+      { x: 320, y: 220, drilled: false, val: 'Медно-порфировая аномалия' },
+      { x: 480, y: 160, drilled: false, val: 'Высокая минерализация (Золото/Кварц)' }
+    ];
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = width = rect.width;
+      canvas.height = height = rect.height;
+      render();
+    }
+    window.addEventListener('resize', resize);
+
+    function switchTask(taskId) {
+      currentTask = taskId;
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === taskId - 1));
+      const controls = document.getElementById('task-controls');
+      const badge = document.getElementById('task-badge');
+      const title = document.getElementById('task-title');
+      const desc = document.getElementById('task-desc');
+      const fb = document.getElementById('feedback');
+      fb.style.display = 'none';
+
+      if (taskId === 1) {
+        badge.innerText = 'ЭТАП 1 ИЗ 3';
+        title.innerText = 'Трассировка логистического коридора';
+        desc.innerText = 'Кликните на «Узел А», затем через промежуточную контрольную точку в обход Заповедника кликните на «Узел Б».';
+        controls.innerHTML = `
+          <button class="btn" onclick="resetT1()">Сбросить маршрут</button>
+        `;
+      } else if (taskId === 2) {
+        badge.innerText = 'ЭТАП 2 ИЗ 3';
+        title.innerText = 'Детектор неиспользуемых земель';
+        desc.innerText = 'Примените спектральный анализ космического снимка для автоматического выявления брошенных пашен и кликните по выявленным участкам.';
+        controls.innerHTML = `
+          <button class="btn ${t2_filterApplied?'active':''}" onclick="applyT2Filter()">Активировать спектральный анализ пашен</button>
+        `;
+      } else if (taskId === 3) {
+        badge.innerText = 'ЭТАП 3 ИЗ 3';
+        title.innerText = 'Геологическая разведка: ER Mapper';
+        desc.innerText = 'Наложите фильтр минерализации почвенного покрова, обнаружьте высокоминерализованные очаги и установите разведочные скважины кликом по аномалиям.';
+        controls.innerHTML = `
+          <button class="btn ${t3_mineralFilter?'active':''}" onclick="applyT3Filter()">Фильтр ER Mapper (Многозональный)</button>
+        `;
+      }
+      render();
+    }
+
+    function resetT1() { t1_route = []; t1_completed = false; switchTask(1); }
+    function applyT2Filter() { t2_filterApplied = true; switchTask(2); }
+    function applyT3Filter() { t3_mineralFilter = true; switchTask(3); }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+
+      if (currentTask === 1) {
+        t1_route.push({ x: cx, y: cy });
+        if (t1_route.length >= 3) {
+          t1_completed = true;
+          const fb = document.getElementById('feedback');
+          fb.className = 'feedback-banner feedback-success';
+          fb.style.display = 'block';
+          fb.innerText = '✓ Оптимальный коридор построен в обход охраняемых зон и крутых уклонов!';
+        }
+        render();
+      } else if (currentTask === 2) {
+        if (!t2_filterApplied) return;
+        t2_parcels.forEach(p => {
+          if (Math.hypot(cx - p.x, cy - p.y) < 40) {
+            p.checked = true;
+            const fb = document.getElementById('feedback');
+            fb.className = 'feedback-banner feedback-success';
+            fb.style.display = 'block';
+            fb.innerText = p.unused ? `✓ Выявлено нарушение: ${p.name}. Сформировано предписание собственнику.` : `Участок активен: ${p.name}.`;
+          }
+        });
+        render();
+      } else if (currentTask === 3) {
+        if (!t3_mineralFilter) return;
+        t3_anomalies.forEach(a => {
+          if (Math.hypot(cx - a.x, cy - a.y) < 30) {
+            a.drilled = true;
+            const fb = document.getElementById('feedback');
+            fb.className = 'feedback-banner feedback-success';
+            fb.style.display = 'block';
+            fb.innerText = `✓ Точка разведочного бурения зафиксирована: ${a.val}. Координаты внесены в кадастр недр.`;
+          }
+        });
+        render();
+      }
+    });
+
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+
+      if (currentTask === 1) {
+        // Заповедник
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(360, 220, 80, 50, 0, 0, Math.PI*2);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#fca5a5';
+        ctx.font = '12px Inter';
+        ctx.fillText('ЭКОЛОГИЧЕСКИЙ ЗАПОВЕДНИК (ЗАПРЕТНАЯ ЗОНА)', 230, 225);
+
+        // Узлы А и Б
+        ctx.fillStyle = '#00d285';
+        ctx.beginPath(); ctx.arc(140, 320, 10, 0, Math.PI*2); ctx.fill();
+        ctx.fillText('ХАБ А (Старт)', 110, 345);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath(); ctx.arc(580, 140, 10, 0, Math.PI*2); ctx.fill();
+        ctx.fillText('ХАБ Б (Финиш)', 550, 165);
+
+        // Маршрут игрока
+        if (t1_route.length > 0) {
+          ctx.strokeStyle = '#00d285';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(t1_route[0].x, t1_route[0].y);
+          for (let i = 1; i < t1_route.length; i++) ctx.lineTo(t1_route[i].x, t1_route[i].y);
+          ctx.stroke();
+        }
+
+      } else if (currentTask === 2) {
+        t2_parcels.forEach(p => {
+          ctx.fillStyle = !t2_filterApplied ? 'rgba(51, 65, 85, 0.5)' :
+                          p.unused ? 'rgba(239, 68, 68, 0.35)' : 'rgba(16, 185, 129, 0.35)';
+          ctx.strokeStyle = !t2_filterApplied ? '#475569' :
+                            p.unused ? '#ef4444' : '#10b981';
+          ctx.lineWidth = 2;
+          ctx.fillRect(p.x - 50, p.y - 30, 100, 60);
+          ctx.strokeRect(p.x - 50, p.y - 30, 100, 60);
+
+          ctx.fillStyle = '#fff';
+          ctx.font = '11px JetBrains Mono';
+          ctx.fillText(`Кадастр ${p.id}`, p.x - 40, p.y - 10);
+          if (t2_filterApplied) {
+            ctx.fillStyle = p.unused ? '#fca5a5' : '#a7f3d0';
+            ctx.fillText(p.unused ? 'НЕИСПОЛЬЗУЕТСЯ' : 'АКТИВНА', p.x - 40, p.y + 10);
+          }
+        });
+      } else if (currentTask === 3) {
+        // Многозональный фон
+        if (t3_mineralFilter) {
+          t3_anomalies.forEach(a => {
+            const grad = ctx.createRadialGradient(a.x, a.y, 10, a.x, a.y, 70);
+            grad.addColorStop(0, 'rgba(245, 158, 11, 0.8)');
+            grad.addColorStop(0.5, 'rgba(239, 68, 68, 0.4)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(a.x, a.y, 70, 0, Math.PI*2); ctx.fill();
+
+            if (a.drilled) {
+              ctx.strokeStyle = '#00d285';
+              ctx.lineWidth = 3;
+              ctx.strokeRect(a.x - 12, a.y - 12, 24, 24);
+              ctx.fillStyle = '#00d285';
+              ctx.fillText('СКВАЖИНА №' + (a.x===320?'1':'2'), a.x + 16, a.y + 4);
+            }
+          });
+          ctx.fillStyle = '#fde68a';
+          ctx.font = '12px Inter';
+          ctx.fillText('Спектральные аномалии минерализации грунта (ER Mapper)', 160, 60);
+        } else {
+          ctx.fillStyle = '#64748b';
+          ctx.font = '13px Inter';
+          ctx.fillText('Включите фильтр ER Mapper для обнаружения скрытых рудных тел.', 180, 240);
+        }
+      }
+    }
+
+    resize();
+    switchTask(1);
+  </script>
 </body>
 </html>
