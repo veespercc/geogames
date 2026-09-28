@@ -22,72 +22,78 @@
     </aside>
 
     <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 9—10</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <header class="header-bar"><div class="crumb"><span>§ 9—10</span> <span>/</span> <strong>3 интерактивных карты</strong></div></header>
       <main class="content">
 
-        <!-- Мини-игра 1: Изометрическая 3D-площадка ГИС -->
+        <!-- 1. Конструктор многослойной карты -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 1. «Сборка слоеного ГИС-пирога»</h2>
-            <span class="badge" data-game-badge="p910_g1">WAIT</span>
+            <h2 class="card-title">1. «Конструктор многослойной электронной карты»</h2>
+            <span class="badge" data-game-badge="p910_m1">WAIT</span>
           </div>
-          <p class="card-subtitle">3D-площадка проектирования карты: основанием может стать ТОЛЬКО опорный слой (геоположение), остальные слои распределяются по оси Z.</p>
+          <p class="card-subtitle">Перетащите «Опорный слой (геоположение)» на самое дно стола карты, а поверх наложите тематические слои.</p>
 
-          <div class="stack-bench">
+          <div style="display:grid; grid-template-columns:230px 1fr; gap:16px;">
             <div style="display:flex; flex-direction:column; gap:8px;">
-              <div id="chip-hydro" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('hydro', this)" ondragstart="dragLayer(event, 'hydro')">📄 [Гидрография]</div>
-              <div id="chip-base" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('base', this)" ondragstart="dragLayer(event, 'base')">🔒 [Опорный слой (Геоположение)]</div>
-              <div id="chip-transport" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('transport', this)" ondragstart="dragLayer(event, 'transport')">📄 [Транспортная сеть]</div>
-              <div id="chip-vegetation" class="token-chip token-chip-layer" draggable="true" onclick="selectStackLayer('vegetation', this)" ondragstart="dragLayer(event, 'vegetation')">📄 [Растительность]</div>
+              <div id="chip-layer-hydro" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'hydro')">📄 [Гидрография]</div>
+              <div id="chip-layer-base" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'base')">🔒 [Опорный слой (геоположение)]</div>
+              <div id="chip-layer-forest" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'forest')">📄 [Лесной фонд]</div>
+              <div id="chip-layer-roads" class="token-chip" draggable="true" ondragstart="dragGISLayer(event, 'roads')">📄 [Дорожная сеть]</div>
             </div>
 
-            <!-- Изометрическая 3D сцена -->
-            <div class="scene-3d-wrapper" onclick="handle3DStageClick()" ondragover="allowDrop(event)" ondrop="dropLayer(event)">
-              <div id="stage-3d" class="stage-3d">
-                <div id="plane-3d-1" class="layer-plane-3d">Основание платформы (Z: 0px)</div>
-                <div id="plane-3d-2" class="layer-plane-3d">Уровень Z: +45px</div>
-                <div id="plane-3d-3" class="layer-plane-3d">Уровень Z: +90px</div>
-                <div id="plane-3d-4" class="layer-plane-3d">Уровень Z: +135px</div>
-              </div>
+            <div class="map-canvas-holder" style="height:210px; padding:12px;" ondragover="allowDrop(event)" ondrop="dropGISLayerOnTable(event)">
+              <div id="gis-slot-4" class="token-chip" style="width:100%; margin-bottom:6px;">Слой 4 (Верхний тематический)</div>
+              <div id="gis-slot-3" class="token-chip" style="width:100%; margin-bottom:6px;">Слой 3 (Тематический)</div>
+              <div id="gis-slot-2" class="token-chip" style="width:100%; margin-bottom:6px;">Слой 2 (Тематический)</div>
+              <div id="gis-slot-1" class="token-chip" style="width:100%; border-color:var(--accent);">Слой 1 (Основание рабочего стола)</div>
             </div>
           </div>
-          <div class="drag-hint">💡 <em>Нажмите на слой слева, затем нажмите на 3D-площадку, либо перетащите курсором.</em></div>
           <div id="p910-g1-fb" class="status-callout"></div>
         </div>
 
-        <!-- Мини-игра 2 -->
+        <!-- 2. Лассо буферной зоны MapInfo -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 2. «Циркулярное лассо: Буферная зона MapInfo»</h2>
-            <span class="badge" data-game-badge="p910_g2">WAIT</span>
+            <h2 class="card-title">2. «Лассо-генератор буферной зоны MapInfo»</h2>
+            <span class="badge" data-game-badge="p910_m2">WAIT</span>
           </div>
-          <p class="card-subtitle">Обведите замкнутой линией газопровод, создав буферную зону безопасности, затем запустите расчет SQL.</p>
+          <p class="card-subtitle">Обведите газопровод замкнутым контуром (Лассо), создайте буферную зону и запустите геометрический расчет площади отчуждения.</p>
 
-          <div class="canvas-holder"><canvas id="lasso-canvas" width="400" height="200"></canvas></div>
-          <div id="sql-action-panel" style="display:none; margin-top:10px;">
-            <button class="btn btn-primary btn-sm" onclick="executeMapInfoSql()">⚡ Тап: [SQL-объединение таблиц и расчет параметров]</button>
+          <div class="map-canvas-holder" style="height:220px;">
+            <canvas id="mapinfo-lasso-canvas" width="400" height="220"></canvas>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button id="btn-create-buffer" class="btn btn-primary btn-sm" style="display:none;" onclick="createMapInfoBuffer()">[Создать буферную зону]</button>
+            <button id="btn-geom-calc" class="btn btn-primary btn-sm" style="display:none;" onclick="calcMapInfoGeometry()">[Геометрические функции: Площадь и Периметр]</button>
           </div>
           <div id="p910-g2-fb" class="status-callout"></div>
         </div>
 
-        <!-- Мини-игра 3 -->
-        <div class="card" id="conveyor-board">
+        <!-- 3. Пространственный манипулятор «ГеоГраф ГИС» -->
+        <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 3. «Сортировочный конвейер программных ядер»</h2>
-            <span class="badge" data-game-badge="p910_g3">WAIT</span>
+            <h2 class="card-title">3. «Пространственный манипулятор "ГеоГраф ГИС"»</h2>
+            <span class="badge" data-game-badge="p910_m3">WAIT</span>
           </div>
-          <p class="card-subtitle">Сбросьте программы в гнезда соответствующего функционала лаборатории.</p>
+          <p class="card-subtitle">Сбросьте блок-диаграмму на центральный район, картограмму — на соседний, и постройте изолинии рельефа.</p>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-            <div id="slot-ai" class="layer-slot" onclick="handleConveyorSlotClick('slot-ai')" ondragover="allowDrop(event)" ondrop="dropSoftware(event, 'slot-ai')">Настройка отдельных цветов векторной графики</div>
-            <div id="slot-mapinfo" class="layer-slot" onclick="handleConveyorSlotClick('slot-mapinfo')" ondragover="allowDrop(event)" ondrop="dropSoftware(event, 'slot-mapinfo')">Построение 3D-моделей и наклонных сечений</div>
-            <div id="slot-corel" class="layer-slot" onclick="handleConveyorSlotClick('slot-corel')" ondragover="allowDrop(event)" ondrop="dropSoftware(event, 'slot-corel')">Быстрое создание растровых рисунков для художников</div>
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <div id="chip-diagram" class="token-chip" draggable="true" ondragstart="dragManipulator(event, 'diagram')">📊 [Блок-диаграмма]</div>
+            <div id="chip-cartogram" class="token-chip" draggable="true" ondragstart="dragManipulator(event, 'cartogram')">🗺️ [Картограмма]</div>
+            <button class="btn btn-secondary btn-sm" onclick="buildIsolines(this)">[Построение изолиний]</button>
           </div>
 
-          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
-            <div id="chip-soft-ai" class="token-chip token-chip-soft" draggable="true" onclick="selectSoft('ai', this)" ondragstart="dragSoft(event, 'ai')">💻 [Adobe Illustrator]</div>
-            <div id="chip-soft-mapinfo" class="token-chip token-chip-soft" draggable="true" onclick="selectSoft('mapinfo', this)" ondragstart="dragSoft(event, 'mapinfo')">💻 [MapInfo Professional]</div>
-            <div id="chip-soft-corel" class="token-chip token-chip-soft" draggable="true" onclick="selectSoft('corel', this)" ondragstart="dragSoft(event, 'corel')">💻 [Corel Photo-Paint]</div>
+          <div class="map-canvas-holder" style="height:200px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:10px;">
+            <div id="dist-side" class="token-chip" style="height:100%; display:flex; align-items:center; justify-content:center;" ondragover="allowDrop(event)" ondrop="dropOnDistrict(event, 'dist-side')">
+              <span id="dist-side-label">Соседний район (Сбросьте картограмму)</span>
+            </div>
+            <div id="dist-center" class="token-chip" style="height:100%; display:flex; align-items:center; justify-content:center;" ondragover="allowDrop(event)" ondrop="dropOnDistrict(event, 'dist-center')">
+              <span id="dist-center-label">Центральный район (Сбросьте блок-диаграмму)</span>
+            </div>
+            <div id="dist-mountain" class="token-chip" style="height:100%; display:flex; align-items:center; justify-content:center;">
+              <span id="dist-mountain-label">Горный участок</span>
+            </div>
           </div>
           <div id="p910-g3-fb" class="status-callout"></div>
         </div>

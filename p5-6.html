@@ -22,105 +22,112 @@
     </aside>
 
     <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 5—6</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <header class="header-bar"><div class="crumb"><span>§ 5—6</span> <span>/</span> <strong>3 интерактивных карты</strong></div></header>
       <main class="content">
 
-        <!-- Мини-игра 1 -->
+        <!-- 1. Pinch-дефектоскопия -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 1. «Pinch-to-Zoom: Тест графического ядра»</h2>
-            <span class="badge" data-game-badge="p56_g1">WAIT</span>
+            <h2 class="card-title">1. «Pinch-дефектоскопия на цифровой карте местности»</h2>
+            <span class="badge" data-game-badge="p56_m1">WAIT</span>
           </div>
-          <p class="card-subtitle">Увеличьте карты ползунком масштабирования: на растровой карте пиксели размоются, а на векторной появится предупреждение «Нет описания объекта!». Распределите магнитные значки.</p>
+          <p class="card-subtitle">Переключайте режим отображения [Растр]/[Вектор], масштабируйте карту и привязывайте атрибуты БД к объектам.</p>
 
-          <input type="range" id="pinch-slider" min="1" max="3" step="0.1" value="1" style="width:100%; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; gap:6px;">
+              <button id="btn-mode-raster" class="btn btn-secondary btn-sm active" onclick="setMapRenderMode('raster')">[Растр]</button>
+              <button id="btn-mode-vector" class="btn btn-secondary btn-sm" onclick="setMapRenderMode('vector')">[Вектор]</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:12px; color:var(--text-muted);">Масштаб (Pinch):</span>
+              <input type="range" id="pinch-zoom-slider" min="1" max="3" step="0.1" value="1" style="width:140px;">
+            </div>
+          </div>
 
-          <div class="zoom-split">
-            <div class="map-window" onclick="handlePinchSlotClick('raster')" ondragover="allowDrop(event)" ondrop="dropToken(event, 'raster')">
-              <strong style="font-size:11px; margin-bottom:6px;">КАРТА А</strong>
-              <div class="pixel-canvas-box" id="raster-box">
-                <div style="width:44px; height:44px; background:#475569; display:grid; grid-template-columns:repeat(2,1fr); gap:2px; padding:2px;">
-                  <div style="background:#38bdf8"></div><div style="background:#cbd5e1"></div>
-                  <div style="background:#cbd5e1"></div><div style="background:#38bdf8"></div>
-                </div>
+          <div id="pinch-map-container" class="map-canvas-holder" ondragover="allowDrop(event)" ondrop="dropAttrOnRiver(event)">
+            <!-- Растровый слой -->
+            <div id="map-raster-layer" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; transform-origin:center;">
+              <div style="width:90px; height:90px; background:#475569; display:grid; grid-template-columns:repeat(3,1fr); gap:2px; padding:3px;">
+                <div style="background:#38bdf8"></div><div style="background:#cbd5e1"></div><div style="background:#38bdf8"></div>
+                <div style="background:#cbd5e1"></div><div style="background:#059669"></div><div style="background:#cbd5e1"></div>
+                <div style="background:#38bdf8"></div><div style="background:#cbd5e1"></div><div style="background:#38bdf8"></div>
               </div>
-              <span id="slot-raster-txt" style="font-size:11px; color:var(--text-muted); margin-top:8px;">Нажмите/перетащите маркер сюда</span>
             </div>
 
-            <div class="map-window" onclick="handlePinchSlotClick('vector')" ondragover="allowDrop(event)" ondrop="dropToken(event, 'vector')">
-              <strong style="font-size:11px; margin-bottom:6px;">КАРТА Б</strong>
-              <div class="pixel-canvas-box" id="vector-box">
-                <svg width="44" height="44" viewBox="0 0 44 44">
-                  <path d="M5,35 Q22,5 39,35" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
-                  <rect x="18" y="12" width="8" height="8" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
-                </svg>
-              </div>
-              <div id="vector-warn" style="display:none; font-size:10px; color:#ef4444; font-weight:700;">⚠️ Нет описания объекта!</div>
-              <span id="slot-vector-txt" style="font-size:11px; color:var(--text-muted); margin-top:8px;">Нажмите/перетащите маркер сюда</span>
+            <!-- Векторный слой -->
+            <div id="map-vector-layer" style="display:none; width:100%; height:100%; position:absolute; top:0; left:0; transform-origin:center;">
+              <svg width="100%" height="100%" viewBox="0 0 400 280">
+                <path id="river-vector-path" d="M30,220 Q180,40 370,180" fill="none" stroke="#0284c7" stroke-width="6"/>
+                <text x="170" y="110" font-size="12" fill="#0369a1" font-weight="600">р. Нура (Векторный контур)</text>
+              </svg>
             </div>
           </div>
 
-          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
-            <div id="chip-pixel" class="token-chip token-chip-pinch" draggable="true" onclick="selectPinchToken('pixel-matrix', this)" ondragstart="dragToken(event, 'pixel-matrix')">
-              📌 [Матрица фиксированных пикселей]
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+            <div>
+              <button id="trigger-pixel-matrix" class="btn btn-primary btn-sm" style="display:none;" onclick="fixRasterBug()">Тап: «Матрица пикселей фиксированного размера»</button>
+              <div id="chip-attr-db" class="token-chip" draggable="true" ondragstart="dragAttrDB(event)">📄 [Таблица атрибутов БД]</div>
             </div>
-            <div id="chip-attr" class="token-chip token-chip-pinch" draggable="true" onclick="selectPinchToken('attr-db', this)" ondragstart="dragToken(event, 'attr-db')">
-              📌 [Связать с базой данных атрибутов]
+            <div style="font-size:12px; color:var(--text-muted);">
+              <span id="raster-status-text"></span> | <span id="vector-status-text"></span>
             </div>
           </div>
-          <div class="drag-hint">💡 <em>Кликните по маркеру, затем по окну карты, либо перетащите курсором.</em></div>
           <div id="p56-g1-fb" class="status-callout"></div>
         </div>
 
-        <!-- Мини-игра 2 -->
+        <!-- 2. Интерактивный классификатор объектов -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 2. «Tinder-сортировщик картографических пакетов»</h2>
-            <span class="badge" data-game-badge="p56_g2">WAIT</span>
+            <h2 class="card-title">2. «Интерактивный классификатор объектов на карте»</h2>
+            <span class="badge" data-game-badge="p56_m2">WAIT</span>
           </div>
-          <p class="card-subtitle">Свайпайте карточку в 4 стороны экрана (жестом или кнопками управления). Достигните комбо 4/4 без ошибок.</p>
+          <p class="card-subtitle">Нажмите на объект на карте и выберите правильный сектор на радиальном кольце вокруг пальца.</p>
 
-          <div style="display:flex; justify-content:space-between; font-weight:600; font-size:12px; margin-bottom:8px;">
-            <span id="tinder-combo-counter">Комбо: 0/4</span>
-          </div>
+          <div id="classifier-map" class="map-canvas-holder" style="background:#f8fafc;">
+            <svg width="100%" height="100%" viewBox="0 0 400 280">
+              <!-- Скважина -->
+              <circle id="obj-well" cx="70" cy="80" r="14" fill="#cbd5e1" stroke="#475569" stroke-width="2" onclick="openRadialMenu(event, 'obj-well')" style="cursor:pointer;"/>
+              <text x="92" y="84" font-size="11" fill="#475569">Скважина №12</text>
 
-          <div id="tinder-zone" class="tinder-zone">
-            <div class="swipe-target swipe-top">⬆️ Размерная (метрика)</div>
-            <div class="swipe-target swipe-right">➡️ Цифровая</div>
-            <div class="swipe-target swipe-bottom">⬇️ Смысловая</div>
-            <div class="swipe-target swipe-left">⬅️ Общая</div>
-            <div id="tinder-card" class="tinder-card">Загрузка...</div>
-          </div>
+              <!-- Рельеф (горизонтали) -->
+              <path id="obj-relief" d="M140,200 Q200,120 260,200" fill="none" stroke="#94a3b8" stroke-width="4" onclick="openRadialMenu(event, 'obj-relief')" style="cursor:pointer;"/>
+              <text x="175" y="180" font-size="11" fill="#475569">Горизонтали h=200м</text>
 
-          <div style="display:flex; justify-content:center; gap:8px; margin-top:12px;">
-            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('LEFT')">⬅️ Общая</button>
-            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('UP')">⬆️ Размерная</button>
-            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('DOWN')">⬇️ Смысловая</button>
-            <button class="btn btn-secondary btn-sm" onclick="manualSwipe('RIGHT')">➡️ Цифровая</button>
+              <!-- Лес -->
+              <rect id="obj-forest" x="270" y="40" width="70" height="50" rx="8" fill="#cbd5e1" onclick="openRadialMenu(event, 'obj-forest')" style="cursor:pointer;"/>
+              <text x="285" y="70" font-size="11" fill="#1e293b">Лес (Береза)</text>
+
+              <!-- Подпись урочища -->
+              <text id="obj-name" x="40" y="240" font-size="14" font-weight="700" fill="#64748b" onclick="openRadialMenu(event, 'obj-name')" style="cursor:pointer;">урочище Карабас</text>
+            </svg>
+
+            <!-- Радиальное меню -->
+            <div id="radial-selector" class="radial-menu">
+              <div class="radial-sector radial-top" onclick="chooseRadialSector('metric')">Размерная (метрика)</div>
+              <div class="radial-sector radial-right" onclick="chooseRadialSector('digital')">Цифровая инфо</div>
+              <div class="radial-sector radial-bottom" onclick="chooseRadialSector('semantic')">Смысловая (порода)</div>
+              <div class="radial-sector radial-left" onclick="chooseRadialSector('general')">Общая инфо</div>
+            </div>
           </div>
           <div id="p56-g2-fb" class="status-callout"></div>
         </div>
 
-        <!-- Мини-игра 3: Честный 3D-рельеф -->
+        <!-- 3. Формирователь структурного рельефа -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 3. «Диск-калибратор плотности рельефа»</h2>
-            <span class="badge" data-game-badge="p56_g3">WAIT</span>
+            <h2 class="card-title">3. «Формирователь структурного рельефа карты»</h2>
+            <span class="badge" data-game-badge="p56_m3">WAIT</span>
           </div>
-          <p class="card-subtitle">Требование: <em>«Отобразить точки рельефа строго в количестве, определяющем средний уровень местности»</em>. Вращайте диск для переключения 3D-проекции.</p>
+          <p class="card-subtitle">Задача: <em>«Сформировать карту, где точки зафиксированы строго в количестве, определяющем средний уровень рельефа местности»</em>.</p>
 
-          <div class="rotary-layout">
-            <div class="landscape-view">
-              <canvas id="terrain-canvas" class="viewport-3d-canvas" width="400" height="200"></canvas>
-            </div>
-            <div class="rotary-controller">
-              <div id="rotary-dial" class="dial-housing">
-                <div class="dial-marker"></div>
-              </div>
-              <div id="dial-mode-name" style="font-weight:700; font-size:14px; margin-top:10px;">3D-режим: Постенная</div>
-              <div id="dial-mode-desc" style="font-size:11px; color:var(--text-muted); text-align:center; margin-top:2px;">Качественные/количественные знаки</div>
-              <span id="dial-lock-icon" class="badge" style="margin-top:8px;">Крутите регулятор</span>
-            </div>
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="btn btn-secondary btn-sm" onclick="setReliefGenMode('wall')">[Постенная]</button>
+            <button class="btn btn-secondary btn-sm" onclick="setReliefGenMode('continuous')">[Непрерывная]</button>
+            <button class="btn btn-secondary btn-sm" onclick="setReliefGenMode('structural')">[Структурная]</button>
+          </div>
+
+          <div class="map-canvas-holder" style="height:220px;">
+            <canvas id="structural-relief-canvas" width="400" height="220"></canvas>
           </div>
           <div id="p56-g3-fb" class="status-callout"></div>
         </div>

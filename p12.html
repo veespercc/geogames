@@ -22,73 +22,97 @@
     </aside>
 
     <div class="main-wrapper">
-      <header class="header-bar"><div class="crumb"><span>§ 12</span> <span>/</span> <strong>3 мини-игры</strong></div></header>
+      <header class="header-bar"><div class="crumb"><span>§ 12</span> <span>/</span> <strong>3 интерактивных карты</strong></div></header>
       <main class="content">
 
-        <!-- Мини-игра 1 -->
+        <!-- 1. Топологический трафарет -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 1. «Геометрический шредер: Точка — Линия — Полигон»</h2>
-            <span class="badge" data-game-badge="p12_g1">WAIT</span>
+            <h2 class="card-title">1. «Топологический трафарет пространственных объектов»</h2>
+            <span class="badge" data-game-badge="p12_m1">WAIT</span>
           </div>
-          <p class="card-subtitle">Сбрасывайте падающие карточки в один из трех люков геометрии базы данных по ГОСТу.</p>
+          <p class="card-subtitle">Выберите инструмент рисования и оцифруйте объекты снимка: Точка (геопункт), Линия (дорога), Полигон (озеро).</p>
 
-          <div style="display:flex; justify-content:center; margin:16px 0;">
-            <div id="shredder-card" class="tinder-card" style="position:relative; width:260px;">Загрузка...</div>
+          <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <button class="btn btn-secondary btn-sm btn-tool-topo" onclick="setTopoTool('point', this)">[ТОЧКА]</button>
+            <button class="btn btn-secondary btn-sm btn-tool-topo" onclick="setTopoTool('line', this)">[ЛИНИЯ]</button>
+            <button class="btn btn-secondary btn-sm btn-tool-topo" onclick="setTopoTool('poly', this)">[ПОЛИГОН]</button>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-            <button class="btn btn-secondary" onclick="sortShredder('point')">🔘 ТОЧКА<br><small style="color:var(--text-muted);">Местоположение, 0D</small></button>
-            <button class="btn btn-secondary" onclick="sortShredder('line')">➖ ЛИНИЯ<br><small style="color:var(--text-muted);">Только длина, 1D</small></button>
-            <button class="btn btn-secondary" onclick="sortShredder('polygon')">🔲 ПОЛИГОН<br><small style="color:var(--text-muted);">Длина и ширина, 2D</small></button>
+          <div class="map-canvas-holder" style="height:220px;">
+            <svg width="100%" height="100%" viewBox="0 0 400 220">
+              <!-- Одиночный геопункт -->
+              <circle id="topo-point-obj" cx="60" cy="50" r="10" fill="#94a3b8" onclick="handleTopoObjectClick('point')" style="cursor:pointer;"/>
+              <text x="80" y="55" font-size="11">Геодезический пункт (Широта/Долгота)</text>
+
+              <!-- Автодорога -->
+              <path id="topo-road-obj" d="M20,180 Q180,80 380,180" fill="none" stroke="#94a3b8" stroke-width="6" onclick="handleTopoObjectClick('line')" style="cursor:pointer;"/>
+              <text x="180" y="125" font-size="11">Автодорога (Длина)</text>
+
+              <!-- Озеро -->
+              <polygon id="topo-lake-obj" points="260,30 350,30 370,90 280,80" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" onclick="handleTopoObjectClick('poly')" style="cursor:pointer;"/>
+              <text x="290" y="60" font-size="11">Озеро (Площадь)</text>
+            </svg>
           </div>
           <div id="p12-g1-fb" class="status-callout"></div>
         </div>
 
-        <!-- Мини-игра 2 -->
+        <!-- 2. Инспектор координатных и временных ошибок -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 2. «Эквалайзер триады качества данных»</h2>
-            <span class="badge" data-game-badge="p12_g2">WAIT</span>
+            <h2 class="card-title">2. «Инспектор координатных и временных ошибок на карте»</h2>
+            <span class="badge" data-game-badge="p12_m2">WAIT</span>
           </div>
-          <p class="card-subtitle">Поднимите все 3 фейдера микшера до целевых золотых отметок качества.</p>
+          <p class="card-subtitle">1. Перетащите смещенный мост на контур реки (Точность). 2. Замените устаревший слой разлива реки (Своевременность).</p>
 
-          <div class="faders-grid">
-            <div class="fader-col">
-              <span style="font-size:11px; font-weight:600;">Пространственная</span>
-              <input type="range" id="eq-fader-1" min="0" max="100" value="20">
-              <span class="badge">ТОЧНОСТЬ</span>
+          <div class="map-canvas-holder" style="height:220px;" ondragover="allowDrop(event)" ondrop="dropBridgeOnRiver(event)">
+            <!-- Река -->
+            <svg width="100%" height="100%" viewBox="0 0 400 220">
+              <path d="M40,20 Q160,110 360,200" fill="none" stroke="#0284c7" stroke-width="12"/>
+            </svg>
+
+            <!-- Смещенный мост -->
+            <div id="bridge-symbol" draggable="true" ondragstart="dragBridge(event)" style="position:absolute; top:20px; left:40px; padding:4px 8px; background:#475569; color:#fff; font-size:11px; font-weight:700; border-radius:4px; cursor:grab;">
+              🌉 Мост (Смещен)
             </div>
-            <div class="fader-col">
-              <span style="font-size:11px; font-weight:600;">Временная</span>
-              <input type="range" id="eq-fader-2" min="0" max="100" value="20">
-              <span class="badge">СВОЕВРЕМЕННОСТЬ</span>
+
+            <!-- Временной маркер слоя -->
+            <div style="position:absolute; bottom:12px; right:12px; font-size:11px; background:#fff; padding:6px 10px; border:1px solid var(--border); border-radius:4px;">
+              <span id="flood-time-tag">⚠️ Слой разлива: Дата прошлой недели</span>
+              <button id="btn-time-update" class="btn btn-secondary btn-sm" style="margin-left:8px;" onclick="updateFloodLayer()">Обновить снимок</button>
             </div>
-            <div class="fader-col">
-              <span style="font-size:11px; font-weight:600;">Тематическая</span>
-              <input type="range" id="eq-fader-3" min="0" max="100" value="20">
-              <span class="badge">ПОЛНОЦЕННОСТЬ</span>
-            </div>
+          </div>
+
+          <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
+            <span id="bridge-status-txt">Мост смещен в сторону от реки</span>
           </div>
           <div id="p12-g2-fb" class="status-callout"></div>
         </div>
 
-        <!-- Мини-игра 3 -->
+        <!-- 3. 3D-трансформер картографического рельефа -->
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="card-title">Мини-игра 3. «Сетевой хаб распределенной СУБД»</h2>
-            <span class="badge" data-game-badge="p12_g3">WAIT</span>
+            <h2 class="card-title">3. «3D-трансформер картографического рельефа»</h2>
+            <span class="badge" data-game-badge="p12_m3">WAIT</span>
           </div>
-          <p class="card-subtitle">Протяните линии-лучи от городских компьютеров к центральному ядру СУБД, затем выполните двойной клик по ядру.</p>
+          <p class="card-subtitle">Наклоните перспективу карты (свайпом вверх / ползунком): изолинии рельефа вытянутся вверх в объемную 3D-модель.</p>
 
-          <div style="display:flex; justify-content:space-around; margin:16px 0;">
-            <button class="btn btn-secondary btn-sm" onclick="connectNode(this, 'Алматы')">🖥️ Компьютер: Алматы</button>
-            <button class="btn btn-secondary btn-sm" onclick="connectNode(this, 'Астана')">🖥️ Компьютер: Астана</button>
-            <button class="btn btn-secondary btn-sm" onclick="connectNode(this, 'Шымкент')">🖥️ Компьютер: Шымкент</button>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <span style="font-size:12px; font-weight:600;">Наклон перспективы (2 пальца вверх):</span>
+            <input type="range" id="tilt-3d-slider" min="0" max="100" value="0" style="width:160px;">
           </div>
 
-          <div id="dbms-core" style="height:70px; background:var(--bg-subtle); border:2px dashed var(--border-strong); border-radius:var(--radius-md); display:grid; place-items:center; font-weight:600; font-size:13px; cursor:pointer; user-select:none;">
-            [СУБД: Распределенная база данных] — Ожидание подключения 3 узлов
+          <div class="scene-3d-tilt">
+            <div id="tilt-map-surface" class="tilt-surface">
+              <svg width="100%" height="100%" viewBox="0 0 320 200">
+                <rect width="320" height="200" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+                <!-- 2D -> 3D Изолинии -->
+                <circle cx="160" cy="100" r="70" fill="none" stroke="#0284c7" stroke-width="2" class="tilt-isoline"/>
+                <circle cx="160" cy="100" r="45" fill="none" stroke="#10b981" stroke-width="2" class="tilt-isoline"/>
+                <circle cx="160" cy="100" r="20" fill="none" stroke="#4f46e5" stroke-width="2" class="tilt-isoline"/>
+                <text x="135" y="105" font-size="11" font-weight="700" fill="#1e293b">H=350м</text>
+              </svg>
+            </div>
           </div>
           <div id="p12-g3-fb" class="status-callout"></div>
         </div>
