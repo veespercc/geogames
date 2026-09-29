@@ -2,184 +2,91 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ГИС & Картография — Образовательный комплекс</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --surface: #0a0c10;
-      --surface-1: #12151c;
-      --surface-2: #1a1f2c;
-      --surface-hover: #22293a;
-      --ink: #f0f3f8;
-      --ink-muted: #8c96a8;
-      --ink-subtle: #566175;
-      --hairline: #202736;
-      --hairline-strong: #2e384d;
-      --accent: #00d285;
-      --accent-soft: rgba(0, 210, 133, 0.12);
-      --accent-cyan: #00b4d8;
-      --font-text: 'Inter', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-      background: var(--surface);
-      color: var(--ink);
-      font-family: var(--font-text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.5;
-    }
-    .header {
-      border-bottom: 1px solid var(--hairline);
-      padding: 1rem 1.25rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--surface-1);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .brand { display: flex; align-items: center; gap: 0.75rem; }
-    .brand-logo {
-      width: 32px; height: 32px; border-radius: 6px;
-      background: var(--accent); display: grid; place-items: center;
-      color: #000; font-weight: 700; font-family: var(--font-mono); font-size: 15px;
-    }
-    .brand-title { font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em; }
-    .brand-subtitle { font-size: 0.75rem; color: var(--ink-muted); font-family: var(--font-mono); }
-    .status-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: var(--font-mono); font-size: 11px; padding: 4px 8px;
-      background: var(--surface-2); border: 1px solid var(--hairline);
-      border-radius: 999px; color: var(--accent); white-space: nowrap;
-    }
-    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-    .main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
-    .hero { margin-bottom: 2rem; }
-    .kicker { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-cyan); margin-bottom: 0.5rem; }
-    .headline { font-size: clamp(1.75rem, 5vw, 3rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
-    .lead { font-size: 0.95rem; color: var(--ink-muted); max-width: 760px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
-    .card {
-      background: var(--surface-1); border: 1px solid var(--hairline); border-radius: 12px;
-      padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;
-      transition: all 180ms ease; text-decoration: none; color: inherit; position: relative;
-    }
-    .card:active, .card:hover { background: var(--surface-hover); border-color: var(--hairline-strong); transform: translateY(-2px); }
-    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--hairline); transition: background 180ms ease; }
-    .card:active::before, .card:hover::before { background: var(--accent); }
-    .card-num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-subtle); margin-bottom: 0.5rem; }
-    .card-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--ink); }
-    .card-desc { font-size: 0.85rem; color: var(--ink-muted); margin-bottom: 1.25rem; flex: 1; }
-    .task-list { list-style: none; border-top: 1px solid var(--hairline); padding-top: 0.75rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.35rem; }
-    .task-item { font-size: 0.75rem; color: var(--ink-muted); display: flex; align-items: center; gap: 0.5rem; }
-    .task-item-bullet { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-    .card-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--accent); font-family: var(--font-mono); }
-    .footer { border-top: 1px solid var(--hairline); padding: 1.25rem 1.5rem; background: var(--surface-1); display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.75rem; color: var(--ink-subtle); font-family: var(--font-mono); text-align: center; }
-    @media(min-width: 640px) { .footer { flex-direction: row; justify-content: space-between; text-align: left; } }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>ГИС и Картография — Лабораторный комплекс</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header">
-    <div class="brand">
-      <div class="brand-logo">G</div>
-      <div>
-        <div class="brand-title">ГИС & Картография</div>
-        <div class="brand-subtitle">Практический комплекс</div>
-      </div>
-    </div>
-    <div class="status-badge"><span class="status-dot"></span> WGS-84 ACTIVE</div>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <button class="menu-toggle-btn" id="mobile_menu_toggle" aria-label="Открыть меню навигации">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-header__title">ГИС и Картография</div>
+    <span class="status-pill done" id="mobile_header_progress">0/15</span>
   </header>
 
-  <main class="main">
-    <div class="hero">
-      <div class="kicker">Интерактивный учебный курс</div>
-      <h1 class="headline">Цифровая картография и анализ геоданных</h1>
-      <p class="lead">5 лабораторных модулей: векторные и растровые модели, группировка KazEOSat, многослойный анализ в MapInfo, программа «Цифровой Казахстан» и структура пространственных БД.</p>
-    </div>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
 
-    <div class="grid">
-      <a href="p5-6.html" class="card">
+  <div class="app-shell">
+    <aside class="sidebar" id="app_sidebar">
+      <div class="sidebar__brand">
         <div>
-          <div class="card-num">МОДУЛЬ 01 • § 5—6</div>
-          <h2 class="card-title">Цифровая модель карты</h2>
-          <p class="card-desc">Растровые и векторные структуры, классификация метрической и смысловой информации, типы карт рельефа.</p>
-          <ul class="task-list">
-            <li class="task-item"><span class="task-item-bullet"></span> Растр vs Вектор (Координаты X, Y)</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Информационные слои и топология</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Постенные, непрерывные и структурные карты</li>
-          </ul>
+          <div class="brand-badge">ГИС и Картография</div>
+          <div class="brand-title">Лабораторный комплекс</div>
         </div>
-        <div class="card-cta">Запустить модуль →</div>
-      </a>
+        <button class="btn-icon" id="mobile_drawer_close" style="display: none;" aria-label="Закрыть меню">✕</button>
+      </div>
+      <nav class="sidebar__nav">
+        <div class="nav-label">Навигация</div>
+        <a href="index.html" class="nav-link active"><span>Главная панель</span></a>
+        <div class="nav-label">Модули с картами</div>
+        <a href="p5-6.html" class="nav-link">
+          <span>§ 5—6. Цифровая карта</span>
+          <span class="status-pill" id="badge_p5-6">0/3</span>
+        </a>
+        <a href="p7-8.html" class="nav-link">
+          <span>§ 7—8. Методы ДЗЗ</span>
+          <span class="status-pill" id="badge_p7-8">0/3</span>
+        </a>
+        <a href="p9-10.html" class="nav-link">
+          <span>§ 9—10. Технологии ГИС</span>
+          <span class="status-pill" id="badge_p9-10">0/3</span>
+        </a>
+        <a href="p11.html" class="nav-link">
+          <span>§ 11. Отрасли и ГИС</span>
+          <span class="status-pill" id="badge_p11">0/3</span>
+        </a>
+        <a href="p12.html" class="nav-link">
+          <span>§ 12. Географическая БД</span>
+          <span class="status-pill" id="badge_p12">0/3</span>
+        </a>
+      </nav>
+    </aside>
 
-      <a href="p7-8.html" class="card">
-        <div>
-          <div class="card-num">МОДУЛЬ 02 • § 7—8</div>
-          <h2 class="card-title">Дистанционное зондирование</h2>
-          <p class="card-desc">Полоса захвата KazEOSat-1/2, космический мониторинг ЧС Казахстана и сеть референц-станций GPS.</p>
-          <ul class="task-list">
-            <li class="task-item"><span class="task-item-bullet"></span> Орбитальный захват KazEOSat-1 & 2</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Геопортал ЧС: паводки и термоточки</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Триангуляция станций GPS «Аэтапография»</li>
-          </ul>
+    <main class="main-content">
+      <header class="page-header">
+        <div class="page-kicker">Профессиональная геоинформатика</div>
+        <h1 class="page-title">Практикум по цифровой картографии и ГИС</h1>
+        <p class="page-desc">
+          Комплекс интерактивных заданий с прямой работой на векторных и спутниковых картах местности. Полная адаптация под мобильные устройства и ПК.
+        </p>
+      </header>
+
+      <section class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card__label">Выполнено заданий</div>
+          <div class="stat-card__val" id="stat_total_score">0 / 15</div>
         </div>
-        <div class="card-cta">Запустить модуль →</div>
-      </a>
-
-      <a href="p9-10.html" class="card">
-        <div>
-          <div class="card-num">МОДУЛЬ 03 • § 9—10</div>
-          <h2 class="card-title">Методы ГИС-технологий</h2>
-          <p class="card-desc">Сборка многослойной карты ГеоГраф/MapInfo, 500-метровые буферные зоны и расчет метрик с изолиниями.</p>
-          <ul class="task-list">
-            <li class="task-item"><span class="task-item-bullet"></span> Многослойный картографический пирог</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Буферная зона безопасности трубопровода</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Метрический калькулятор и изолинии</li>
-          </ul>
+        <div class="stat-card">
+          <div class="stat-card__label">Интерактивных карт</div>
+          <div class="stat-card__val">15 карт</div>
         </div>
-        <div class="card-cta">Запустить модуль →</div>
-      </a>
-
-      <a href="p11.html" class="card">
-        <div>
-          <div class="card-num">МОДУЛЬ 04 • § 11</div>
-          <h2 class="card-title">ГИС в отраслях экономики</h2>
-          <p class="card-desc">Трассировка логистических коридоров, контроль неиспользуемых пашен и разведка недр сенсором ER Mapper.</p>
-          <ul class="task-list">
-            <li class="task-item"><span class="task-item-bullet"></span> Трассировка логистического коридора</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Детектор неиспользуемых земель</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Разведка ископаемых: ER Mapper</li>
-          </ul>
+        <div class="stat-card">
+          <div class="stat-card__label">Стандарт обмена</div>
+          <div class="stat-card__val">OGC GML</div>
         </div>
-        <div class="card-cta">Запустить модуль →</div>
-      </a>
+      </section>
 
-      <a href="p12.html" class="card">
-        <div>
-          <div class="card-num">МОДУЛЬ 05 • § 12</div>
-          <h2 class="card-title">Географическая база данных</h2>
-          <p class="card-desc">Векторные примитивы (Point, Line, Polygon), модель данных Пространство-Время-Тема и базовые основы.</p>
-          <ul class="task-list">
-            <li class="task-item"><span class="task-item-bullet"></span> Векторная оцифровка местности</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Атрибутивная карточка объекта СУБД</li>
-            <li class="task-item"><span class="task-item-bullet"></span> Выбор базовой кадастровой основы</li>
-          </ul>
-        </div>
-        <div class="card-cta">Запустить модуль →</div>
-      </a>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div>РГКП «Аэтапография» • Обучающий программный комплекс</div>
-    <div>СТАНДАРТ OGC GML • WGS-84</div>
-  </footer>
+      <div class="task-card">
+        <h2 class="task-title">Инструкция по работе на смартфоне и ПК</h2>
+        <p class="task-desc">
+          В каждом задании нажимайте прямо на объекты карты для считывания координат и атрибутов. Порядок слоев меняется с помощью кнопок [▲ Вверх] и [▼ Вниз].
+        </p>
+        <a href="p5-6.html" class="btn btn--primary" style="width: 100%;">Начать выполнение: § 5—6. Цифровая карта →</a>
+      </div>
+    </main>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>

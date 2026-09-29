@@ -2,387 +2,242 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>§ 5—6. Цифровая модель карты</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #090b0e; --panel: #11141a; --panel-2: #181d26;
-      --hairline: #222938; --hairline-focus: #3b4761;
-      --ink: #edf2f7; --ink-muted: #8a96a8;
-      --accent: #00d285; --accent-soft: rgba(0, 210, 133, 0.15);
-      --cyan: #38bdf8; --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-    .nav { min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; gap: 0.5rem; }
-    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
-    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--panel-2); }
-    .nav-title { font-size: 0.85rem; font-weight: 600; }
-    .tabs { display: flex; gap: 4px; overflow-x: auto; width: 100%; padding-bottom: 2px; }
-    @media(min-width: 768px) { .tabs { width: auto; } }
-    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; white-space: nowrap; min-height: 40px; }
-    .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
-    .workspace { flex: 1; display: grid; grid-template-columns: 1fr; }
-    @media(min-width: 860px) { .workspace { grid-template-columns: 320px 1fr; height: calc(100vh - 52px); overflow: hidden; } }
-    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
-    .viewport { position: relative; background: #06080a; display: flex; flex-direction: column; min-height: 380px; }
-    .step-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); text-transform: uppercase; }
-    .task-title { font-size: 1.1rem; font-weight: 600; }
-    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.45; }
-    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
-    .tool-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
-    .btn { background: var(--panel-2); border: 1px solid var(--hairline-focus); color: var(--ink); padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
-    .btn:active, .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
-    .map-canvas-wrap { flex: 1; position: relative; width: 100%; min-height: 340px; touch-action: none; cursor: crosshair; }
-    canvas { width: 100%; height: 100%; display: block; }
-    .telemetry-bar { background: var(--panel); border-top: 1px solid var(--hairline); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
-    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.8rem; display: none; line-height: 1.4; }
-    .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
-    .feedback-info { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--cyan); color: #7dd3fc; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="nav">
-    <div class="nav-left">
-      <a href="index.html" class="back-btn">← МЕНЮ</a>
-      <div class="nav-title">§ 5—6. Цифровая модель карты</div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTask(1)">1. РАСТР / ВЕКТОР</button>
-      <button class="tab-btn" onclick="switchTask(2)">2. СЛОИ И ТОПОЛОГИЯ</button>
-      <button class="tab-btn" onclick="switchTask(3)">3. КАРТЫ РЕЛЬЕФА</button>
-    </div>
+  <header class="mobile-header">
+    <button class="menu-toggle-btn" id="mobile_menu_toggle" aria-label="Меню">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-header__title">§ 5—6. Цифровая карта</div>
+    <span class="status-pill done" id="mobile_header_progress">0/15</span>
   </header>
 
-  <div class="workspace">
-    <aside class="sidebar">
-      <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
-      <h2 class="task-title" id="task-title">Растр против вектора</h2>
-      <p class="task-desc" id="task-desc">При сильном зуме растр пикселизуется. Переключите режим на «Векторный», выберите зум 2x или 4x и коснитесь центра геодезического репера.</p>
-      <div class="tool-box" id="task-controls"></div>
-      <div id="feedback" class="feedback-banner"></div>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="app_sidebar">
+      <div class="sidebar__brand">
+        <div>
+          <div class="brand-badge">ГИС и Картография</div>
+          <div class="brand-title">Лабораторный комплекс</div>
+        </div>
+      </div>
+      <nav class="sidebar__nav">
+        <div class="nav-label">Навигация</div>
+        <a href="index.html" class="nav-link"><span>Главная панель</span></a>
+        <div class="nav-label">Модули с картами</div>
+        <a href="p5-6.html" class="nav-link active">
+          <span>§ 5—6. Цифровая карта</span>
+          <span class="status-pill" id="badge_p5-6">0/3</span>
+        </a>
+        <a href="p7-8.html" class="nav-link">
+          <span>§ 7—8. Методы ДЗЗ</span>
+          <span class="status-pill" id="badge_p7-8">0/3</span>
+        </a>
+        <a href="p9-10.html" class="nav-link">
+          <span>§ 9—10. Технологии ГИС</span>
+          <span class="status-pill" id="badge_p9-10">0/3</span>
+        </a>
+        <a href="p11.html" class="nav-link">
+          <span>§ 11. Отрасли и ГИС</span>
+          <span class="status-pill" id="badge_p11">0/3</span>
+        </a>
+        <a href="p12.html" class="nav-link">
+          <span>§ 12. Географическая БД</span>
+          <span class="status-pill" id="badge_p12">0/3</span>
+        </a>
+      </nav>
     </aside>
 
-    <main class="viewport">
-      <div class="map-canvas-wrap" id="canvas-container">
-        <canvas id="gis-canvas"></canvas>
-      </div>
-      <div class="telemetry-bar">
-        <div>МАСШТАБ: <span id="scale-readout">1:25000</span> | РЕЖИМ: <span id="mode-readout">РАСТР</span></div>
-        <div>КООРД: <span id="cur-coords" style="color:var(--cyan)">X: 400.0, Y: 250.0</span> | OGC GML</div>
-      </div>
+    <main class="main-content">
+      <header class="page-header">
+        <div class="page-kicker">Тема 1. Моделирование карт</div>
+        <h1 class="page-title">§ 5—6. Цифровая модель карты</h1>
+        <p class="page-desc">Интерактивный анализ метрических и смысловых слоев, растрового и векторного масштабирования.</p>
+      </header>
+
+      <!-- TASK 1 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 1</span>
+          <span class="task-type">Инспекция объектов карты</span>
+        </div>
+        <h2 class="task-title">Анализ видов информации на цифровой карте местности</h2>
+        <p class="task-desc">Нажмите на объекты карты (геодезический репер, лесной массив, автодорога) для считывания параметров.</p>
+
+        <div class="map-workspace">
+          <div class="map-toolbar">
+            <span class="map-toolbar__title">Топокарта «Акбулак»</span>
+          </div>
+          <div class="map-svg-container">
+            <svg class="map-svg" viewBox="0 0 600 240">
+              <path d="M 20 200 Q 150 50 300 120 T 580 80" fill="none" stroke="#CBD5E1" stroke-width="2"/>
+              <polygon class="map-feature" points="120,40 260,30 290,130 180,160 100,100" fill="rgba(5, 150, 105, 0.15)" stroke="#059669" stroke-width="2"
+                       data-name="Лесной массив (Выдел 14)" data-geom="Полигон" data-coords="X: 68.324, Y: 49.812" data-attrs="Порода: Сосна; H = 20м; D = 25см; Возраст: 50 лет"/>
+              <line class="map-feature" x1="50" y1="230" x2="550" y2="40" stroke="#475569" stroke-width="4" stroke-dasharray="8,4"
+                    data-name="Лесовозная автодорога" data-geom="Линейный" data-coords="L = 14.8 км" data-attrs="Ширина полотна = 6м; Покрытие = гравий"/>
+              <circle class="map-feature" cx="440" cy="90" r="10" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"
+                      data-name="Геодезический пункт (Репер 104)" data-geom="Точечный" data-coords="X: 68.3912, Y: 49.8450, Z = 1542.0 м" data-attrs="Отметка рельефа = 1542.0 м над ур. моря"/>
+            </svg>
+          </div>
+          <div class="map-status-bar">
+            <span>Инспектор: <code class="map-coord-display">Нажмите на объект на карте</code></span>
+          </div>
+          <div class="map-inspector"></div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">1.1. К какой категории информации на карте относятся пространственные координаты (X, Y) и высота (Z = 1542 м) Репера 104?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p5-6_1_q1" value="A"><span>A) Смысловая информация</span></label>
+            <label class="choice-label"><input type="radio" name="t_p5-6_1_q1" value="B"><span>B) Размерная (метрическая) информация</span></label>
+            <label class="choice-label"><input type="radio" name="t_p5-6_1_q1" value="C"><span>C) Структурная информация</span></label>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">1.2. К какому виду информации относятся сведения о породе леса (сосна), высоте деревьев (20 м) и диаметре стволов (25 см)?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p5-6_1_q2" value="A"><span>A) Общая информация</span></label>
+            <label class="choice-label"><input type="radio" name="t_p5-6_1_q2" value="B"><span>B) Цифровая координатная основа</span></label>
+            <label class="choice-label"><input type="radio" name="t_p5-6_1_q2" value="C"><span>C) Смысловая информация</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p5-6_1">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p5-6_1"></div>
+      </article>
+
+      <!-- TASK 2 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 2</span>
+          <span class="task-type">Интерактивный зум-симулятор</span>
+        </div>
+        <h2 class="task-title">Сравнение растрового и векторного способов вывода карты</h2>
+        <p class="task-desc">Используйте кнопки [1x / 2x / 4x] для исследования поведения растровой матрицы и векторных линий при увеличении.</p>
+
+        <div class="map-workspace">
+          <div class="map-toolbar">
+            <span class="map-toolbar__title">Растр vs Вектор</span>
+            <div class="map-toolbar__actions">
+              <button class="btn btn--secondary" style="min-height: 36px; padding: 0 14px;" onclick="setMapZoom(1)">1x</button>
+              <button class="btn btn--secondary" style="min-height: 36px; padding: 0 14px;" onclick="setMapZoom(2)">2x</button>
+              <button class="btn btn--secondary" style="min-height: 36px; padding: 0 14px;" onclick="setMapZoom(4)">4x</button>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; background: #FFF; overflow: hidden;">
+            <div style="padding: 16px; border-right: 1px solid var(--hairline); text-align: center;">
+              <div style="font-family: var(--font-mono); font-size: 11px; margin-bottom: 6px;">РАСТР (МАТРИЦА)</div>
+              <svg id="raster_canvas_demo" style="width: 100px; height: 100px; transition: transform 200ms ease, filter 200ms ease;" viewBox="0 0 10 10">
+                <rect x="1" y="1" width="3" height="3" fill="#2563EB"/>
+                <rect x="4" y="1" width="3" height="3" fill="#60A5FA"/>
+                <rect x="1" y="4" width="3" height="3" fill="#93C5FD"/>
+                <rect x="4" y="4" width="3" height="3" fill="#1D4ED8"/>
+              </svg>
+            </div>
+            <div style="padding: 16px; text-align: center;">
+              <div style="font-family: var(--font-mono); font-size: 11px; margin-bottom: 6px;">ВЕКТОР (КРИВЫЕ)</div>
+              <svg id="vector_canvas_demo" style="width: 100px; height: 100px; transition: transform 200ms ease;" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#2563EB" stroke-width="4"/>
+                <line x1="15" y1="50" x2="85" y2="50" stroke="#059669" stroke-width="3"/>
+              </svg>
+            </div>
+          </div>
+          <div class="map-status-bar">
+            <span>Масштаб: <strong id="zoom_level_label">1x</strong></span>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.1. Почему для интерактивных административных границ района предпочтителен векторный способ?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p5-6_2_q1" value="A"><span>A) Вектор занимает больше памяти</span></label>
+            <label class="choice-label"><input type="radio" name="t_p5-6_2_q1" value="B"><span>B) Линии и геометрические фигуры не теряют четкости при масштабировании</span></label>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.2. Какой главный недостаток растрового способа указан в параграфе?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p5-6_2_q2" value="A"><span>A) При увеличении масштаба пиксели увеличиваются в размере и четкость уменьшается</span></label>
+            <label class="choice-label"><input type="radio" name="t_p5-6_2_q2" value="B"><span>B) Растровые карты нельзя отобразить на экране</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p5-6_2">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p5-6_2"></div>
+      </article>
+
+      <!-- TASK 3 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 3</span>
+          <span class="task-type">Классификация и технологии</span>
+        </div>
+        <h2 class="task-title">Классификация и методы создания цифровых карт</h2>
+        <p class="task-desc">Установите соответствие между типами карт по способу обработки данных и выберите методы их создания.</p>
+
+        <div class="sub-question">
+          <div class="sub-question__label">3.1. Сопоставьте тип цифровой карты с принципом отбора точек местности:</div>
+          <div class="match-grid">
+            <div class="match-source">1. Постенная карта</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p5-6_3_q1_1">
+                <option value="">-- Выберите принцип --</option>
+                <option value="A">Точки выделяются с учетом их частоты и плотности</option>
+                <option value="B">Указывают количественные и качественные характеристики объектов</option>
+                <option value="C">Точки определяют средний уровень рельефа местности</option>
+              </select>
+            </div>
+            <div class="match-source">2. Непрерывная карта</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p5-6_3_q1_2">
+                <option value="">-- Выберите принцип --</option>
+                <option value="A">Точки выделяются с учетом их частоты и плотности</option>
+                <option value="B">Указывают количественные и качественные характеристики объектов</option>
+                <option value="C">Точки определяют средний уровень рельефа местности</option>
+              </select>
+            </div>
+            <div class="match-source">3. Структурная карта</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p5-6_3_q1_3">
+                <option value="">-- Выберите принцип --</option>
+                <option value="A">Точки выделяются с учетом их частоты и плотности</option>
+                <option value="B">Указывают количественные и качественные характеристики объектов</option>
+                <option value="C">Точки определяют средний уровень рельефа местности</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">3.2. Какими способами создаются цифровые карты? (Выберите все верные варианты):</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="checkbox" name="t_p5-6_3_q2" value="A"><span>A) Перевод традиционных бумажных карт в цифровой формат</span></label>
+            <label class="choice-label"><input type="checkbox" name="t_p5-6_3_q2" value="B"><span>B) Фотограмметрическая обработка данных дистанционного зондирования (ДЗЗ)</span></label>
+            <label class="choice-label"><input type="checkbox" name="t_p5-6_3_q2" value="C"><span>C) Полевые тахеометрические или спутниковые съемки</span></label>
+            <label class="choice-label"><input type="checkbox" name="t_p5-6_3_q2" value="D"><span>D) Камеральная обработка данных полевых съемок</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p5-6_3">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p5-6_3"></div>
+      </article>
     </main>
   </div>
-
-  <script>
-    const V_WIDTH = 800, V_HEIGHT = 500;
-    let currentTask = 1;
-    const canvas = document.getElementById('gis-canvas');
-    const ctx = canvas.getContext('2d');
-    let scale = 1, offsetX = 0, offsetY = 0;
-
-    // Task 1 State
-    let t1_mode = 'raster';
-    let t1_zoom = 1;
-    let t1_found = false;
-
-    // Task 2 State
-    let t2_filter = 'all';
-    let t2_selectedObj = null;
-    let t2_pipeConnected = false;
-    let t2_objects = [
-      { id: 1, type: 'metric', name: 'Высотная отметка 418.2м', vx: 220, vy: 160, r: 24, checked: false },
-      { id: 2, type: 'semantic', name: 'Лесной массив (Береза 85%)', vx: 580, vy: 170, r: 50, checked: false },
-      { id: 3, type: 'structural', name: 'Скважина №4', vx: 280, vy: 360, r: 26 },
-      { id: 4, type: 'structural', name: 'Водонапорный резервуар', vx: 520, vy: 360, r: 28 }
-    ];
-
-    // Task 3 State
-    let t3_mapType = 'postennaya';
-    let t3_points = [
-      { vx: 180, vy: 140, h: 320, val: 'Плотность: Выс.' },
-      { vx: 320, vy: 200, h: 340, val: 'Категория А' },
-      { vx: 520, vy: 150, h: 320, val: 'Плотность: Сред.' },
-      { vx: 240, vy: 340, h: 380, val: 'Категория B' },
-      { vx: 440, vy: 310, h: 380, val: 'Плотность: Выс.' },
-      { vx: 620, vy: 300, h: 340, val: 'Категория А' }
-    ];
-
-    function resize() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      
-      const scaleX = rect.width / V_WIDTH;
-      const scaleY = rect.height / V_HEIGHT;
-      scale = Math.min(scaleX, scaleY);
-      offsetX = (rect.width - V_WIDTH * scale) / 2;
-      offsetY = (rect.height - V_HEIGHT * scale) / 2;
-      
-      ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr);
-      render();
-    }
-    window.addEventListener('resize', resize);
-
-    function toVirtual(clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      const screenX = clientX - rect.left;
-      const screenY = clientY - rect.top;
-      return {
-        vx: (screenX - offsetX) / scale,
-        vy: (screenY - offsetY) / scale
-      };
-    }
-
-    function switchTask(taskId) {
-      currentTask = taskId;
-      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === taskId - 1));
-      const controls = document.getElementById('task-controls');
-      const badge = document.getElementById('task-badge');
-      const title = document.getElementById('task-title');
-      const desc = document.getElementById('task-desc');
-      const fb = document.getElementById('feedback');
-      fb.style.display = 'none';
-
-      if (taskId === 1) {
-        badge.innerText = 'ЭТАП 1 ИЗ 3';
-        title.innerText = 'Растр против вектора';
-        desc.innerText = 'На растровой матрице при 4x увеличении знак пикселизуется. Переключитесь на Векторный режим и коснитесь центра геодезического репера (X: 400, Y: 250).';
-        controls.innerHTML = `
-          <div class="tool-label">Режим отображения</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-            <button class="btn ${t1_mode==='raster'?'active':''}" onclick="setT1Mode('raster')">Растровый</button>
-            <button class="btn ${t1_mode==='vector'?'active':''}" onclick="setT1Mode('vector')">Векторный</button>
-          </div>
-          <div class="tool-label" style="margin-top:6px;">Масштаб</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-            <button class="btn ${t1_zoom===1?'active':''}" onclick="setT1Zoom(1)">1x</button>
-            <button class="btn ${t1_zoom===2?'active':''}" onclick="setT1Zoom(2)">2x</button>
-            <button class="btn ${t1_zoom===4?'active':''}" onclick="setT1Zoom(4)">4x Zoom</button>
-          </div>
-        `;
-      } else if (taskId === 2) {
-        badge.innerText = 'ЭТАП 2 ИЗ 3';
-        title.innerText = 'Информационные слои и топология';
-        desc.innerText = 'Изучите слои карты. Для построения структурного слоя коснитесь сначала Скважины, затем Резервуара, чтобы связать их вектором водопровода.';
-        controls.innerHTML = `
-          <div class="tool-label">Фильтр слоя карты</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-            <button class="btn ${t2_filter==='all'?'active':''}" onclick="setT2Filter('all')">Все слои</button>
-            <button class="btn ${t2_filter==='metric'?'active':''}" onclick="setT2Filter('metric')">Размерный</button>
-            <button class="btn ${t2_filter==='semantic'?'active':''}" onclick="setT2Filter('semantic')">Смысловой</button>
-            <button class="btn ${t2_filter==='structural'?'active':''}" onclick="setT2Filter('structural')">Структурный</button>
-          </div>
-        `;
-      } else if (taskId === 3) {
-        badge.innerText = 'ЭТАП 3 ИЗ 3';
-        title.innerText = 'Карты рельефа';
-        desc.innerText = 'Переключайте режимы отображения рельефа холмистой местности: постенная карта (показатели), непрерывная (плотность) и структурная (изолинии).';
-        controls.innerHTML = `
-          <div class="tool-label">Тип цифровой карты</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn ${t3_mapType==='postennaya'?'active':''}" onclick="setT3Type('postennaya')">Постенная карта</button>
-            <button class="btn ${t3_mapType==='continuous'?'active':''}" onclick="setT3Type('continuous')">Непрерывная карта</button>
-            <button class="btn ${t3_mapType==='structural'?'active':''}" onclick="setT3Type('structural')">Структурная карта</button>
-          </div>
-        `;
-      }
-      render();
-    }
-
-    function setT1Mode(m) { t1_mode = m; document.getElementById('mode-readout').innerText = m.toUpperCase(); switchTask(1); }
-    function setT1Zoom(z) { t1_zoom = z; document.getElementById('scale-readout').innerText = z===1?'1:25000':z===2?'1:10000':'1:2500'; switchTask(1); }
-    function setT2Filter(f) { t2_filter = f; switchTask(2); }
-    function setT3Type(t) { 
-      t3_mapType = t; 
-      switchTask(3);
-      const fb = document.getElementById('feedback');
-      fb.className = 'feedback-banner feedback-success';
-      fb.style.display = 'block';
-      fb.innerText = t === 'postennaya' ? '✓ Постенная карта: визуализированы качественные и количественные маркеры.' :
-                     t === 'continuous' ? '✓ Непрерывная карта: точки объединены в градиентное поле плотности.' :
-                     '✓ Структурная карта: построены сечения и изолинии среднего уровня рельефа.';
-    }
-
-    canvas.addEventListener('pointerdown', (e) => {
-      const { vx, vy } = toVirtual(e.clientX, e.clientY);
-      document.getElementById('cur-coords').innerText = `X: ${Math.max(0, vx).toFixed(1)}, Y: ${Math.max(0, vy).toFixed(1)}`;
-
-      if (currentTask === 1) {
-        if (Math.hypot(vx - 400, vy - 250) < 45) {
-          if (t1_mode === 'vector' && t1_zoom >= 2) {
-            t1_found = true;
-            const fb = document.getElementById('feedback');
-            fb.className = 'feedback-banner feedback-success';
-            fb.style.display = 'block';
-            fb.innerText = '✓ Репер зафиксирован! Метрические координаты: 400.00 E, 250.00 N (OGC GML).';
-          } else {
-            const fb = document.getElementById('feedback');
-            fb.className = 'feedback-banner feedback-info';
-            fb.style.display = 'block';
-            fb.innerText = 'Разрешение растра недостаточно. Включите «Векторный» режим и 2x/4x Zoom.';
-          }
-        }
-      } else if (currentTask === 2) {
-        t2_objects.forEach(obj => {
-          if (Math.hypot(vx - obj.vx, vy - obj.vy) < obj.r + 15) {
-            if (obj.type === 'metric') {
-              obj.checked = true;
-              showMsg('✓ Размерные данные: Рельеф H=418.2м занесен в формуляр.');
-            } else if (obj.type === 'semantic') {
-              obj.checked = true;
-              showMsg('✓ Смысловые данные: Прикреплены характеристики древостоя (Береза 85%).');
-            } else if (obj.type === 'structural') {
-              if (!t2_selectedObj) {
-                t2_selectedObj = obj;
-                showMsg('Начальная точка: ' + obj.name + '. Теперь коснитесь Резервуара.');
-              } else if (t2_selectedObj.id !== obj.id) {
-                t2_pipeConnected = true;
-                t2_selectedObj = null;
-                showMsg('✓ Топологическая связь замкнута: Вектор водопровода активен!');
-              }
-            }
-          }
-        });
-      }
-      render();
-    });
-
-    function showMsg(txt) {
-      const fb = document.getElementById('feedback');
-      fb.className = 'feedback-banner feedback-success';
-      fb.style.display = 'block';
-      fb.innerText = txt;
-    }
-
-    function render() {
-      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
-
-      // Coordinate Grid
-      ctx.strokeStyle = '#151b26';
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= V_WIDTH; x += 50) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, V_HEIGHT); ctx.stroke();
-      }
-      for (let y = 0; y <= V_HEIGHT; y += 50) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(V_WIDTH, y); ctx.stroke();
-      }
-
-      if (currentTask === 1) {
-        if (t1_mode === 'raster') {
-          const pSize = t1_zoom === 1 ? 8 : t1_zoom === 2 ? 22 : 44;
-          for (let x = 120; x < 680; x += pSize) {
-            for (let y = 80; y < 420; y += pSize) {
-              const dist = Math.hypot(x - 400, y - 250);
-              const val = Math.sin(x * 0.02) * Math.cos(y * 0.02) + (dist < 90 ? 0.6 : 0.2);
-              const c = Math.floor(25 + val * 45);
-              ctx.fillStyle = `rgb(${c}, ${c+15}, ${c+10})`;
-              ctx.fillRect(x, y, pSize - 1, pSize - 1);
-            }
-          }
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillRect(400 - pSize, 250 - pSize, pSize * 2, pSize * 2);
-        } else {
-          ctx.strokeStyle = '#2dd4bf';
-          ctx.lineWidth = 2;
-          for (let r = 40; r <= 160; r += 40) {
-            ctx.beginPath();
-            ctx.ellipse(400, 250, r * 1.3, r, 0.2, 0, Math.PI * 2);
-            ctx.stroke();
-          }
-          ctx.fillStyle = '#00d285';
-          ctx.beginPath(); ctx.arc(400, 250, 9, 0, Math.PI * 2); ctx.fill();
-          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-
-          ctx.font = '13px JetBrains Mono';
-          ctx.fillStyle = '#fff';
-          ctx.fillText('ГЕО-РЕПЕР №104 (400.0, 250.0)', 418, 245);
-        }
-
-        if (t1_found) {
-          ctx.strokeStyle = '#00d285';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([4, 4]);
-          ctx.strokeRect(350, 200, 100, 100);
-          ctx.setLineDash([]);
-          ctx.fillStyle = '#00d285';
-          ctx.font = '12px JetBrains Mono';
-          ctx.fillText('ФИКСИРОВАНО ✓', 355, 190);
-        }
-      } else if (currentTask === 2) {
-        if (t2_filter === 'all' || t2_filter === 'semantic') {
-          ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-          ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.ellipse(580, 170, 90, 60, 0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = '#a7f3d0'; ctx.font = '13px Inter';
-          ctx.fillText('Лесной массив кв. 14', 510, 175);
-        }
-        if (t2_filter === 'all' || t2_filter === 'metric') {
-          ctx.fillStyle = '#38bdf8';
-          ctx.beginPath(); ctx.arc(220, 160, 8, 0, Math.PI*2); ctx.fill();
-          ctx.font = '12px JetBrains Mono'; ctx.fillStyle = '#7dd3fc';
-          ctx.fillText('▲ 418.2м [X:220, Y:160]', 235, 165);
-        }
-        if (t2_filter === 'all' || t2_filter === 'structural') {
-          ctx.fillStyle = '#f59e0b';
-          ctx.beginPath(); ctx.arc(280, 360, 10, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#fde68a'; ctx.font = '12px Inter';
-          ctx.fillText('Скважина №4', 235, 395);
-
-          ctx.fillStyle = '#6366f1';
-          ctx.fillRect(505, 345, 30, 30);
-          ctx.fillStyle = '#c7d2fe';
-          ctx.fillText('Резервуар', 490, 395);
-
-          if (t2_pipeConnected) {
-            ctx.strokeStyle = '#00d285'; ctx.lineWidth = 4;
-            ctx.beginPath(); ctx.moveTo(280, 360); ctx.lineTo(520, 360); ctx.stroke();
-            ctx.fillStyle = '#00d285'; ctx.font = '11px JetBrains Mono';
-            ctx.fillText('ТОПОЛОГИЧЕСКИЙ ВЕКТОР ВОДОПРОВОДА [АКТИВЕН]', 250, 345);
-          } else if (t2_selectedObj) {
-            ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.setLineDash([6, 6]);
-            ctx.beginPath(); ctx.moveTo(280, 360); ctx.lineTo(520, 360); ctx.stroke();
-            ctx.setLineDash([]);
-          }
-        }
-      } else if (currentTask === 3) {
-        if (t3_mapType === 'postennaya') {
-          t3_points.forEach(p => {
-            ctx.fillStyle = '#f43f5e';
-            ctx.beginPath(); ctx.arc(p.vx, p.vy, 8, 0, Math.PI*2); ctx.fill();
-            ctx.font = '11px JetBrains Mono'; ctx.fillStyle = '#fda4af';
-            ctx.fillText(`${p.val} (H=${p.h}м)`, p.vx + 12, p.vy + 4);
-          });
-        } else if (t3_mapType === 'continuous') {
-          t3_points.forEach(p => {
-            const grad = ctx.createRadialGradient(p.vx, p.vy, 10, p.vx, p.vy, 90);
-            grad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
-            grad.addColorStop(1, 'transparent');
-            ctx.fillStyle = grad;
-            ctx.beginPath(); ctx.arc(p.vx, p.vy, 90, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#38bdf8';
-            ctx.beginPath(); ctx.arc(p.vx, p.vy, 4, 0, Math.PI*2); ctx.fill();
-          });
-        } else if (t3_mapType === 'structural') {
-          ctx.strokeStyle = '#eab308'; ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(140, 130); ctx.quadraticCurveTo(320, 100, 560, 150); ctx.stroke();
-          ctx.fillStyle = '#fef08a'; ctx.font = '12px JetBrains Mono';
-          ctx.fillText('Изолиния 320м (Средний уровень)', 280, 115);
-
-          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(180, 350); ctx.quadraticCurveTo(360, 310, 520, 320); ctx.stroke();
-          ctx.fillStyle = '#fca5a5';
-          ctx.fillText('Изолиния 380м (Водораздел)', 280, 305);
-        }
-      }
-    }
-
-    resize();
-    switchTask(1);
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

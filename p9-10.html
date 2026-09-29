@@ -2,271 +2,219 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>§ 9—10. Методы ГИС-технологий</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #090b0e; --panel: #11151d; --panel-2: #181f2b;
-      --hairline: #222b3d; --ink: #f0f4f8; --ink-muted: #8594a6;
-      --accent: #00d285; --accent-soft: rgba(0, 210, 133, 0.15);
-      --cyan: #38bdf8; --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-    .nav { min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; gap: 0.5rem; }
-    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
-    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--panel-2); }
-    .nav-title { font-size: 0.85rem; font-weight: 600; }
-    .tabs { display: flex; gap: 4px; overflow-x: auto; width: 100%; padding-bottom: 2px; }
-    @media(min-width: 768px) { .tabs { width: auto; } }
-    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; white-space: nowrap; min-height: 40px; }
-    .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
-    .workspace { flex: 1; display: grid; grid-template-columns: 1fr; }
-    @media(min-width: 860px) { .workspace { grid-template-columns: 340px 1fr; height: calc(100vh - 52px); overflow: hidden; } }
-    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
-    .viewport { position: relative; background: #05070a; display: flex; flex-direction: column; min-height: 380px; }
-    .step-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); text-transform: uppercase; }
-    .task-title { font-size: 1.1rem; font-weight: 600; }
-    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.45; }
-    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
-    .tool-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
-    .layer-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--panel); border: 1px solid var(--hairline); border-radius: 6px; font-size: 0.8rem; }
-    .btn { background: var(--panel-2); border: 1px solid var(--hairline); color: var(--ink); padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; }
-    .btn:active, .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
-    .map-canvas-wrap { flex: 1; position: relative; width: 100%; min-height: 340px; touch-action: none; cursor: crosshair; }
-    canvas { width: 100%; height: 100%; display: block; }
-    .telemetry-bar { background: var(--panel); border-top: 1px solid var(--hairline); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
-    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.8rem; display: none; }
-    .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>§ 9—10. Особенности геоинформационных методов и ГИС-технологий</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="nav">
-    <div class="nav-left">
-      <a href="index.html" class="back-btn">← МЕНЮ</a>
-      <div class="nav-title">§ 9—10. Методы ГИС-технологий</div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTask(1)">1. СЛОИ ГИС</button>
-      <button class="tab-btn" onclick="switchTask(2)">2. БУФЕРНАЯ ЗОНА</button>
-      <button class="tab-btn" onclick="switchTask(3)">3. КАЛЬКУЛЯТОР</button>
-    </div>
+  <header class="mobile-header">
+    <button class="menu-toggle-btn" id="mobile_menu_toggle" aria-label="Меню">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-header__title">§ 9—10. Технологии ГИС</div>
+    <span class="status-pill done" id="mobile_header_progress">0/15</span>
   </header>
 
-  <div class="workspace">
-    <aside class="sidebar">
-      <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
-      <h2 class="task-title" id="task-title">Сборка многослойного пирога ГИС</h2>
-      <p class="task-desc" id="task-desc">Концепция ГИС основана на слоях: рельеф, гидрография, дороги и объекты инфраструктуры.</p>
-      <div class="tool-box" id="task-controls"></div>
-      <div id="feedback" class="feedback-banner"></div>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="app_sidebar">
+      <div class="sidebar__brand">
+        <div>
+          <div class="brand-badge">ГИС и Картография</div>
+          <div class="brand-title">Лабораторный комплекс</div>
+        </div>
+      </div>
+      <nav class="sidebar__nav">
+        <div class="nav-label">Навигация</div>
+        <a href="index.html" class="nav-link"><span>Главная панель</span></a>
+        <div class="nav-label">Модули с картами</div>
+        <a href="p5-6.html" class="nav-link">
+          <span>§ 5—6. Цифровая карта</span>
+          <span class="status-pill" id="badge_p5-6">0/3</span>
+        </a>
+        <a href="p7-8.html" class="nav-link">
+          <span>§ 7—8. Методы ДЗЗ</span>
+          <span class="status-pill" id="badge_p7-8">0/3</span>
+        </a>
+        <a href="p9-10.html" class="nav-link active">
+          <span>§ 9—10. Технологии ГИС</span>
+          <span class="status-pill" id="badge_p9-10">0/3</span>
+        </a>
+        <a href="p11.html" class="nav-link">
+          <span>§ 11. Отрасли и ГИС</span>
+          <span class="status-pill" id="badge_p11">0/3</span>
+        </a>
+        <a href="p12.html" class="nav-link">
+          <span>§ 12. Географическая БД</span>
+          <span class="status-pill" id="badge_p12">0/3</span>
+        </a>
+      </nav>
     </aside>
 
-    <main class="viewport">
-      <div class="map-canvas-wrap">
-        <canvas id="gis-canvas"></canvas>
-      </div>
-      <div class="telemetry-bar">
-        <div>ПЛАТФОРМА: MapInfo Professional / ГеоГраф</div>
-        <div style="color:var(--cyan)">SPATIAL SQL: АКТИВЕН</div>
-      </div>
+    <main class="main-content">
+      <header class="page-header">
+        <div class="page-kicker">Тема 3. Архитектура ГИС</div>
+        <h1 class="page-title">§ 9—10. Особенности ГИС-технологий и слои</h1>
+        <p class="page-desc">Интерактивный конструктор многослойных электронных карт, буферный пространственный анализ и софт.</p>
+      </header>
+
+      <!-- TASK 1 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 1</span>
+          <span class="task-type">Конструктор иерархии слоев</span>
+        </div>
+        <h2 class="task-title">Проектирование многослойной электронной карты ЧС</h2>
+        <p class="task-desc">Используйте кнопки [▲ / ▼] для расстановки слоев в правильном порядке отображения (СНИЗУ ВВЕРХ: от опорного топографического слоя к точечным накладным событиям).</p>
+
+        <div class="layer-list" id="sorter_t_p9-10_1_q1">
+          <div class="layer-item" data-layer-id="layer_fires">
+            <span class="layer-item-title">🔴 Точечный слой: Очаги лесных пожаров</span>
+            <div class="layer-controls">
+              <button class="btn-icon" onclick="moveLayerItem(this, -1)">▲</button>
+              <button class="btn-icon" onclick="moveLayerItem(this, 1)">▼</button>
+            </div>
+          </div>
+          <div class="layer-item" data-layer-id="layer_roads">
+            <span class="layer-item-title">🛣️ Линейный слой: Сеть квартальных дорог</span>
+            <div class="layer-controls">
+              <button class="btn-icon" onclick="moveLayerItem(this, -1)">▲</button>
+              <button class="btn-icon" onclick="moveLayerItem(this, 1)">▼</button>
+            </div>
+          </div>
+          <div class="layer-item" data-layer-id="layer_forest">
+            <span class="layer-item-title">🌲 Полигональный слой: Лесные массивы</span>
+            <div class="layer-controls">
+              <button class="btn-icon" onclick="moveLayerItem(this, -1)">▲</button>
+              <button class="btn-icon" onclick="moveLayerItem(this, 1)">▼</button>
+            </div>
+          </div>
+          <div class="layer-item" data-layer-id="layer_base">
+            <span class="layer-item-title">🗺️ Опорный базовый слой: Рельеф местности</span>
+            <div class="layer-controls">
+              <button class="btn-icon" onclick="moveLayerItem(this, -1)">▲</button>
+              <button class="btn-icon" onclick="moveLayerItem(this, 1)">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-question" style="margin-top: 16px;">
+          <div class="sub-question__label">1.2. Какую ключевую функцию выполняет опорный (базовый) слой в концепции ГИС?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p9-10_1_q2" value="A"><span>A) Хранит статистику чрезвычайных ситуаций за текущий день</span></label>
+            <label class="choice-label"><input type="radio" name="t_p9-10_1_q2" value="B"><span>B) Характеризует географическое положение территории, на которое накладываются все тематические слои</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p9-10_1">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p9-10_1"></div>
+      </article>
+
+      <!-- TASK 2 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 2</span>
+          <span class="task-type">Интерактивный буферный анализ</span>
+        </div>
+        <h2 class="task-title">Пространственный анализ и специализированное ПО</h2>
+        <p class="task-desc">Нажмите на русло реки или пашню на карте для инспекции водоохранной буферной зоны 500 метров.</p>
+
+        <div class="map-workspace">
+          <div class="map-toolbar">
+            <span class="map-toolbar__title">Буферная зона реки Есиль</span>
+          </div>
+          <div class="map-svg-container">
+            <svg class="map-svg" viewBox="0 0 600 220">
+              <path class="map-feature" d="M 30,190 Q 180,40 320,160 T 570,70" fill="none" stroke="#2563EB" stroke-width="5"
+                    data-name="Река Есиль" data-geom="Гидрография" data-coords="L = 84.2 км" data-attrs="Ширина русла = 45м; Водоохранная полоса = 500м"/>
+              <path d="M 30,190 Q 180,40 320,160 T 570,70" fill="none" stroke="rgba(37, 99, 235, 0.25)" stroke-width="40" stroke-linecap="round"/>
+              <polygon class="map-feature" points="140,20 250,15 240,70 120,60" fill="rgba(217, 119, 6, 0.2)" stroke="#D97706" stroke-width="2"
+                       data-name="Участок №108" data-geom="Полигон" data-coords="S = 4.2 га" data-attrs="Назначение: Пашня; Ограничение: попадает в 500м буфер"/>
+            </svg>
+          </div>
+          <div class="map-status-bar">
+            <span>Инспектор: <code class="map-coord-display">Нажмите на реку или контур участка</code></span>
+          </div>
+          <div class="map-inspector"></div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.1. Какая программа специализирована для выполнения геометрических функций (расчет площадей, периметров, буферных зон и SQL-запросов)?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p9-10_2_q1" value="A"><span>A) Adobe Photoshop</span></label>
+            <label class="choice-label"><input type="radio" name="t_p9-10_2_q1" value="B"><span>B) MapInfo Professional</span></label>
+            <label class="choice-label"><input type="radio" name="t_p9-10_2_q1" value="C"><span>C) Corel Painter</span></label>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.2. Какой результат дает операция создания буферной зоны вокруг группы объектов?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p9-10_2_q2" value="A"><span>A) Формирует полигональную зону заданного радиуса/расстояния вокруг объектов</span></label>
+            <label class="choice-label"><input type="radio" name="t_p9-10_2_q2" value="B"><span>B) Удаляет атрибуты объектов из базы данных</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p9-10_2">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p9-10_2"></div>
+      </article>
+
+      <!-- TASK 3 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 3</span>
+          <span class="task-type">Архитектура ГеоГраф ГИС</span>
+        </div>
+        <h2 class="task-title">Структура трех типов рабочих объектов в «ГеоГраф ГИС»</h2>
+        <p class="task-desc">Соотнесите объекты системы с их назначением.</p>
+
+        <div class="sub-question">
+          <div class="match-grid">
+            <div class="match-source">1. Первый объект (Слой)</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p9-10_3_q1_1">
+                <option value="">-- Назначение --</option>
+                <option value="A">Методы манипуляций: внедрение диаграмм, картограмм</option>
+                <option value="B">Передает пространственные данные с таблицей атрибутов</option>
+                <option value="C">Набор карт и макетов для точного отражения данных</option>
+              </select>
+            </div>
+            <div class="match-source">2. Второй объект (Макеты)</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p9-10_3_q1_2">
+                <option value="">-- Назначение --</option>
+                <option value="A">Методы манипуляций: внедрение диаграмм, картограмм</option>
+                <option value="B">Передает пространственные данные с таблицей атрибутов</option>
+                <option value="C">Набор карт и макетов для точного отражения данных</option>
+              </select>
+            </div>
+            <div class="match-source">3. Третий объект (Манипуляция)</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p9-10_3_q1_3">
+                <option value="">-- Назначение --</option>
+                <option value="A">Методы манипуляций: внедрение диаграмм, картограмм</option>
+                <option value="B">Передает пространственные данные с таблицей атрибутов</option>
+                <option value="C">Набор карт и макетов для точного отражения данных</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p9-10_3">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p9-10_3"></div>
+      </article>
     </main>
   </div>
-
-  <script>
-    const V_WIDTH = 800, V_HEIGHT = 500;
-    let currentTask = 1;
-    const canvas = document.getElementById('gis-canvas');
-    const ctx = canvas.getContext('2d');
-    let scale = 1, offsetX = 0, offsetY = 0;
-
-    let t1_layers = { base: true, hydro: false, roads: false, poi: false };
-    let t2_bufferRadius = 0;
-    let t2_violators = [
-      { name: 'Жилой дом №12', vx: 380, vy: 210 },
-      { name: 'Хозпостройка', vx: 480, vy: 240 },
-      { name: 'Склад ГСМ', vx: 250, vy: 350 }
-    ];
-    let t3_polyCalculated = false, t3_contoursVisible = false;
-
-    function resize() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      const scaleX = rect.width / V_WIDTH;
-      const scaleY = rect.height / V_HEIGHT;
-      scale = Math.min(scaleX, scaleY);
-      offsetX = (rect.width - V_WIDTH * scale) / 2;
-      offsetY = (rect.height - V_HEIGHT * scale) / 2;
-      ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr);
-      render();
-    }
-    window.addEventListener('resize', resize);
-
-    function switchTask(taskId) {
-      currentTask = taskId;
-      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === taskId - 1));
-      const controls = document.getElementById('task-controls');
-      const badge = document.getElementById('task-badge');
-      const title = document.getElementById('task-title');
-      const desc = document.getElementById('task-desc');
-      const fb = document.getElementById('feedback');
-      fb.style.display = 'none';
-
-      if (taskId === 1) {
-        badge.innerText = 'ЭТАП 1 ИЗ 3';
-        title.innerText = 'Сборка многослойного пирога ГИС';
-        desc.innerText = 'Включите все 4 слоя карты в правильном порядке.';
-        controls.innerHTML = `
-          <div class="tool-label">Слои карты</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <label class="layer-item"><span>1. Опорный рельеф</span> <input type="checkbox" ${t1_layers.base?'checked':''} onchange="toggleL('base')"></label>
-            <label class="layer-item"><span>2. Гидрография (р. Есиль)</span> <input type="checkbox" ${t1_layers.hydro?'checked':''} onchange="toggleL('hydro')"></label>
-            <label class="layer-item"><span>3. Дорожная сеть</span> <input type="checkbox" ${t1_layers.roads?'checked':''} onchange="toggleL('roads')"></label>
-            <label class="layer-item"><span>4. Инфраструктура</span> <input type="checkbox" ${t1_layers.poi?'checked':''} onchange="toggleL('poi')"></label>
-          </div>
-        `;
-      } else if (taskId === 2) {
-        badge.innerText = 'ЭТАП 2 ИЗ 3';
-        title.innerText = 'Буферная зона безопасности';
-        desc.innerText = 'Задайте нормативный буфер 500 м вокруг магистрального трубопровода для детекции нарушений.';
-        controls.innerHTML = `
-          <div class="tool-label">Радиус буфера</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-            <button class="btn ${t2_bufferRadius===0?'active':''}" onclick="setBuffer(0)">0 м</button>
-            <button class="btn ${t2_bufferRadius===250?'active':''}" onclick="setBuffer(250)">250 м</button>
-            <button class="btn ${t2_bufferRadius===500?'active':''}" onclick="setBuffer(500)">500 м</button>
-          </div>
-        `;
-      } else if (taskId === 3) {
-        badge.innerText = 'ЭТАП 3 ИЗ 3';
-        title.innerText = 'Метрический калькулятор и изолинии';
-        desc.innerText = 'Рассчитайте площадь лесного полигона и сгенерируйте изолинии равных высот.';
-        controls.innerHTML = `
-          <div class="tool-label">Пространственный анализ</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn ${t3_polyCalculated?'active':''}" onclick="calcPoly()">Рассчитать площадь (S) и периметр</button>
-            <button class="btn ${t3_contoursVisible?'active':''}" onclick="toggleContours()">Построить изолинии высот</button>
-          </div>
-        `;
-      }
-      render();
-    }
-
-    function toggleL(k) {
-      t1_layers[k] = !t1_layers[k];
-      if (Object.values(t1_layers).every(v=>v)) {
-        const fb = document.getElementById('feedback');
-        fb.className = 'feedback-banner feedback-success';
-        fb.style.display = 'block';
-        fb.innerText = '✓ Многослойный ГИС-пирог успешно собран!';
-      }
-      switchTask(1);
-    }
-    function setBuffer(r) {
-      t2_bufferRadius = r;
-      if (r === 500) {
-        const fb = document.getElementById('feedback');
-        fb.className = 'feedback-banner feedback-success';
-        fb.style.display = 'block';
-        fb.innerText = '✓ Буфер 500м активен! Выявлены нарушения: Жилой дом и Хозпостройка в зоне отчуждения.';
-      }
-      switchTask(2);
-    }
-    function calcPoly() {
-      t3_polyCalculated = true;
-      const fb = document.getElementById('feedback');
-      fb.className = 'feedback-banner feedback-success';
-      fb.style.display = 'block';
-      fb.innerText = '✓ Площадь S = 142.8 га | Периметр P = 4.92 км.';
-      switchTask(3);
-    }
-    function toggleContours() { t3_contoursVisible = !t3_contoursVisible; switchTask(3); }
-
-    function render() {
-      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
-
-      if (currentTask === 1) {
-        if (t1_layers.base) {
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(80, 60, 640, 380);
-          ctx.strokeStyle = '#334155'; ctx.strokeRect(80, 60, 640, 380);
-          ctx.fillStyle = '#64748b'; ctx.font = '12px JetBrains Mono';
-          ctx.fillText('[СЛОЙ 1]: Опорный рельеф', 100, 90);
-        }
-        if (t1_layers.hydro) {
-          ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 10;
-          ctx.beginPath(); ctx.moveTo(100, 320); ctx.bezierCurveTo(300, 260, 450, 410, 700, 230); ctx.stroke();
-          ctx.fillStyle = '#38bdf8'; ctx.fillText('[СЛОЙ 2]: Русло реки Есиль', 320, 300);
-        }
-        if (t1_layers.roads) {
-          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4;
-          ctx.beginPath(); ctx.moveTo(180, 80); ctx.lineTo(500, 420); ctx.stroke();
-          ctx.fillStyle = '#fbbf24'; ctx.fillText('[СЛОЙ 3]: Автомагистраль М-36', 360, 260);
-        }
-        if (t1_layers.poi) {
-          ctx.fillStyle = '#00d285';
-          ctx.beginPath(); ctx.arc(520, 160, 9, 0, Math.PI*2); ctx.fill();
-          ctx.fillText('● [СЛОЙ 4]: Метеостанция', 535, 165);
-        }
-      } else if (currentTask === 2) {
-        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 6;
-        ctx.beginPath(); ctx.moveTo(80, 280); ctx.lineTo(720, 280); ctx.stroke();
-        ctx.fillStyle = '#cbd5e1'; ctx.font = '12px JetBrains Mono';
-        ctx.fillText('МАГИСТРАЛЬНЫЙ ТРУБОПРОВОД ВЫСОКОГО ДАВЛЕНИЯ', 180, 265);
-
-        if (t2_bufferRadius > 0) {
-          const bH = t2_bufferRadius === 250 ? 40 : 80;
-          ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
-          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]);
-          ctx.fillRect(80, 280 - bH, 640, bH * 2);
-          ctx.strokeRect(80, 280 - bH, 640, bH * 2);
-          ctx.setLineDash([]);
-          ctx.fillStyle = '#fca5a5';
-          ctx.fillText(`БУФЕРНАЯ ЗОНА: ${t2_bufferRadius} МЕТРОВ`, 100, 280 - bH - 6);
-        }
-
-        t2_violators.forEach(v => {
-          const inBuf = t2_bufferRadius === 500 && Math.abs(v.vy - 280) <= 80;
-          ctx.fillStyle = inBuf ? '#ef4444' : '#00d285';
-          ctx.fillRect(v.vx - 9, v.vy - 9, 18, 18);
-          ctx.fillStyle = '#fff'; ctx.font = '11px Inter';
-          ctx.fillText(v.name + (inBuf ? ' [НАРУШЕНИЕ]' : ''), v.vx + 14, v.vy + 4);
-        });
-      } else if (currentTask === 3) {
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
-        ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(220, 140); ctx.lineTo(480, 120); ctx.lineTo(580, 260); ctx.lineTo(380, 340); ctx.lineTo(200, 240);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        ctx.fillStyle = '#a7f3d0'; ctx.font = '13px Inter';
-        ctx.fillText('Полигон лесного фонда №7', 280, 220);
-
-        if (t3_polyCalculated) {
-          ctx.fillStyle = '#00d285'; ctx.font = '12px JetBrains Mono';
-          ctx.fillText('S = 142.8 га | P = 4.92 км', 280, 245);
-        }
-
-        if (t3_contoursVisible) {
-          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5;
-          for (let i = 0; i < 4; i++) {
-            ctx.beginPath();
-            ctx.ellipse(390, 220, 200 - i*35, 140 - i*25, 0.1, 0, Math.PI*2);
-            ctx.stroke();
-          }
-          ctx.fillStyle = '#7dd3fc';
-          ctx.fillText('Изолинии рельефа (шаг 5.0м)', 400, 95);
-        }
-      }
-    }
-
-    resize();
-    switchTask(1);
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

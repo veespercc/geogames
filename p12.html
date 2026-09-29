@@ -2,272 +2,221 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>§ 12. Географическая база данных</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #07090d; --panel: #0f131a; --panel-2: #161c28;
-      --hairline: #1f283a; --ink: #f0f4f8; --ink-muted: #8393a7;
-      --accent: #00d285; --accent-soft: rgba(0, 210, 133, 0.15);
-      --cyan: #38bdf8; --font-ui: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-    .nav { min-height: 52px; background: var(--panel); border-bottom: 1px solid var(--hairline); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 0.5rem 1rem; gap: 0.5rem; }
-    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
-    .back-btn { color: var(--ink-muted); text-decoration: none; font-size: 0.8rem; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--panel-2); }
-    .nav-title { font-size: 0.85rem; font-weight: 600; }
-    .tabs { display: flex; gap: 4px; overflow-x: auto; width: 100%; padding-bottom: 2px; }
-    @media(min-width: 768px) { .tabs { width: auto; } }
-    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--ink-muted); padding: 8px 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer; white-space: nowrap; min-height: 40px; }
-    .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(0,210,133,0.3); font-weight: 600; }
-    .workspace { flex: 1; display: grid; grid-template-columns: 1fr; }
-    @media(min-width: 860px) { .workspace { grid-template-columns: 360px 1fr; height: calc(100vh - 52px); overflow: hidden; } }
-    .sidebar { background: var(--panel); border-right: 1px solid var(--hairline); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
-    .viewport { position: relative; background: #05070a; display: flex; flex-direction: column; min-height: 380px; }
-    .step-badge { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); text-transform: uppercase; }
-    .task-title { font-size: 1.1rem; font-weight: 600; }
-    .task-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.45; }
-    .tool-box { background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
-    .tool-label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--ink-muted); text-transform: uppercase; }
-    .btn { background: var(--panel-2); border: 1px solid var(--hairline); color: var(--ink); padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 500; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; }
-    .btn:active, .btn.active { background: var(--accent); color: #000; font-weight: 600; border-color: var(--accent); }
-    .attr-row { display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem; }
-    .attr-row span { color: var(--ink-muted); font-family: var(--font-mono); }
-    .attr-row input { background: var(--bg); border: 1px solid var(--hairline); color: #fff; padding: 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; }
-    .map-canvas-wrap { flex: 1; position: relative; width: 100%; min-height: 340px; touch-action: none; cursor: crosshair; }
-    canvas { width: 100%; height: 100%; display: block; }
-    .telemetry-bar { background: var(--panel); border-top: 1px solid var(--hairline); padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
-    .feedback-banner { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.8rem; display: none; }
-    .feedback-success { background: rgba(0, 210, 133, 0.15); border: 1px solid var(--accent); color: #4ade80; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="nav">
-    <div class="nav-left">
-      <a href="index.html" class="back-btn">← МЕНЮ</a>
-      <div class="nav-title">§ 12. Географическая база данных</div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTask(1)">1. ОЦИФРОВКА</button>
-      <button class="tab-btn" onclick="switchTask(2)">2. АТРИБУТЫ СУБД</button>
-      <button class="tab-btn" onclick="switchTask(3)">3. ВЫБОР ОСНОВЫ</button>
-    </div>
+  <header class="mobile-header">
+    <button class="menu-toggle-btn" id="mobile_menu_toggle" aria-label="Меню">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="mobile-header__title">§ 12. Географическая БД</div>
+    <span class="status-pill done" id="mobile_header_progress">0/15</span>
   </header>
 
-  <div class="workspace">
-    <aside class="sidebar">
-      <div class="step-badge" id="task-badge">ЭТАП 1 ИЗ 3</div>
-      <h2 class="task-title" id="task-title">Векторная оцифровка местности</h2>
-      <p class="task-desc" id="task-desc">Оцифруйте объекты карты: Точка (скважина), Линия (дорога), Полигон (озеро).</p>
-      <div class="tool-box" id="task-controls"></div>
-      <div id="feedback" class="feedback-banner"></div>
+  <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="app_sidebar">
+      <div class="sidebar__brand">
+        <div>
+          <div class="brand-badge">ГИС и Картография</div>
+          <div class="brand-title">Лабораторный комплекс</div>
+        </div>
+      </div>
+      <nav class="sidebar__nav">
+        <div class="nav-label">Навигация</div>
+        <a href="index.html" class="nav-link"><span>Главная панель</span></a>
+        <div class="nav-label">Модули с картами</div>
+        <a href="p5-6.html" class="nav-link">
+          <span>§ 5—6. Цифровая карта</span>
+          <span class="status-pill" id="badge_p5-6">0/3</span>
+        </a>
+        <a href="p7-8.html" class="nav-link">
+          <span>§ 7—8. Методы ДЗЗ</span>
+          <span class="status-pill" id="badge_p7-8">0/3</span>
+        </a>
+        <a href="p9-10.html" class="nav-link">
+          <span>§ 9—10. Технологии ГИС</span>
+          <span class="status-pill" id="badge_p9-10">0/3</span>
+        </a>
+        <a href="p11.html" class="nav-link">
+          <span>§ 11. Отрасли и ГИС</span>
+          <span class="status-pill" id="badge_p11">0/3</span>
+        </a>
+        <a href="p12.html" class="nav-link active">
+          <span>§ 12. Географическая БД</span>
+          <span class="status-pill" id="badge_p12">0/3</span>
+        </a>
+      </nav>
     </aside>
 
-    <main class="viewport">
-      <div class="map-canvas-wrap">
-        <canvas id="gis-canvas"></canvas>
-      </div>
-      <div class="telemetry-bar">
-        <div>СТРУКТУРА: Пространственные (2D/3D) + Семантика</div>
-        <div style="color:var(--cyan)">СУБД: РАСПРЕДЕЛЕННАЯ БАЗА</div>
-      </div>
+    <main class="main-content">
+      <header class="page-header">
+        <div class="page-kicker">Тема 5. Базы пространственных данных</div>
+        <h1 class="page-title">§ 12. Географическая база данных</h1>
+        <p class="page-desc">Интерактивный инспектор геометрических типов (Точка, Линия, Полигон) и триады характеристик пространственных данных.</p>
+      </header>
+
+      <!-- TASK 1 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 1</span>
+          <span class="task-type">Инспекция геометрии БД</span>
+        </div>
+        <h2 class="task-title">Векторные типы геометрии: Точка, Линия, Полигон</h2>
+        <p class="task-desc">Нажмите на Полигон, Линию или Точку на карте для считывания размерности и атрибутивной таблицы.</p>
+
+        <div class="map-workspace">
+          <div class="map-toolbar">
+            <span class="map-toolbar__title">Схема пространственных примитивов ГИС</span>
+          </div>
+          <div class="map-svg-container">
+            <svg class="map-svg" viewBox="0 0 600 220">
+              <polygon class="map-feature" points="40,50 180,40 190,150 90,170 30,120" fill="rgba(37, 99, 235, 0.15)" stroke="#2563EB" stroke-width="2"
+                       data-name="Озеро Балхаш" data-geom="Полигон (2D)" data-coords="X: 75.12, Y: 46.50" data-attrs="Размерность: 2D (длина + ширина); S = 18 200 км2"/>
+              <text x="65" y="105" font-family="sans-serif" font-size="12" fill="#2563EB" font-weight="600">ПОЛИГОН</text>
+
+              <path class="map-feature" d="M 230,170 Q 330,30 430,160 T 560,40" fill="none" stroke="#D97706" stroke-width="4" stroke-dasharray="8,4"
+                    data-name="Нефтепровод" data-geom="Линия (1D)" data-coords="L = 1230 км" data-attrs="Размерность: 1D (только длина); Транзитный коридор"/>
+              <text x="330" y="85" font-family="sans-serif" font-size="12" fill="#D97706" font-weight="600">ЛИНИЯ</text>
+
+              <circle class="map-feature" cx="500" cy="140" r="10" fill="#DC2626" stroke="#FFFFFF" stroke-width="2"
+                      data-name="Скважина №42" data-geom="Точка (0D)" data-coords="X: 79.42, Y: 43.18" data-attrs="Размерность: 0D (координаты X, Y); Дебит = 45 т/сут"/>
+              <text x="450" y="175" font-family="sans-serif" font-size="12" fill="#DC2626" font-weight="600">ТОЧКА</text>
+            </svg>
+          </div>
+          <div class="map-status-bar">
+            <span>Объект геометрии: <code class="map-coord-display">Нажмите на Полигон, Линию или Точку</code></span>
+          </div>
+          <div class="map-inspector"></div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">1.1. Соотнесите географические объекты с их векторным типом геометрии в базе данных:</div>
+          <div class="match-grid">
+            <div class="match-source">1. Нефтяная скважина / Геопункт</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p12_1_q1_1">
+                <option value="">-- Тип геометрии --</option>
+                <option value="A">Полигон (замкнутый контур с площадью)</option>
+                <option value="B">Точка (координаты X, Y: широта и долгота)</option>
+                <option value="C">Линия (характеризуется только длиной)</option>
+              </select>
+            </div>
+            <div class="match-source">2. Нефтепровод / Госграница</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p12_1_q1_2">
+                <option value="">-- Тип геометрии --</option>
+                <option value="A">Полигон (замкнутый контур с площадью)</option>
+                <option value="B">Точка (координаты X, Y: широта и долгота)</option>
+                <option value="C">Линия (характеризуется только длиной)</option>
+              </select>
+            </div>
+            <div class="match-source">3. Озеро Балхаш / Заповедник</div>
+            <div class="match-arrow">→</div>
+            <div>
+              <select class="select-control" id="match_t_p12_1_q1_3">
+                <option value="">-- Тип геометрии --</option>
+                <option value="A">Полигон (замкнутый контур с площадью)</option>
+                <option value="B">Точка (координаты X, Y: широта и долгота)</option>
+                <option value="C">Линия (характеризуется только длиной)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">1.2. Какими геометрическими измерениями в пространстве характеризуется полигон согласно параграфу?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p12_1_q2" value="A"><span>A) Двумя размерами, указывающими длину и ширину (площадь контура)</span></label>
+            <label class="choice-label"><input type="radio" name="t_p12_1_q2" value="B"><span>B) Исключительно одной координатой долготы</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p12_1">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p12_1"></div>
+      </article>
+
+      <!-- TASK 2 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 2</span>
+          <span class="task-type">Триада характеристик данных</span>
+        </div>
+        <h2 class="task-title">Пространственные, временные и тематические требования</h2>
+        <p class="task-desc">Сопоставьте характеристики объекта базы данных с главными требованиями к ним.</p>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.1. Каково главное требование к Пространственной характеристике объекта?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p12_2_q1" value="A"><span>A) Точность передачи данных в заданной системе координат</span></label>
+            <label class="choice-label"><input type="radio" name="t_p12_2_q1" value="B"><span>B) Красочность оформления условных знаков</span></label>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.2. Каково главное требование к Временной характеристике данных?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p12_2_q2" value="A"><span>A) Полная неизменяемость данных в течение 100 лет</span></label>
+            <label class="choice-label"><input type="radio" name="t_p12_2_q2" value="B"><span>B) Своевременность передачи данных (устаревшие данные теряют значение)</span></label>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">2.3. Каково главное требование к Тематической (атрибутивной) характеристике?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p12_2_q3" value="A"><span>A) Запись только латинскими буквами</span></label>
+            <label class="choice-label"><input type="radio" name="t_p12_2_q3" value="B"><span>B) Использование только круглых пикселей</span></label>
+            <label class="choice-label"><input type="radio" name="t_p12_2_q3" value="C"><span>C) Полноценность данных, раскрывающих экономические, технические и природные свойства</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p12_2">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p12_2"></div>
+      </article>
+
+      <!-- TASK 3 -->
+      <article class="task-card">
+        <div class="task-card__meta">
+          <span class="task-num">Кейс-задание 3</span>
+          <span class="task-type">Базовые карты и СУБД</span>
+        </div>
+        <h2 class="task-title">Формирование основы для распределенных баз данных</h2>
+        <p class="task-desc">Выберите разрешенные базовые карты и определите принципы работы распределенной БД.</p>
+
+        <div class="sub-question">
+          <div class="sub-question__label">3.1. Какие карты могут быть выбраны в качестве географической базовой основы ГИС? (Выберите 3 правильных ответа):</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="checkbox" name="t_p12_3_q1" value="A"><span>A) Карта административно-территориального деления</span></label>
+            <label class="choice-label"><input type="checkbox" name="t_p12_3_q1" value="B"><span>B) Кадастровые карты и планы</span></label>
+            <label class="choice-label"><input type="checkbox" name="t_p12_3_q1" value="C"><span>C) Топографические и общегеографические карты</span></label>
+            <label class="choice-label"><input type="checkbox" name="t_p12_3_q1" value="D"><span>D) Схема линий метрополитена без координат</span></label>
+          </div>
+        </div>
+
+        <div class="sub-question">
+          <div class="sub-question__label">3.2. Как называется база пространственных данных, информация которой физически хранится на компьютерах в разных городах, но доступна через единую СУБД?</div>
+          <div class="choice-group">
+            <label class="choice-label"><input type="radio" name="t_p12_3_q2" value="A"><span>A) Локальный растровый файл</span></label>
+            <label class="choice-label"><input type="radio" name="t_p12_3_q2" value="B"><span>B) Распределенная база данных</span></label>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn--primary" data-task-submit="t_p12_3">Проверить выполнение задания</button>
+        </div>
+        <div class="feedback-banner" id="feedback_t_p12_3"></div>
+      </article>
     </main>
   </div>
-
-  <script>
-    const V_WIDTH = 800, V_HEIGHT = 500;
-    let currentTask = 1;
-    const canvas = document.getElementById('gis-canvas');
-    const ctx = canvas.getContext('2d');
-    let scale = 1, offsetX = 0, offsetY = 0;
-
-    let t1_tool = 'point';
-    let t1_done = { point: false, line: false, polygon: false };
-    let t2_saved = false;
-    let t3_selectedBase = null;
-
-    function resize() {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      const scaleX = rect.width / V_WIDTH;
-      const scaleY = rect.height / V_HEIGHT;
-      scale = Math.min(scaleX, scaleY);
-      offsetX = (rect.width - V_WIDTH * scale) / 2;
-      offsetY = (rect.height - V_HEIGHT * scale) / 2;
-      ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr);
-      render();
-    }
-    window.addEventListener('resize', resize);
-
-    function toVirtual(clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      return {
-        vx: (clientX - rect.left - offsetX) / scale,
-        vy: (clientY - rect.top - offsetY) / scale
-      };
-    }
-
-    function switchTask(taskId) {
-      currentTask = taskId;
-      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === taskId - 1));
-      const controls = document.getElementById('task-controls');
-      const badge = document.getElementById('task-badge');
-      const title = document.getElementById('task-title');
-      const desc = document.getElementById('task-desc');
-      const fb = document.getElementById('feedback');
-      fb.style.display = 'none';
-
-      if (taskId === 1) {
-        badge.innerText = 'ЭТАП 1 ИЗ 3';
-        title.innerText = 'Векторная оцифровка местности';
-        desc.innerText = 'Выберите примитив (Точка, Линия, Полигон) и коснитесь соответствующего объекта на карте.';
-        controls.innerHTML = `
-          <div class="tool-label">Геометрический примитив</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-            <button class="btn ${t1_tool==='point'?'active':''}" onclick="setT1Tool('point')">Точка</button>
-            <button class="btn ${t1_tool==='line'?'active':''}" onclick="setT1Tool('line')">Линия</button>
-            <button class="btn ${t1_tool==='polygon'?'active':''}" onclick="setT1Tool('polygon')">Полигон</button>
-          </div>
-        `;
-      } else if (taskId === 2) {
-        badge.innerText = 'ЭТАП 2 ИЗ 3';
-        title.innerText = 'Атрибутивная карточка СУБД';
-        desc.innerText = 'Заполните триаду характеристик объекта: Пространство, Время, Семантика.';
-        controls.innerHTML = `
-          <div class="tool-label">Параметры объекта</div>
-          <div class="attr-row">
-            <span>ПРОСТРАНСТВО (WGS-84):</span>
-            <input type="text" value="51°10' N, 71°26' E (Астана)" readonly>
-          </div>
-          <div class="attr-row">
-            <span>ВРЕМЕННАЯ ОТМЕТКА:</span>
-            <input type="text" id="attr-date" value="2026-09-28 10:00 UTC">
-          </div>
-          <div class="attr-row">
-            <span>СЕМАНТИЧЕСКОЕ ОПИСАНИЕ:</span>
-            <input type="text" id="attr-theme" value="Озеро Тенгиз, минерализация соленая">
-          </div>
-          <button class="btn" style="margin-top:4px;" onclick="saveAttr()">Синхронизировать с БД</button>
-        `;
-      } else if (taskId === 3) {
-        badge.innerText = 'ЭТАП 3 ИЗ 3';
-        title.innerText = 'Выбор базовой карты';
-        desc.innerText = 'Задача: «Учет границ земельных участков и прав собственности». Выберите верную базовую основу.';
-        controls.innerHTML = `
-          <div class="tool-label">Базовая основа</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn ${t3_selectedBase==='admin'?'active':''}" onclick="selectBase('admin')">Карта административного деления</button>
-            <button class="btn ${t3_selectedBase==='cadastral'?'active':''}" onclick="selectBase('cadastral')">Кадастровая карта и планы</button>
-            <button class="btn ${t3_selectedBase==='landscape'?'active':''}" onclick="selectBase('landscape')">Ландшафтная карта</button>
-          </div>
-        `;
-      }
-      render();
-    }
-
-    function setT1Tool(t) { t1_tool = t; switchTask(1); }
-    function saveAttr() {
-      t2_saved = true;
-      const fb = document.getElementById('feedback');
-      fb.className = 'feedback-banner feedback-success';
-      fb.style.display = 'block';
-      fb.innerText = '✓ Атрибутивная запись успешно зафиксирована в реляционной базе данных!';
-      render();
-    }
-
-    function selectBase(b) {
-      t3_selectedBase = b;
-      const fb = document.getElementById('feedback');
-      fb.style.display = 'block';
-      if (b === 'cadastral') {
-        fb.className = 'feedback-banner feedback-success';
-        fb.innerText = '✓ Верно! Кадастровая карта содержит юридические границы собственности участков.';
-      } else {
-        fb.className = 'feedback-banner';
-        fb.style.background = 'rgba(245, 158, 11, 0.15)';
-        fb.style.color = '#fbbf24';
-        fb.innerText = 'Выбранная основа не отображает границы участков. Нужна кадастровая основа.';
-      }
-      switchTask(3);
-    }
-
-    canvas.addEventListener('pointerdown', (e) => {
-      const { vx, vy } = toVirtual(e.clientX, e.clientY);
-
-      if (currentTask === 1) {
-        if (t1_tool === 'point' && Math.hypot(vx - 200, vy - 180) < 40) t1_done.point = true;
-        else if (t1_tool === 'line' && Math.hypot(vx - 380, vy - 300) < 50) t1_done.line = true;
-        else if (t1_tool === 'polygon' && Math.hypot(vx - 540, vy - 180) < 60) t1_done.polygon = true;
-
-        if (t1_done.point && t1_done.line && t1_done.polygon) {
-          const fb = document.getElementById('feedback');
-          fb.className = 'feedback-banner feedback-success';
-          fb.style.display = 'block';
-          fb.innerText = '✓ Все три примитива (Point, Line, Polygon) оцифрованы!';
-        }
-        render();
-      }
-    });
-
-    function render() {
-      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
-
-      if (currentTask === 1) {
-        ctx.fillStyle = t1_done.point ? '#00d285' : '#64748b';
-        ctx.beginPath(); ctx.arc(200, 180, 10, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.font = '12px JetBrains Mono';
-        ctx.fillText('Скважина (Point) ' + (t1_done.point?'[✓]':'[ТАП]'), 130, 215);
-
-        ctx.strokeStyle = t1_done.line ? '#00d285' : '#64748b'; ctx.lineWidth = 5;
-        ctx.beginPath(); ctx.moveTo(280, 340); ctx.lineTo(480, 260); ctx.stroke();
-        ctx.fillStyle = '#fff';
-        ctx.fillText('Дорога (Line) ' + (t1_done.line?'[✓]':'[ТАП]'), 320, 325);
-
-        ctx.fillStyle = t1_done.polygon ? 'rgba(0, 210, 133, 0.3)' : 'rgba(100, 116, 139, 0.2)';
-        ctx.strokeStyle = t1_done.polygon ? '#00d285' : '#64748b'; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.ellipse(540, 180, 75, 45, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#fff';
-        ctx.fillText('Озеро (Polygon) ' + (t1_done.polygon?'[✓]':'[ТАП]'), 470, 185);
-      } else if (currentTask === 2) {
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
-        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.ellipse(400, 240, 150, 90, 0.1, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-
-        ctx.fillStyle = '#bae6fd'; ctx.font = '13px JetBrains Mono';
-        ctx.fillText('ОБЪЕКТ СУБД: Озеро Тенгиз', 310, 235);
-        ctx.fillText('WGS-84: 51°10\' N, 71°26\' E', 300, 255);
-
-        if (t2_saved) {
-          ctx.fillStyle = '#00d285';
-          ctx.fillText('[АТРИБУТЫ СИНХРОНИЗИРОВАНЫ ✓]', 275, 285);
-        }
-      } else if (currentTask === 3) {
-        if (t3_selectedBase === 'cadastral') {
-          for (let x = 160; x < 640; x += 110) {
-            for (let y = 100; y < 380; y += 85) {
-              ctx.strokeStyle = '#00d285'; ctx.lineWidth = 1.5;
-              ctx.strokeRect(x, y, 100, 75);
-              ctx.fillStyle = '#a7f3d0'; ctx.font = '10px JetBrains Mono';
-              ctx.fillText(`УЧ. 01:${Math.floor(x/10)}:${Math.floor(y/10)}`, x + 8, y + 22);
-            }
-          }
-          ctx.fillStyle = '#fff'; ctx.font = '13px Inter';
-          ctx.fillText('Кадастровая основа: границы согласованы', 250, 65);
-        } else {
-          ctx.fillStyle = '#64748b'; ctx.font = '13px Inter';
-          ctx.fillText('Выберите базовую основу на панели для согласования слоев.', 160, 240);
-        }
-      }
-    }
-
-    resize();
-    switchTask(1);
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
